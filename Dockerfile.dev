@@ -1,0 +1,23 @@
+FROM node:20-slim
+
+RUN apt-get update && \
+    apt-get install -y openssl && \
+    npx playwright install-deps chromium && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g pnpm@latest
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+COPY prisma ./prisma/
+COPY prisma.config.ts ./
+RUN pnpm install
+
+# Generate Prisma client
+RUN npx prisma generate
+
+# Install Playwright browsers
+RUN npx playwright install chromium
+
+COPY . .

@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: clearsight
+      POSTGRES_PASSWORD: clearsight
+      POSTGRES_DB: clearsight
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clearsight"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://clearsight:clearsight@postgres:5432/clearsight
+      AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
+      AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
+      AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION:-2025-01-01-preview}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      DATABASE_URL: postgresql://clearsight:clearsight@postgres:5432/clearsight
+      AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
+      AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
+      AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION:-2025-01-01-preview}
+    depends_on:
+      app:
+        condition: service_healthy
+
+volumes:
+  pgdata:

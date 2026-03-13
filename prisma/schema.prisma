@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ScanStatus {
+  queued
+  running
+  completed
+  failed
+  completed_partial
+  cancelled
+}
+
+enum IssueType {
+  confirmed
+  potential
+}
+
+enum Severity {
+  critical
+  serious
+  moderate
+  minor
+}
+
+enum WcagLevel {
+  A
+  AA
+}
+
+model Scan {
+  id             String     @id @default(uuid())
+  url            String
+  status         ScanStatus @default(queued)
+  progress       Int        @default(0)
+  currentStage   String?    @map("current_stage")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+  completedAt    DateTime?  @map("completed_at")
+  pageTitle      String?    @map("page_title")
+  pageScreenshot String?    @map("page_screenshot")
+  errorMessage   String?    @map("error_message")
+  retryCount     Int        @default(0) @map("retry_count")
+  metadata       Json?
+
+  issues  Issue[]
+  summary ScanSummary?
+
+  @@map("scans")
+}
+
+model Issue {
+  id              String    @id @default(uuid())
+  scanId          String    @map("scan_id")
+  type            IssueType
+  severity        Severity
+  confidenceScore Float?    @map("confidence_score")
+  wcagCriterion   String    @map("wcag_criterion")
+  wcagLevel       WcagLevel @map("wcag_level")
+  elementSelector String    @map("element_selector")
+  elementHtml     String    @map("element_html")
+  description     String
+  fixSuggestion   String    @map("fix_suggestion")
+  axeRuleId       String?   @map("axe_rule_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  scan Scan @relation(fields: [scanId], references: [id], onDelete: Cascade)
+
+  @@map("issues")
+}
+
+model ScanSummary {
+  id               String   @id @default(uuid())
+  scanId           String   @unique @map("scan_id")
+  overallScore     Int      @map("overall_score")
+  summary          String
+  topPriorities    Json     @map("top_priorities")
+  positiveFindings Json     @map("positive_findings")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  scan Scan @relation(fields: [scanId], references: [id], onDelete: Cascade)
+
+  @@map("scan_summaries")
+}

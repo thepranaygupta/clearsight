@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: clearsight
+      POSTGRES_PASSWORD: clearsight
+      POSTGRES_DB: clearsight
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clearsight"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      DATABASE_URL: postgresql://clearsight:clearsight@postgres:5432/clearsight
+      AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
+      AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
+      AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION:-2025-01-01-preview}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "npx prisma db push && pnpm dev"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      DATABASE_URL: postgresql://clearsight:clearsight@postgres:5432/clearsight
+      AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
+      AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
+      AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION:-2025-01-01-preview}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: pnpm worker
+
+volumes:
+  pgdata:
