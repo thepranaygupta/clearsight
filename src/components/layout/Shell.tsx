@@ -18,8 +18,10 @@ export function Shell({ children }: ShellProps) {
         activeScanId={activeScanId}
         onNewScan={() => router.push("/")}
       />
-      <main className="flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-5xl px-6 py-6 sm:px-10 sm:py-8">
+      <main className="relative flex-1 overflow-y-auto">
+        {/* Subtle top gradient wash */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-primary/[0.015] to-transparent" />
+        <div className="relative mx-auto w-full max-w-5xl px-8 py-8 sm:px-12 sm:py-10">
           {children}
         </div>
       </main>

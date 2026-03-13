@@ -183,7 +183,7 @@ export function IssueTabs({ issues }: IssueTabsProps) {
                 {severityLabels[filterSeverity]}
                 <ChevronDown className="size-3 opacity-50" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={6}>
+              <DropdownMenuContent align="end" sideOffset={6} className="min-w-[200px]">
                 <DropdownMenuGroup>
                   <span className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
                     Filter by severity
@@ -229,7 +229,7 @@ export function IssueTabs({ issues }: IssueTabsProps) {
                 {sortLabels[sortKey]}
                 <ChevronDown className="size-3 opacity-50" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={6}>
+              <DropdownMenuContent align="end" sideOffset={6} className="min-w-[200px]">
                 <DropdownMenuGroup>
                   <span className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
                     Sort by

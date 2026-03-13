@@ -79,7 +79,7 @@ export function ExportButtons({ scanId }: ExportButtonsProps) {
             ? "Generating Excel..."
             : "Export"}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" sideOffset={6}>
+      <DropdownMenuContent align="end" sideOffset={6} className="min-w-[260px]">
         <DropdownMenuGroup>
           <span className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
             Export report

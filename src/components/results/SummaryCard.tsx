@@ -1,7 +1,6 @@
 "use client";
 
-import { CheckCircle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle, Sparkles } from "lucide-react";
 
 interface PositiveFinding {
   category: string;
@@ -15,36 +14,43 @@ interface SummaryCardProps {
 
 export function SummaryCard({ summary, positiveFindings }: SummaryCardProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base font-semibold">Summary</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        <p className="text-sm leading-relaxed text-foreground/80">{summary}</p>
+    <div className="space-y-4">
+      {/* AI Summary */}
+      <div className="rounded-2xl border border-border/50 bg-card p-6">
+        <div className="mb-3 flex items-center gap-2">
+          <Sparkles className="size-4 text-primary/60" />
+          <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground/60">
+            AI Summary
+          </h3>
+        </div>
+        <p className="text-[15px] leading-[1.7] text-foreground/80">{summary}</p>
+      </div>
 
-        {positiveFindings.length > 0 && (
-          <div className="rounded-lg border border-green-200/60 bg-green-50/50 p-4">
-            <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-green-800/70">
-              What&apos;s working well
-            </h4>
-            <ul className="space-y-2.5">
-              {positiveFindings.map((finding, i) => (
-                <li key={i} className="flex items-start gap-2.5">
-                  <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-600" />
-                  <div>
-                    <span className="text-sm font-medium text-green-900">
-                      {finding.category}
-                    </span>
-                    <span className="text-sm text-green-800/70">
-                      {" "}&mdash; {finding.detail}
-                    </span>
-                  </div>
-                </li>
-              ))}
-            </ul>
+      {/* Positive findings */}
+      {positiveFindings.length > 0 && (
+        <div className="rounded-2xl border border-green-200/50 bg-green-50/30 p-6">
+          <h4 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-green-700/50">
+            What&apos;s working well
+          </h4>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {positiveFindings.map((finding, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md bg-green-100">
+                  <CheckCircle className="size-3 text-green-600" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-green-900">
+                    {finding.category}
+                  </p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-green-700/70">
+                    {finding.detail}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </div>
   );
 }

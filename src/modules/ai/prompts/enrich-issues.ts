@@ -23,7 +23,7 @@ Rules:
 5. Preserve the original ruleId, severity, wcagCriterion, wcagLevel, elementSelector, and elementHtml from the raw finding.
 6. Map the engineName-based ruleId to axeRuleId if the finding originated from axe-core, otherwise set axeRuleId to null.
 
-You MUST respond with a valid JSON array of enriched issues. Do not include any text outside the JSON.`
+You MUST respond with a valid JSON object containing a single key "issues" whose value is the array of enriched issues. Do not include any text outside the JSON.`
 
   const user = `## Page Context
 - URL: ${pageContext.url}
@@ -52,7 +52,7 @@ Respond with a JSON array where each element matches this schema:
 }
 \`\`\`
 
-Return ONLY the JSON array, no surrounding text or markdown.`
+Return ONLY a JSON object like: { "issues": [ ... ] }`
 
   return { system, user }
 }

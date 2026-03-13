@@ -485,7 +485,7 @@ Sidebar + main content area.
 ### Environment Variables
 ```
 DATABASE_URL=postgresql://clearsight:clearsight@postgres:5432/clearsight
-AZURE_OPENAI_ENDPOINT=https://it-es.openai.azure.com/openai/deployments/gpt-4.1/chat/completions
+AZURE_OPENAI_ENDPOINT=https://your-endpoint.openai.azure.com/openai/deployments/your-model/chat/completions?api-version=2025-01-01-preview
 AZURE_OPENAI_API_KEY=<your-api-key>
 AZURE_OPENAI_API_VERSION=2025-01-01-preview
 ```

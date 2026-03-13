@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2, Shield } from "lucide-react";
 
 export function ScanForm() {
   const router = useRouter();
@@ -45,32 +45,31 @@ export function ScanForm() {
   }
 
   return (
-    <section className="flex min-h-[50vh] flex-col items-center justify-center px-4">
-      {/* Decorative background element */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[40vh] overflow-hidden opacity-[0.03]">
-        <div
-          className="absolute -top-1/2 left-1/2 size-[600px] -translate-x-1/2 rounded-full"
-          style={{
-            background:
-              "radial-gradient(circle, oklch(0.52 0.22 25) 0%, transparent 70%)",
-          }}
-        />
+    <section className="flex min-h-[46vh] flex-col items-center justify-center">
+      {/* Badge */}
+      <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/[0.04] px-3.5 py-1.5">
+        <Shield className="size-3.5 text-primary" />
+        <span className="text-xs font-medium text-primary">
+          WCAG 2.1 Level A & AA
+        </span>
       </div>
 
       {/* Heading */}
-      <h1 className="relative mb-3 text-center text-4xl font-light tracking-tight text-foreground sm:text-5xl">
-        Check any page for
+      <h1 className="mb-4 text-center text-[2.5rem] font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl">
+        Scan any page for
         <br />
-        <span className="font-medium text-primary">accessibility</span>
+        <span className="bg-gradient-to-r from-primary via-primary to-primary/70 bg-clip-text text-transparent">
+          accessibility
+        </span>
       </h1>
-      <p className="relative mb-12 max-w-md text-center text-base leading-relaxed text-muted-foreground">
-        Enter a URL to scan for WCAG 2.1 Level A &amp; AA compliance.
-        Get actionable results in seconds.
+      <p className="mb-10 max-w-lg text-center text-[15px] leading-relaxed text-muted-foreground">
+        Enter a URL and get a detailed compliance report with
+        AI-powered fix suggestions — in under a minute.
       </p>
 
       {/* Search bar */}
-      <form onSubmit={handleSubmit} className="relative w-full max-w-2xl">
-        <div className="group relative flex items-center rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 focus-within:border-primary/30 focus-within:shadow-lg focus-within:shadow-primary/[0.04] focus-within:ring-4 focus-within:ring-primary/[0.06]">
+      <form onSubmit={handleSubmit} className="w-full max-w-2xl">
+        <div className="group relative flex items-center rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 focus-within:border-primary/25 focus-within:shadow-xl focus-within:shadow-primary/[0.04]">
           <input
             type="url"
             value={url}
@@ -78,15 +77,15 @@ export function ScanForm() {
               setUrl(e.target.value);
               if (error) setError(null);
             }}
-            placeholder="https://example.com"
+            placeholder="https://pranaygupta.in"
             disabled={loading}
-            className="h-14 flex-1 rounded-l-2xl bg-transparent px-5 text-base text-foreground outline-none placeholder:text-muted-foreground/50 disabled:opacity-60 sm:h-16 sm:text-lg"
+            className="h-14 flex-1 rounded-l-2xl bg-transparent px-6 font-mono text-[15px] text-foreground outline-none placeholder:font-sans placeholder:text-muted-foreground/40 disabled:opacity-60 sm:h-[60px]"
             autoFocus
           />
           <button
             type="submit"
             disabled={loading}
-            className="mr-2 flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.97] disabled:opacity-60 sm:h-11 sm:px-6"
+            className="mr-2 flex h-10 items-center gap-2 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm shadow-primary/25 transition-all hover:bg-primary/90 hover:shadow-md hover:shadow-primary/30 active:scale-[0.97] disabled:opacity-60 sm:h-11 sm:px-6"
           >
             {loading ? (
               <Loader2 className="size-4 animate-spin" />
@@ -101,15 +100,10 @@ export function ScanForm() {
 
         {/* Error */}
         {error && (
-          <p className="mt-3 text-center text-sm text-[var(--severity-critical)]">
+          <p className="mt-3 text-center text-sm font-medium text-[var(--severity-critical)]">
             {error}
           </p>
         )}
-
-        {/* Subtle hint */}
-        <p className="mt-4 text-center text-xs text-muted-foreground/50">
-          Powered by axe-core engine + AI analysis
-        </p>
       </form>
     </section>
   );

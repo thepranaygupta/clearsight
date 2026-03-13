@@ -6,27 +6,27 @@ import { cn } from "@/lib/utils";
 const stages = [
   {
     key: "Fetching",
-    label: "Fetching",
+    label: "Rendering page",
     icon: Eye,
-    description: "Rendering the page in a headless browser and capturing a screenshot",
+    description: "Capturing the page in a headless browser",
   },
   {
     key: "Analyzing",
-    label: "Analyzing",
+    label: "Running checks",
     icon: Scan,
-    description: "Running axe-core accessibility engine and custom WCAG checks",
+    description: "axe-core engine + custom WCAG rule checks",
   },
   {
     key: "Enriching",
-    label: "Enriching",
+    label: "AI analysis",
     icon: Brain,
-    description: "AI is reviewing findings, generating human-readable explanations and fix suggestions",
+    description: "Generating explanations and fix suggestions",
   },
   {
     key: "Complete",
-    label: "Storing",
+    label: "Finalizing",
     icon: Database,
-    description: "Saving results and computing your accessibility score",
+    description: "Computing score and saving results",
   },
 ] as const;
 
@@ -55,6 +55,7 @@ export function ScanProgress({
 }: ScanProgressProps) {
   const activeIndex = mapStageToIndex(currentStage);
   const clampedProgress = Math.min(Math.max(progress, 0), 100);
+  const circumference = 2 * Math.PI * 68;
 
   let hostname = url;
   try {
@@ -64,116 +65,146 @@ export function ScanProgress({
   }
 
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center">
-      {/* Animated ring */}
-      <div className="relative mb-10">
-        <svg width="160" height="160" viewBox="0 0 160 160" className="-rotate-90">
+    <div className="flex min-h-[65vh] flex-col items-center justify-center">
+      {/* Progress ring */}
+      <div className="relative mb-8">
+        <svg width="176" height="176" viewBox="0 0 176 176" className="-rotate-90">
+          {/* Track */}
           <circle
-            cx="80"
-            cy="80"
-            r="72"
+            cx="88"
+            cy="88"
+            r="68"
             fill="none"
             stroke="currentColor"
-            className="text-muted/40"
-            strokeWidth="3"
+            className="text-muted/30"
+            strokeWidth="4"
           />
+          {/* Tick marks */}
+          {Array.from({ length: 40 }).map((_, i) => {
+            const angle = (i / 40) * 360;
+            const rad = (angle * Math.PI) / 180;
+            const x1 = 88 + 80 * Math.cos(rad);
+            const y1 = 88 + 80 * Math.sin(rad);
+            const x2 = 88 + 83 * Math.cos(rad);
+            const y2 = 88 + 83 * Math.sin(rad);
+            return (
+              <line
+                key={i}
+                x1={x1}
+                y1={y1}
+                x2={x2}
+                y2={y2}
+                stroke="currentColor"
+                className="text-muted/20"
+                strokeWidth="1"
+              />
+            );
+          })}
+          {/* Progress arc */}
           <circle
-            cx="80"
-            cy="80"
-            r="72"
+            cx="88"
+            cy="88"
+            r="68"
             fill="none"
             stroke="var(--primary)"
-            strokeWidth="3"
+            strokeWidth="4"
             strokeLinecap="round"
-            strokeDasharray={2 * Math.PI * 72}
-            strokeDashoffset={2 * Math.PI * 72 * (1 - clampedProgress / 100)}
+            strokeDasharray={circumference}
+            strokeDashoffset={circumference * (1 - clampedProgress / 100)}
             className="transition-[stroke-dashoffset] duration-700 ease-out"
             style={{
-              filter: "drop-shadow(0 0 8px oklch(0.52 0.22 25 / 0.3))",
+              filter: "drop-shadow(0 0 10px oklch(0.52 0.22 25 / 0.35))",
             }}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-4xl font-semibold tabular-nums tracking-tight text-foreground">
+          <span className="font-mono text-4xl font-bold tabular-nums tracking-tighter text-foreground">
             {clampedProgress}
-            <span className="text-lg text-muted-foreground">%</span>
           </span>
+          <span className="text-xs font-medium text-muted-foreground">percent</span>
         </div>
       </div>
 
       {/* URL pill */}
-      <div className="mb-8 flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 shadow-sm">
-        <Globe className="size-3.5 text-muted-foreground" />
-        <span className="font-mono text-xs text-foreground/70">{hostname}</span>
+      <div className="mb-10 flex items-center gap-2 rounded-full border border-border/60 bg-card px-4 py-2">
+        <Globe className="size-3 text-muted-foreground/50" />
+        <span className="font-mono text-xs text-foreground/60">{hostname}</span>
       </div>
 
-      {/* Stage cards — vertical timeline */}
-      <div className="mb-8 w-full max-w-md space-y-3">
+      {/* Stage timeline */}
+      <div className="mb-8 w-full max-w-sm">
         {stages.map((stage, i) => {
           const isPast = i < activeIndex;
           const isCurrent = i === activeIndex;
           const isFuture = i > activeIndex;
           const Icon = stage.icon;
+          const isLast = i === stages.length - 1;
 
           return (
-            <div
-              key={stage.key}
-              className={cn(
-                "flex items-start gap-4 rounded-xl border px-4 py-3.5 transition-all duration-500",
-                isCurrent && "border-primary/30 bg-primary/[0.03] shadow-sm",
-                isPast && "border-green-200/60 bg-green-50/30",
-                isFuture && "border-transparent bg-transparent opacity-40"
-              )}
-            >
-              {/* Icon */}
-              <div
-                className={cn(
-                  "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-300",
-                  isCurrent && "bg-primary/10 text-primary",
-                  isPast && "bg-green-100 text-green-600",
-                  isFuture && "bg-muted text-muted-foreground"
-                )}
-              >
-                {isPast ? (
-                  <Check className="size-4" />
-                ) : (
-                  <Icon className={cn("size-4", isCurrent && "animate-pulse")} />
+            <div key={stage.key} className="flex gap-4">
+              {/* Timeline track */}
+              <div className="flex flex-col items-center">
+                <div
+                  className={cn(
+                    "flex size-9 shrink-0 items-center justify-center rounded-xl border transition-all duration-500",
+                    isCurrent && "border-primary/40 bg-primary/[0.08] shadow-sm shadow-primary/10",
+                    isPast && "border-green-300/50 bg-green-50",
+                    isFuture && "border-border/40 bg-muted/30"
+                  )}
+                >
+                  {isPast ? (
+                    <Check className="size-4 text-green-600" />
+                  ) : (
+                    <Icon
+                      className={cn(
+                        "size-4 transition-colors",
+                        isCurrent && "text-primary animate-pulse",
+                        isFuture && "text-muted-foreground/30"
+                      )}
+                    />
+                  )}
+                </div>
+                {!isLast && (
+                  <div
+                    className={cn(
+                      "w-px flex-1 min-h-4 transition-colors duration-500",
+                      isPast ? "bg-green-300/50" : "bg-border/30"
+                    )}
+                  />
                 )}
               </div>
 
-              {/* Text */}
-              <div className="min-w-0 flex-1">
-                <p
-                  className={cn(
-                    "text-sm font-medium transition-colors",
-                    isCurrent && "text-foreground",
-                    isPast && "text-green-700",
-                    isFuture && "text-muted-foreground"
+              {/* Content */}
+              <div className={cn("pb-5", isLast && "pb-0")}>
+                <div className="flex items-center gap-2">
+                  <p
+                    className={cn(
+                      "text-sm font-medium transition-colors",
+                      isCurrent && "text-foreground",
+                      isPast && "text-green-700",
+                      isFuture && "text-muted-foreground/40"
+                    )}
+                  >
+                    {stage.label}
+                  </p>
+                  {isCurrent && (
+                    <span className="relative flex size-1.5">
+                      <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-40" />
+                      <span className="relative inline-flex size-1.5 rounded-full bg-primary" />
+                    </span>
                   )}
-                >
-                  {stage.label}
-                </p>
+                  {isPast && (
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-green-600/70">
+                      Done
+                    </span>
+                  )}
+                </div>
                 {(isCurrent || isPast) && (
-                  <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">
+                  <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground/70">
                     {stage.description}
                   </p>
                 )}
               </div>
-
-              {/* Status */}
-              {isPast && (
-                <span className="mt-1 text-[10px] font-medium uppercase tracking-wider text-green-600">
-                  Done
-                </span>
-              )}
-              {isCurrent && (
-                <div className="mt-1.5 flex items-center gap-1.5">
-                  <span className="relative flex size-2">
-                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-primary opacity-40" />
-                    <span className="relative inline-flex size-2 rounded-full bg-primary" />
-                  </span>
-                </div>
-              )}
             </div>
           );
         })}
@@ -183,7 +214,7 @@ export function ScanProgress({
       {onCancel && (
         <button
           onClick={onCancel}
-          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border/40 px-4 py-2 text-xs font-medium text-muted-foreground transition-all hover:border-border hover:bg-muted hover:text-foreground"
         >
           <X className="size-3" />
           Cancel scan

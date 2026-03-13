@@ -1,8 +1,9 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { useState } from "react";
+import { Plus, Scan } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ScanHistory } from "@/components/scan/ScanHistory";
+import { ScanHistory, ScanSearch } from "@/components/scan/ScanHistory";
 
 interface SidebarProps {
   activeScanId?: string;
@@ -10,13 +11,15 @@ interface SidebarProps {
 }
 
 export function Sidebar({ activeScanId, onNewScan }: SidebarProps) {
+  const [search, setSearch] = useState("");
+
   return (
-    <aside className="flex h-screen w-[280px] shrink-0 flex-col bg-sidebar text-sidebar-foreground">
-      {/* Wordmark */}
-      <div className="flex h-14 items-center px-5">
-        <span className="text-base font-bold tracking-tight">
-          <span className="text-white">Clear</span>
-          <span className="text-sidebar-primary">Sight</span>
+    <aside className="flex h-screen w-[264px] shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+      {/* Header */}
+      <div className="flex h-[52px] items-center gap-2 px-4">
+        <Scan className="size-4 text-sidebar-primary" strokeWidth={2.5} />
+        <span className="text-[14px] font-semibold tracking-tight text-sidebar-foreground">
+          ClearSight
         </span>
       </div>
 
@@ -24,26 +27,29 @@ export function Sidebar({ activeScanId, onNewScan }: SidebarProps) {
       <div className="px-3 pb-3">
         <button
           onClick={onNewScan}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-sidebar-primary px-4 py-2 text-sm font-medium text-sidebar-primary-foreground transition-all hover:bg-sidebar-primary/85 active:scale-[0.98]"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-sidebar-primary px-4 py-2 text-[13px] font-medium text-sidebar-primary-foreground transition-colors hover:bg-sidebar-primary/90 active:scale-[0.98]"
         >
-          <Plus className="size-4" />
+          <Plus className="size-3.5" strokeWidth={2.5} />
           New Scan
         </button>
       </div>
 
-      {/* Divider */}
-      <div className="mx-3 border-t border-sidebar-border" />
+      {/* Separator */}
+      <div className="mx-3 h-px bg-sidebar-border" />
 
-      {/* Scan history header */}
-      <div className="flex items-center px-4 pt-4 pb-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
-          Recent Scans
+      {/* Section label */}
+      <div className="px-4 pt-4 pb-1.5">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-sidebar-foreground/50">
+          Scans
         </span>
       </div>
 
-      {/* Scan history */}
-      <ScrollArea className="flex-1 px-1 pb-4">
-        <ScanHistory activeScanId={activeScanId} />
+      {/* Search — pinned above scroll */}
+      <ScanSearch search={search} onSearchChange={setSearch} />
+
+      {/* Scan history — scrollable */}
+      <ScrollArea className="min-h-0 flex-1 pb-2">
+        <ScanHistory activeScanId={activeScanId} search={search} />
       </ScrollArea>
     </aside>
   );

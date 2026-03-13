@@ -6,7 +6,6 @@ interface ScoreGaugeProps {
   score: number;
   size?: number;
   strokeWidth?: number;
-  label?: string;
 }
 
 function getScoreColor(score: number): string {
@@ -17,15 +16,14 @@ function getScoreColor(score: number): string {
 
 function getScoreLabel(score: number): string {
   if (score < 50) return "Poor";
-  if (score < 80) return "Needs Work";
+  if (score < 80) return "Needs work";
   return "Good";
 }
 
 export function ScoreGauge({
   score,
-  size = 120,
-  strokeWidth = 8,
-  label = "Accessibility Score",
+  size = 140,
+  strokeWidth = 10,
 }: ScoreGaugeProps) {
   const [animatedScore, setAnimatedScore] = useState(0);
   const rafRef = useRef<number>(0);
@@ -37,12 +35,11 @@ export function ScoreGauge({
 
   useEffect(() => {
     startTimeRef.current = performance.now();
-    const duration = 1200;
+    const duration = 1400;
 
     function animate(now: number) {
       const elapsed = now - startTimeRef.current;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setAnimatedScore(Math.round(eased * score));
 
@@ -59,7 +56,7 @@ export function ScoreGauge({
   const color = getScoreColor(score);
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center">
       <div className="relative" style={{ width: size, height: size }}>
         <svg
           width={size}
@@ -74,7 +71,7 @@ export function ScoreGauge({
             r={radius}
             fill="none"
             stroke="currentColor"
-            className="text-muted/60"
+            className="text-muted/40"
             strokeWidth={strokeWidth}
           />
           {/* Score arc */}
@@ -90,26 +87,23 @@ export function ScoreGauge({
             strokeDashoffset={offset}
             style={{
               transition: "stroke-dashoffset 0.1s ease-out",
-              filter: `drop-shadow(0 0 6px ${color}40)`,
+              filter: `drop-shadow(0 0 8px ${color}50)`,
             }}
           />
         </svg>
-        {/* Center score */}
+        {/* Center */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span
-            className="text-3xl font-semibold tabular-nums tracking-tight"
+            className="font-mono text-3xl font-bold tabular-nums tracking-tighter"
             style={{ color }}
           >
             {animatedScore}
           </span>
-          <span className="text-[10px] font-medium text-muted-foreground">
+          <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
             {getScoreLabel(score)}
           </span>
         </div>
       </div>
-      <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase">
-        {label}
-      </span>
     </div>
   );
 }

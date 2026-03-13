@@ -112,7 +112,7 @@ src/
 | Variable                   | Description                                    |
 |----------------------------|------------------------------------------------|
 | `DATABASE_URL`             | PostgreSQL connection string                   |
-| `AZURE_OPENAI_ENDPOINT`   | Azure OpenAI deployment endpoint               |
+| `AZURE_OPENAI_ENDPOINT`   | Azure OpenAI base URL (e.g. `https://your-endpoint.openai.azure.com`) |
 | `AZURE_OPENAI_API_KEY`    | Azure OpenAI API key                           |
 | `AZURE_OPENAI_API_VERSION`| API version (default: `2025-01-01-preview`)    |
 

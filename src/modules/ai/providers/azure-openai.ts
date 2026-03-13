@@ -28,19 +28,16 @@ interface AzureOpenAIResponse {
   }
 }
 
-const MODEL_DEPLOYMENT = 'gpt-4.1'
 const MAX_RETRIES = 1
 const RETRY_DELAY_MS = 1000
 
 export class AzureOpenAIProvider implements AIProvider {
   private endpoint: string
   private apiKey: string
-  private apiVersion: string
 
   constructor() {
     this.endpoint = config.ai.endpoint
     this.apiKey = config.ai.apiKey
-    this.apiVersion = config.ai.apiVersion
   }
 
   async enrichIssues(
@@ -58,13 +55,15 @@ export class AzureOpenAIProvider implements AIProvider {
     const responseText = await this.chatCompletion(messages)
     const parsed = JSON.parse(responseText)
 
-    if (!Array.isArray(parsed)) {
+    // LLM returns { "issues": [...] } due to json_object mode requiring a top-level object
+    const issues = Array.isArray(parsed) ? parsed : parsed.issues
+    if (!Array.isArray(issues)) {
       throw new Error(
-        `Expected JSON array from enrich-issues response, got ${typeof parsed}`,
+        `Expected issues array in enrich-issues response, got ${typeof parsed}`,
       )
     }
 
-    return parsed as EnrichedIssue[]
+    return issues as EnrichedIssue[]
   }
 
   async generateSummary(
@@ -90,12 +89,12 @@ export class AzureOpenAIProvider implements AIProvider {
   }
 
   private async chatCompletion(messages: ChatMessage[]): Promise<string> {
-    const url = `${this.endpoint}/openai/deployments/${MODEL_DEPLOYMENT}/chat/completions?api-version=${this.apiVersion}`
+    const url = this.endpoint
 
     const body = {
       messages,
       temperature: 0.2,
-      max_tokens: 4096,
+      max_tokens: 16384,
       response_format: { type: 'json_object' as const },
     }
 
