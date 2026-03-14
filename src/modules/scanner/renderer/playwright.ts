@@ -1,7 +1,7 @@
 import { chromium, type Browser, type BrowserContext, type Page } from 'playwright'
 import type { PageRenderer, RenderedPage } from './types'
 
-const MAX_REDIRECTS = 5
+const MAX_REDIRECTS = 10
 const NAVIGATION_TIMEOUT_MS = 90_000
 const POST_LOAD_SETTLE_MS = 3_000
 const MAX_ELEMENT_COUNT_CHECK = 5_000
