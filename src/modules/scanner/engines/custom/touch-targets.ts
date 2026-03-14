@@ -66,6 +66,7 @@ export class TouchTargetEngine implements ScanEngine {
       elementSelector: target.selector,
       elementHtml: target.outerHtml,
       description: `Interactive element <${target.tagName}> has a touch target size of ${target.width}x${target.height}px, which is below the minimum ${MIN_TARGET_SIZE_PX}x${MIN_TARGET_SIZE_PX}px recommended for AA conformance.`,
+      ruleHelp: 'Touch targets must be large enough for interaction',
       engineName: this.name,
     }))
   }

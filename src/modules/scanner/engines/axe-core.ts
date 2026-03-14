@@ -2,7 +2,11 @@ import AxeBuilder from '@axe-core/playwright'
 import type { Page } from 'playwright'
 import type { RawFinding, ScanEngine } from '../types'
 
-const WCAG_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] as const
+const WCAG_TAGS = [
+  'wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa',
+  'wcag2aaa', 'wcag22aa',
+  'best-practice', 'experimental',
+] as const
 
 /** Maps an axe-core tag like "wcag244" to a criterion string like "2.4.4". */
 function extractWcagCriterion(tags: string[]): string {
@@ -12,13 +16,17 @@ function extractWcagCriterion(tags: string[]): string {
       return `${match[1]}.${match[2]}.${match[3]}`
     }
   }
+  if (tags.includes('best-practice')) return 'BP'
   return 'unknown'
 }
 
 /** Derives the WCAG conformance level from tags. */
-function extractWcagLevel(tags: string[]): 'A' | 'AA' {
+function extractWcagLevel(tags: string[]): 'A' | 'AA' | 'AAA' {
   for (const tag of tags) {
-    if (tag === 'wcag2aa' || tag === 'wcag21aa') return 'AA'
+    if (tag === 'wcag2aaa') return 'AAA'
+  }
+  for (const tag of tags) {
+    if (tag === 'wcag2aa' || tag === 'wcag21aa' || tag === 'wcag22aa') return 'AA'
   }
   return 'A'
 }
@@ -59,6 +67,7 @@ export class AxeCoreEngine implements ScanEngine {
           elementSelector: node.target.join(' '),
           elementHtml: node.html,
           description: violation.help,
+          ruleHelp: violation.help,
           engineName: this.name,
         })
       }
@@ -76,6 +85,7 @@ export class AxeCoreEngine implements ScanEngine {
           elementSelector: node.target.join(' '),
           elementHtml: node.html,
           description: incomplete.help,
+          ruleHelp: incomplete.help,
           engineName: this.name,
         })
       }

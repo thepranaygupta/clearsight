@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { Eye, Scan, Brain, Database, ChevronRight } from "lucide-react";
 import { ScanForm } from "@/components/scan/ScanForm";
 import { cn } from "@/lib/utils";
@@ -34,7 +35,9 @@ const steps = [
 export default function Home() {
   return (
     <>
-      <ScanForm />
+      <Suspense>
+        <ScanForm />
+      </Suspense>
 
       {/* Pipeline */}
       <section className="border-t border-border/30 pt-12 pb-10">

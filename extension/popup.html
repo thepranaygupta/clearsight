@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 320px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #0a0a0b;
+      color: #e4e4e7;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .header img {
+      width: 28px;
+      height: 28px;
+    }
+
+    .header-text h1 {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #fafafa;
+    }
+
+    .header-text p {
+      font-size: 11px;
+      color: #71717a;
+      margin-top: 1px;
+    }
+
+    .content {
+      padding: 16px;
+    }
+
+    .url-preview {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .url-preview label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #71717a;
+      margin-bottom: 4px;
+    }
+
+    .url-preview .url {
+      font-size: 13px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: #a1a1aa;
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .host-input-group {
+      margin-bottom: 14px;
+    }
+
+    .host-input-group label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #71717a;
+      margin-bottom: 6px;
+    }
+
+    .host-input-group input {
+      width: 100%;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 0 10px;
+      font-size: 13px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: #e4e4e7;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .host-input-group input:focus {
+      border-color: rgba(124, 58, 237, 0.4);
+    }
+
+    .scan-btn {
+      width: 100%;
+      height: 40px;
+      background: #7c3aed;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .scan-btn:hover {
+      background: #6d28d9;
+    }
+
+    .scan-btn:active {
+      transform: scale(0.98);
+    }
+
+    .scan-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .error {
+      display: none;
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #fca5a5;
+    }
+
+    .error.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="icons/icon48.png" alt="ClearSight">
+    <div class="header-text">
+      <h1>ClearSight</h1>
+      <p>WCAG 2.1 Accessibility Scanner</p>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="url-preview">
+      <label>Current Page</label>
+      <div class="url" id="current-url">Loading...</div>
+    </div>
+
+    <div class="host-input-group">
+      <label>ClearSight Host</label>
+      <input type="text" id="host-input" placeholder="http://localhost:3000" spellcheck="false">
+    </div>
+
+    <button class="scan-btn" id="scan-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+        <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+        <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+        <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+        <line x1="7" y1="12" x2="17" y2="12"/>
+      </svg>
+      Scan This Page
+    </button>
+
+    <div class="error" id="error-msg"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

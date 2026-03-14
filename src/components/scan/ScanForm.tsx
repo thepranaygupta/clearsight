@@ -1,26 +1,27 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Loader2, Shield } from "lucide-react";
 
 export function ScanForm() {
   const router = useRouter();
-  const [url, setUrl] = useState("");
+  const searchParams = useSearchParams();
+  const autoScanUrl = searchParams.get("autoScan");
+  const [url, setUrl] = useState(autoScanUrl ?? "");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const autoScanTriggered = useRef(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-
-    const trimmed = url.trim();
+  async function submitScan(targetUrl: string) {
+    const trimmed = targetUrl.trim();
     if (!trimmed) {
       setError("Please enter a URL");
       return;
     }
 
     setLoading(true);
+    setError(null);
 
     try {
       const res = await fetch("/api/scans", {
@@ -42,6 +43,20 @@ export function ScanForm() {
       setError("Network error. Please try again.");
       setLoading(false);
     }
+  }
+
+  // Auto-scan when opened from Chrome extension with ?autoScan=<url>
+  useEffect(() => {
+    if (autoScanUrl && !autoScanTriggered.current) {
+      autoScanTriggered.current = true;
+      submitScan(autoScanUrl);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount when autoScanUrl is present
+  }, []);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    submitScan(url);
   }
 
   return (

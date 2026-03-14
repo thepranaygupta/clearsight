@@ -50,6 +50,7 @@ export class LinkTextEngine implements ScanEngine {
           elementSelector: link.selector,
           elementHtml: link.outerHtml,
           description: `Link text "${link.text}" is not descriptive. Use meaningful link text that describes the destination or purpose.`,
+          ruleHelp: 'Links must have discernible text',
           engineName: this.name,
         })
       }
