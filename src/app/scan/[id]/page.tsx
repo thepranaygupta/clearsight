@@ -189,13 +189,23 @@ function ResultsView({ scan }: { scan: ScanDetail }) {
           {/* Screenshot */}
           {scan.pageScreenshot && (
             <div className="hidden shrink-0 sm:block">
-              <div className="overflow-hidden rounded-xl border border-border/60 shadow-sm">
+              <button
+                type="button"
+                onClick={() => {
+                  const byteChars = atob(scan.pageScreenshot!)
+                  const byteArray = new Uint8Array(byteChars.length)
+                  for (let i = 0; i < byteChars.length; i++) byteArray[i] = byteChars.charCodeAt(i)
+                  const blob = new Blob([byteArray], { type: 'image/png' })
+                  window.open(URL.createObjectURL(blob), '_blank')
+                }}
+                className="block overflow-hidden rounded-xl border border-border/60 shadow-sm transition-opacity hover:opacity-80 cursor-pointer"
+              >
                 <img
                   src={`data:image/png;base64,${scan.pageScreenshot}`}
                   alt="Page screenshot"
                   className="h-36 w-52 object-cover object-top"
                 />
-              </div>
+              </button>
             </div>
           )}
         </div>
