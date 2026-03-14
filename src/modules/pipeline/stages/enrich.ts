@@ -1,5 +1,6 @@
 import { createAIProvider } from '@/modules/ai'
 import type { PageContext, EnrichedIssue, ScanSummary } from '@/modules/ai/types'
+import type { BoundingBox } from '@/modules/scanner/types'
 import type { PipelineContext, PipelineStage } from '../types'
 
 export class EnrichStage implements PipelineStage {
@@ -26,11 +27,14 @@ export class EnrichStage implements PipelineStage {
         pageContext
       )
 
-      const summary = await aiProvider.generateSummary(enrichedIssues, pageContext)
+      // Merge bounding boxes from raw findings into enriched issues
+      const enrichedWithBoxes = mergeBoundingBoxes(enrichedIssues, context)
+
+      const summary = await aiProvider.generateSummary(enrichedWithBoxes, pageContext)
 
       return {
         ...context,
-        enrichedIssues,
+        enrichedIssues: enrichedWithBoxes,
         summary,
       }
     } catch (error) {
@@ -42,6 +46,7 @@ export class EnrichStage implements PipelineStage {
       // Fall back: convert raw findings to enriched issues without LLM
       const fallbackIssues: EnrichedIssue[] = context.rawFindings.map((finding) => ({
         ruleId: finding.ruleId,
+        ruleHelp: finding.ruleHelp,
         type: finding.type,
         severity: finding.severity,
         confidenceScore: finding.type === 'potential' ? 0.5 : null,
@@ -52,6 +57,7 @@ export class EnrichStage implements PipelineStage {
         description: finding.description,
         fixSuggestion: `Review and fix the ${finding.severity} accessibility issue for WCAG ${finding.wcagCriterion}.`,
         axeRuleId: finding.engineName === 'axe-core' ? finding.ruleId : null,
+        boundingBox: finding.boundingBox ?? null,
       }))
 
       const fallbackSummary: ScanSummary = {
@@ -81,4 +87,26 @@ function calculateFallbackScore(issueCount: number): number {
   // Simple heuristic: start at 100 and subtract points per issue
   const score = Math.max(0, 100 - issueCount * 5)
   return score
+}
+
+/** Merge bounding boxes from raw findings into enriched issues by matching ruleId + selector. */
+function mergeBoundingBoxes(
+  enrichedIssues: EnrichedIssue[],
+  context: PipelineContext
+): EnrichedIssue[] {
+  const boxMap = new Map<string, BoundingBox>()
+  for (const finding of context.rawFindings) {
+    if (finding.boundingBox) {
+      const key = `${finding.ruleId}::${finding.elementSelector}`
+      boxMap.set(key, finding.boundingBox)
+    }
+  }
+
+  return enrichedIssues.map((issue) => {
+    const key = `${issue.ruleId ?? issue.axeRuleId}::${issue.elementSelector}`
+    return {
+      ...issue,
+      boundingBox: boxMap.get(key) ?? null,
+    }
+  })
 }

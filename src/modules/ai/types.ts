@@ -1,4 +1,4 @@
-import type { RawFinding } from '../scanner/types'
+import type { RawFinding, BoundingBox } from '../scanner/types'
 
 export interface PageContext {
   url: string
@@ -9,16 +9,18 @@ export interface PageContext {
 
 export interface EnrichedIssue {
   ruleId: string
+  ruleHelp: string
   type: 'confirmed' | 'potential'
   severity: 'critical' | 'serious' | 'moderate' | 'minor'
   confidenceScore: number | null // null for confirmed issues
   wcagCriterion: string
-  wcagLevel: 'A' | 'AA'
+  wcagLevel: 'A' | 'AA' | 'AAA'
   elementSelector: string
   elementHtml: string
   description: string // LLM-generated human-readable
   fixSuggestion: string // LLM-generated actionable fix
   axeRuleId: string | null
+  boundingBox?: BoundingBox | null
 }
 
 export interface ScanSummary {

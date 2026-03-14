@@ -10,6 +10,7 @@ export interface PipelineContext {
   rawFindings: RawFinding[]
   enrichedIssues: EnrichedIssue[]
   summary?: ScanSummary
+  pageHtml?: string
 }
 
 export interface PipelineStage {
