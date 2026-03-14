@@ -419,7 +419,7 @@ export class PDFReportGenerator implements ReportGenerator {
             `ClearSight Accessibility Report • Page ${i + 1} of ${pages.count}`,
             50,
             doc.page.height - 35,
-            { width: pageWidth, align: 'center' },
+            { width: pageWidth, align: 'center', lineBreak: false, height: 20 },
           )
       }
 

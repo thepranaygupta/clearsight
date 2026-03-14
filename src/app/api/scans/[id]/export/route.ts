@@ -53,9 +53,7 @@ async function generateExecutiveSummary(
       positiveFindings,
     })
 
-    const url = `${config.ai.endpoint}/openai/deployments/gpt-4.1/chat/completions?api-version=${config.ai.apiVersion}`
-
-    const response = await fetch(url, {
+    const response = await fetch(config.ai.endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
