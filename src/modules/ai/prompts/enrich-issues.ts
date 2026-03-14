@@ -43,7 +43,7 @@ Respond with a JSON array where each element matches this schema:
   "severity": "critical | serious | moderate | minor",
   "confidenceScore": "number (0-1) for potential issues, null for confirmed",
   "wcagCriterion": "string (e.g., '1.1.1')",
-  "wcagLevel": "A | AA",
+  "wcagLevel": "A | AA | AAA",
   "elementSelector": "string (CSS selector from raw finding)",
   "elementHtml": "string (HTML snippet from raw finding)",
   "description": "string (human-readable explanation of the issue and its impact)",
