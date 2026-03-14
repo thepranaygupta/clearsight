@@ -40,6 +40,9 @@ export class StoreStage implements PipelineStage {
       description: issue.description,
       fixSuggestion: issue.fixSuggestion,
       axeRuleId: issue.axeRuleId,
+      ruleId: issue.ruleId,
+      ruleHelp: issue.ruleHelp,
+      elementBoundingBox: issue.boundingBox ?? null,
     }))
 
     // Create issues in bulk
@@ -68,6 +71,7 @@ export class StoreStage implements PipelineStage {
       completedAt: new Date(),
       pageTitle,
       pageScreenshot: screenshotBase64,
+      pageHtml: context.pageHtml ?? null,
     })
 
     // Update scan metadata (page load time, total elements, etc.)

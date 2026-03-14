@@ -21,6 +21,9 @@ export class PrismaIssueRepository implements IssueRepository {
           description: issue.description,
           fixSuggestion: issue.fixSuggestion,
           axeRuleId: issue.axeRuleId ?? null,
+          ruleId: issue.ruleId ?? null,
+          ruleHelp: issue.ruleHelp ?? null,
+          elementBoundingBox: issue.elementBoundingBox ?? undefined,
         })),
       })
 

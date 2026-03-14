@@ -11,7 +11,7 @@ import type { InputJsonValue } from '@/generated/prisma/internal/prismaNamespace
 
 // ─── Scan with relations ────────────────────────────────────────────
 
-export type ScanWithRelations = Scan & {
+export type ScanWithRelations = Omit<Scan, 'pageHtml'> & {
   issues: Issue[]
   summary: ScanSummary | null
 }
@@ -29,6 +29,7 @@ export interface UpdateScanStatusInput {
   completedAt?: Date | null
   pageTitle?: string | null
   pageScreenshot?: string | null
+  pageHtml?: string | null
 }
 
 export interface UpdateScanProgressInput {
@@ -48,6 +49,9 @@ export interface CreateIssueInput {
   description: string
   fixSuggestion: string
   axeRuleId?: string | null
+  ruleId?: string | null
+  ruleHelp?: string | null
+  elementBoundingBox?: { x: number; y: number; width: number; height: number } | null
 }
 
 export interface CreateSummaryInput {

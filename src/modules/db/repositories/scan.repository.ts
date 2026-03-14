@@ -30,6 +30,7 @@ export class PrismaScanRepository implements ScanRepository {
     try {
       return await prisma.scan.findUnique({
         where: { id },
+        omit: { pageHtml: true },
         include: {
           issues: true,
           summary: true,
@@ -82,6 +83,7 @@ export class PrismaScanRepository implements ScanRepository {
           completedAt: input.completedAt ?? undefined,
           pageTitle: input.pageTitle ?? undefined,
           pageScreenshot: input.pageScreenshot ?? undefined,
+          pageHtml: input.pageHtml ?? undefined,
         },
       })
     } catch (error) {

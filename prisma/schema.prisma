@@ -31,6 +31,7 @@ enum Severity {
 enum WcagLevel {
   A
   AA
+  AAA
 }
 
 model Scan {
@@ -44,6 +45,7 @@ model Scan {
   completedAt    DateTime?  @map("completed_at")
   pageTitle      String?    @map("page_title")
   pageScreenshot String?    @map("page_screenshot")
+  pageHtml       String?    @map("page_html")
   errorMessage   String?    @map("error_message")
   retryCount     Int        @default(0) @map("retry_count")
   metadata       Json?
@@ -67,6 +69,9 @@ model Issue {
   description     String
   fixSuggestion   String    @map("fix_suggestion")
   axeRuleId       String?   @map("axe_rule_id")
+  ruleId          String?   @map("rule_id")
+  ruleHelp        String?   @map("rule_help")
+  elementBoundingBox Json?  @map("element_bounding_box")
   createdAt       DateTime  @default(now()) @map("created_at")
 
   scan Scan @relation(fields: [scanId], references: [id], onDelete: Cascade)
