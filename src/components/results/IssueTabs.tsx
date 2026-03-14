@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { IssueCard } from "./IssueCard";
+import { IssueGroup } from "./IssueGroup";
 import type { Issue, Severity } from "@/lib/types";
 
 const severityOrder: Record<Severity, number> = {
@@ -38,8 +38,50 @@ const severityColors: Record<Severity, string> = {
   minor: "bg-blue-400",
 };
 
+interface IssueGroupData {
+  ruleId: string;
+  ruleHelp: string;
+  wcagCriterion: string;
+  wcagLevel: string;
+  worstSeverity: Severity;
+  issues: Issue[];
+}
+
+function groupIssues(issues: Issue[]): IssueGroupData[] {
+  const groups = new Map<string, Issue[]>();
+
+  for (const issue of issues) {
+    const key = issue.ruleId ?? issue.axeRuleId ?? issue.wcagCriterion;
+    const existing = groups.get(key) || [];
+    existing.push(issue);
+    groups.set(key, existing);
+  }
+
+  return Array.from(groups.entries()).map(([key, groupIssues]) => {
+    const worstSeverity = groupIssues.reduce((worst, issue) => {
+      return severityOrder[issue.severity] < severityOrder[worst]
+        ? issue.severity
+        : worst;
+    }, groupIssues[0].severity);
+
+    const ruleHelp = groupIssues[0].ruleHelp ?? groupIssues[0].description;
+
+    return {
+      ruleId: key,
+      ruleHelp,
+      wcagCriterion: groupIssues[0].wcagCriterion,
+      wcagLevel: groupIssues[0].wcagLevel,
+      worstSeverity,
+      issues: groupIssues.sort(
+        (a, b) => severityOrder[a.severity] - severityOrder[b.severity]
+      ),
+    };
+  });
+}
+
 interface IssueTabsProps {
   issues: Issue[];
+  onInspect?: (issueId: string) => void;
 }
 
 type SortKey = "severity" | "confidence";
@@ -91,7 +133,45 @@ function EmptyState({ type }: { type: "confirmed" | "potential" }) {
   );
 }
 
-export function IssueTabs({ issues }: IssueTabsProps) {
+function IssueList({ groups, onInspect }: { groups: IssueGroupData[]; onInspect?: (issueId: string) => void }) {
+  if (groups.length === 0) return null;
+
+  const totalIssues = groups.reduce((sum, g) => sum + g.issues.length, 0);
+
+  return (
+    <div>
+      {/* Column header */}
+      <div className="mb-1 flex items-center gap-3 border-b border-border/40 px-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
+        <span className="w-3.5" /> {/* chevron spacer */}
+        <span className="w-2" /> {/* dot spacer */}
+        <span className="flex-1">Rule</span>
+        <span className="hidden sm:block">WCAG</span>
+        <span className="hidden sm:block">Severity</span>
+        <span className="min-w-8 text-right">
+          {totalIssues}
+        </span>
+      </div>
+
+      {/* Group rows */}
+      <div className="divide-y divide-border/20">
+        {groups.map((group) => (
+          <IssueGroup
+            key={group.ruleId}
+            ruleId={group.ruleId}
+            ruleHelp={group.ruleHelp}
+            wcagCriterion={group.wcagCriterion}
+            wcagLevel={group.wcagLevel}
+            worstSeverity={group.worstSeverity}
+            issues={group.issues}
+            onInspect={onInspect}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function IssueTabs({ issues, onInspect }: IssueTabsProps) {
   const [filterSeverity, setFilterSeverity] = useState<FilterSeverity>("all");
   const [sortKey, setSortKey] = useState<SortKey>("severity");
   const [activeTab, setActiveTab] = useState("confirmed");
@@ -105,24 +185,35 @@ export function IssueTabs({ issues }: IssueTabsProps) {
     [issues]
   );
 
-  function filterAndSort(list: Issue[]): Issue[] {
-    let result =
+  function filterAndGroup(list: Issue[]): IssueGroupData[] {
+    const filtered =
       filterSeverity === "all"
         ? list
         : list.filter((i) => i.severity === filterSeverity);
 
-    result = [...result].sort((a, b) => {
+    const groups = groupIssues(filtered);
+
+    groups.sort((a, b) => {
       if (sortKey === "confidence") {
-        return (b.confidenceScore ?? 1) - (a.confidenceScore ?? 1);
+        const avgA =
+          a.issues.reduce((sum, i) => sum + (i.confidenceScore ?? 1), 0) /
+          a.issues.length;
+        const avgB =
+          b.issues.reduce((sum, i) => sum + (i.confidenceScore ?? 1), 0) /
+          b.issues.length;
+        return avgB - avgA;
       }
-      return severityOrder[a.severity] - severityOrder[b.severity];
+      const sevDiff =
+        severityOrder[a.worstSeverity] - severityOrder[b.worstSeverity];
+      if (sevDiff !== 0) return sevDiff;
+      return b.issues.length - a.issues.length;
     });
 
-    return result;
+    return groups;
   }
 
-  const filteredConfirmed = filterAndSort(confirmed);
-  const filteredPotential = filterAndSort(potential);
+  const filteredConfirmed = filterAndGroup(confirmed);
+  const filteredPotential = filterAndGroup(potential);
 
   // Severity breakdown for the active tab
   const activeList = activeTab === "confirmed" ? confirmed : potential;
@@ -145,7 +236,7 @@ export function IssueTabs({ issues }: IssueTabsProps) {
       onValueChange={(val) => setActiveTab(val as string)}
     >
       {/* Toolbar */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {/* Row 1: Tabs + controls */}
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <TabsList variant="line">
@@ -167,9 +258,8 @@ export function IssueTabs({ issues }: IssueTabsProps) {
             </TabsTrigger>
           </TabsList>
 
-          {/* Filter & Sort dropdowns */}
+          {/* Filter & Sort */}
           <div className="flex items-center gap-2">
-            {/* Filter dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger
                 className={cn(
@@ -183,7 +273,11 @@ export function IssueTabs({ issues }: IssueTabsProps) {
                 {severityLabels[filterSeverity]}
                 <ChevronDown className="size-3 opacity-50" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={6} className="min-w-[200px]">
+              <DropdownMenuContent
+                align="end"
+                sideOffset={6}
+                className="min-w-[200px]"
+              >
                 <DropdownMenuGroup>
                   <span className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
                     Filter by severity
@@ -222,14 +316,17 @@ export function IssueTabs({ issues }: IssueTabsProps) {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Sort dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-background px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted">
                 <ArrowDownWideNarrow className="size-3" />
                 {sortLabels[sortKey]}
                 <ChevronDown className="size-3 opacity-50" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={6} className="min-w-[200px]">
+              <DropdownMenuContent
+                align="end"
+                sideOffset={6}
+                className="min-w-[200px]"
+              >
                 <DropdownMenuGroup>
                   <span className="px-1.5 py-1 text-xs font-medium text-muted-foreground">
                     Sort by
@@ -297,23 +394,19 @@ export function IssueTabs({ issues }: IssueTabsProps) {
       </div>
 
       {/* Issue lists */}
-      <TabsContent value="confirmed" className="mt-5 space-y-3">
+      <TabsContent value="confirmed" className="mt-4">
         {filteredConfirmed.length === 0 ? (
           <EmptyState type="confirmed" />
         ) : (
-          filteredConfirmed.map((issue) => (
-            <IssueCard key={issue.id} issue={issue} />
-          ))
+          <IssueList groups={filteredConfirmed} onInspect={onInspect} />
         )}
       </TabsContent>
 
-      <TabsContent value="potential" className="mt-5 space-y-3">
+      <TabsContent value="potential" className="mt-4">
         {filteredPotential.length === 0 ? (
           <EmptyState type="potential" />
         ) : (
-          filteredPotential.map((issue) => (
-            <IssueCard key={issue.id} issue={issue} />
-          ))
+          <IssueList groups={filteredPotential} onInspect={onInspect} />
         )}
       </TabsContent>
     </Tabs>

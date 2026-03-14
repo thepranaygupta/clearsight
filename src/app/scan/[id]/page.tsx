@@ -27,6 +27,8 @@ import { SummaryCard } from "@/components/results/SummaryCard";
 import { IssueTabs } from "@/components/results/IssueTabs";
 import { TopPriorities } from "@/components/results/TopPriorities";
 import { ExportButtons } from "@/components/results/ExportButtons";
+import { InspectorPanel } from "@/components/inspector/InspectorPanel";
+import { useInspectorState } from "@/components/inspector/useInspectorState";
 import { cn } from "@/lib/utils";
 import type { ScanDetail } from "@/lib/types";
 
@@ -129,9 +131,11 @@ function StatCard({
 }
 
 function ResultsView({ scan }: { scan: ScanDetail }) {
+  const inspector = useInspectorState();
   const summary = scan.summary;
   const issues = scan.issues ?? [];
   const isPerfect = issues.length === 0 && summary?.overallScore === 100;
+  const activeIssue = issues.find((i) => i.id === inspector.activeIssueId) ?? null;
 
   const confirmedCount = issues.filter((i) => i.type === "confirmed").length;
   const potentialCount = issues.filter((i) => i.type === "potential").length;
@@ -241,7 +245,20 @@ function ResultsView({ scan }: { scan: ScanDetail }) {
       )}
 
       {/* Issues */}
-      {issues.length > 0 && <IssueTabs issues={issues} />}
+      {issues.length > 0 && <IssueTabs issues={issues} onInspect={inspector.open} />}
+
+      {/* Inspector overlay */}
+      {inspector.isOpen && activeIssue && (
+        <InspectorPanel
+          scan={scan}
+          issue={activeIssue}
+          allIssues={issues}
+          viewMode={inspector.viewMode}
+          onViewModeChange={inspector.setViewMode}
+          onNavigateIssue={inspector.setActiveIssue}
+          onClose={inspector.close}
+        />
+      )}
     </div>
   );
 }

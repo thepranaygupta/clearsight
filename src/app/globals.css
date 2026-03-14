@@ -135,3 +135,12 @@
     @apply font-sans;
   }
 }
+
+/* Inspector highlight pulse animation */
+@keyframes inspector-pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+.animate-inspector-pulse {
+  animation: inspector-pulse 1.5s ease-in-out infinite;
+}
