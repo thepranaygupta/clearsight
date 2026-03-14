@@ -4,60 +4,6 @@ import type { PipelineContext, PipelineStage } from '../types'
 const MAX_PAGE_HTML_SIZE = 5 * 1024 * 1024 // 5 MB
 
 /**
- * Bounding box query script. Handles axe-core's shadow DOM selector format
- * where commas separate shadow boundary steps (not CSS selector lists).
- * e.g. "c-my-component,div.inner,.target" means:
- *   find c-my-component → enter its shadowRoot → find div.inner → enter its shadowRoot → find .target
- */
-const QUERY_BOUNDING_BOXES_SCRIPT = `(entries) => {
-  var boxes = [];
-  for (var i = 0; i < entries.length; i++) {
-    var key = entries[i].key;
-    var selector = entries[i].selector;
-    try {
-      var el = null;
-      // Detect axe-core shadow DOM selectors (contain commas but aren't normal CSS selector lists)
-      // Axe uses " > " within each shadow level and "," between shadow boundaries
-      var parts = selector.split(',');
-      if (parts.length > 1) {
-        // Shadow-piercing: walk through each part
-        var root = document;
-        for (var p = 0; p < parts.length; p++) {
-          var part = parts[p].trim();
-          if (!part) continue;
-          var found = root.querySelector(part);
-          if (!found) { el = null; break; }
-          if (p < parts.length - 1 && found.shadowRoot) {
-            root = found.shadowRoot;
-          } else {
-            el = found;
-          }
-        }
-      } else {
-        el = document.querySelector(selector);
-      }
-      if (el) {
-        var rect = el.getBoundingClientRect();
-        boxes.push({
-          key: key,
-          box: {
-            x: Math.round(rect.left + window.scrollX),
-            y: Math.round(rect.top + window.scrollY),
-            width: Math.round(rect.width),
-            height: Math.round(rect.height)
-          }
-        });
-      } else {
-        boxes.push({ key: key, box: null });
-      }
-    } catch(e) {
-      boxes.push({ key: key, box: null });
-    }
-  }
-  return boxes;
-}`
-
-/**
  * DOM serialization script executed inside the browser via page.evaluate().
  * Defined as a string literal to prevent tsx/esbuild from transforming
  * function declarations and injecting __name() calls that don't exist
@@ -82,10 +28,11 @@ const SERIALIZE_DOM_SCRIPT = `(() => {
     for (var i = 0; i < el.attributes.length; i++) {
       var attr = el.attributes[i];
       var val = attr.value;
-      if (val.length > 200) {
-        s += ' ' + attr.name + '="' + val.slice(0, 200) + '..."';
+      var escaped = val.replace(/"/g, '&quot;');
+      if (escaped.length > 200) {
+        s += ' ' + attr.name + '="' + escaped.slice(0, 200) + '..."';
       } else {
-        s += ' ' + attr.name + '="' + val.replace(/"/g, '&quot;') + '"';
+        s += ' ' + attr.name + '="' + escaped + '"';
       }
     }
     return s;
@@ -175,15 +122,60 @@ export class ElementLocateStage implements PipelineStage {
       }
     }
 
-    // Batch-query all bounding boxes in a single page.evaluate.
-    // Uses a string script to avoid tsx __name() injection (same as DOM serializer).
-    // Handles axe-core shadow DOM selectors which use commas to pierce shadow
-    // boundaries (e.g., "host-element,shadow-child,deeper-child").
+    // Batch-query all bounding boxes.
+    // ALL code inside page.evaluate must be a string to avoid tsx/esbuild
+    // injecting __name() decorators — this affects function declarations,
+    // const arrow functions, and any named binding inside the callback.
+    // We JSON-encode the entries and embed them in the script string.
     const boundingBoxMap = new Map<string, BoundingBox>()
 
     if (selectorEntries.length > 0) {
-      const results = await page.evaluate(QUERY_BOUNDING_BOXES_SCRIPT, selectorEntries) as
-        Array<{ key: string; box: { x: number; y: number; width: number; height: number } | null }>
+      const entriesJson = JSON.stringify(selectorEntries)
+      const results = await page.evaluate(`(() => {
+        var entries = ${entriesJson};
+        var boxes = [];
+        for (var i = 0; i < entries.length; i++) {
+          var key = entries[i].key;
+          var selector = entries[i].selector;
+          try {
+            var el = null;
+            var parts = selector.split(',');
+            if (parts.length > 1) {
+              var root = document;
+              for (var p = 0; p < parts.length; p++) {
+                var part = parts[p].trim();
+                if (!part) continue;
+                var found = root.querySelector(part);
+                if (!found) { el = null; break; }
+                if (p < parts.length - 1 && found.shadowRoot) {
+                  root = found.shadowRoot;
+                } else {
+                  el = found;
+                }
+              }
+            } else {
+              el = document.querySelector(selector);
+            }
+            if (el) {
+              var rect = el.getBoundingClientRect();
+              boxes.push({
+                key: key,
+                box: {
+                  x: Math.round(rect.left + window.scrollX),
+                  y: Math.round(rect.top + window.scrollY),
+                  width: Math.round(rect.width),
+                  height: Math.round(rect.height)
+                }
+              });
+            } else {
+              boxes.push({ key: key, box: null });
+            }
+          } catch(e) {
+            boxes.push({ key: key, box: null });
+          }
+        }
+        return boxes;
+      })()`) as Array<{ key: string; box: BoundingBox | null }>
 
       for (const { key, box } of results) {
         if (box) {
