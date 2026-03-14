@@ -1,5 +1,12 @@
 // ─── Client-side types for API responses ─────────────────────────────
 
+export interface BoundingBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export type ScanStatus =
   | "queued"
   | "running"
@@ -10,7 +17,7 @@ export type ScanStatus =
 
 export type IssueType = "confirmed" | "potential";
 export type Severity = "critical" | "serious" | "moderate" | "minor";
-export type WcagLevel = "A" | "AA";
+export type WcagLevel = "A" | "AA" | "AAA";
 
 export interface ScanListItem {
   id: string;
@@ -40,6 +47,9 @@ export interface Issue {
   description: string;
   fixSuggestion: string;
   axeRuleId: string | null;
+  ruleId: string | null;
+  ruleHelp: string | null;
+  elementBoundingBox: BoundingBox | null;
   createdAt: string;
 }
 
