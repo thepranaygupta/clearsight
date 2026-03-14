@@ -3,6 +3,101 @@ import type { PipelineContext, PipelineStage } from '../types'
 
 const MAX_PAGE_HTML_SIZE = 5 * 1024 * 1024 // 5 MB
 
+/**
+ * DOM serialization script executed inside the browser via page.evaluate().
+ * Defined as a string literal to prevent tsx/esbuild from transforming
+ * function declarations and injecting __name() calls that don't exist
+ * in the browser context.
+ */
+const SERIALIZE_DOM_SCRIPT = `(() => {
+  const SELF_CLOSING = new Set([
+    'area','base','br','col','embed','hr','img','input',
+    'link','meta','param','source','track','wbr'
+  ]);
+  const INLINE = new Set([
+    'a','abbr','b','bdi','bdo','br','cite','code','data','dfn',
+    'em','i','kbd','mark','q','rp','rt','ruby','s','samp',
+    'small','span','strong','sub','sup','time','u','var','wbr'
+  ]);
+  const MAX = 5 * 1024 * 1024;
+  var out = '';
+  var stopped = false;
+
+  var getAttrs = function(el) {
+    var s = '';
+    for (var i = 0; i < el.attributes.length; i++) {
+      var attr = el.attributes[i];
+      var val = attr.value;
+      if (val.length > 200) {
+        s += ' ' + attr.name + '="' + val.slice(0, 200) + '..."';
+      } else {
+        s += ' ' + attr.name + '="' + val.replace(/"/g, '&quot;') + '"';
+      }
+    }
+    return s;
+  };
+
+  var indent = function(d) {
+    return '  '.repeat(d);
+  };
+
+  var walk = function(node, depth) {
+    if (stopped) return;
+    if (out.length > MAX) { stopped = true; return; }
+
+    if (node.nodeType === 3) {
+      var text = (node.textContent || '').trim();
+      if (!text) return;
+      if (text.length < 120) {
+        out += indent(depth) + text + '\\n';
+      } else {
+        out += indent(depth) + text.slice(0, 200) + '...\\n';
+      }
+      return;
+    }
+
+    if (node.nodeType === 8) {
+      var cmt = node.data.trim();
+      if (cmt.length < 200) {
+        out += indent(depth) + '<!--' + cmt + '-->\\n';
+      }
+      return;
+    }
+
+    if (node.nodeType !== 1) return;
+    var tag = node.tagName.toLowerCase();
+    var attrs = getAttrs(node);
+
+    if (tag === 'script' || tag === 'noscript' || tag === 'style') {
+      out += indent(depth) + '<' + tag + attrs + '>...</' + tag + '>\\n';
+      return;
+    }
+
+    if (SELF_CLOSING.has(tag)) {
+      out += indent(depth) + '<' + tag + attrs + '>\\n';
+      return;
+    }
+
+    var children = node.childNodes;
+    var hasOnlyText = children.length === 1 && children[0].nodeType === 3;
+    var txt = hasOnlyText ? (children[0].textContent || '').trim() : '';
+
+    if (hasOnlyText && txt.length < 100 && (INLINE.has(tag) || txt.length < 60)) {
+      out += indent(depth) + '<' + tag + attrs + '>' + txt + '</' + tag + '>\\n';
+      return;
+    }
+
+    out += indent(depth) + '<' + tag + attrs + '>\\n';
+    for (var i = 0; i < children.length; i++) {
+      walk(children[i], depth + 1);
+    }
+    out += indent(depth) + '</' + tag + '>\\n';
+  };
+
+  walk(document.documentElement, 0);
+  return out;
+})()`
+
 export class ElementLocateStage implements PipelineStage {
   readonly name = 'Locating elements'
   readonly progress = 65
@@ -76,104 +171,12 @@ export class ElementLocateStage implements PipelineStage {
     })
 
     // Capture pretty-printed DOM tree (like Chrome DevTools)
+    // NOTE: Uses page.evaluate with a string expression to avoid tsx/esbuild
+    // injecting __name() decorators into named function declarations, which
+    // causes ReferenceError in the browser context.
     let pageHtml: string | undefined
     try {
-      const html = await page.evaluate(() => {
-        const SELF_CLOSING = new Set([
-          'area','base','br','col','embed','hr','img','input',
-          'link','meta','param','source','track','wbr',
-        ])
-        const INLINE_TAGS = new Set([
-          'a','abbr','b','bdi','bdo','br','cite','code','data','dfn',
-          'em','i','kbd','mark','q','rp','rt','ruby','s','samp',
-          'small','span','strong','sub','sup','time','u','var','wbr',
-        ])
-        const MAX_LEN = 5 * 1024 * 1024
-        let out = ''
-        let stopped = false
-
-        function serialize(node: Node, depth: number): void {
-          if (stopped) return
-          if (out.length > MAX_LEN) { stopped = true; return }
-
-          if (node.nodeType === Node.TEXT_NODE) {
-            const text = node.textContent ?? ''
-            const trimmed = text.trim()
-            if (!trimmed) return
-            // For short inline text, keep it on one line
-            if (trimmed.length < 120) {
-              out += '  '.repeat(depth) + trimmed + '\n'
-            } else {
-              // Truncate very long text nodes (inline scripts, JSON blobs)
-              out += '  '.repeat(depth) + trimmed.slice(0, 200) + '...\n'
-            }
-            return
-          }
-
-          if (node.nodeType === Node.COMMENT_NODE) {
-            const text = (node as Comment).data.trim()
-            if (text.length < 200) {
-              out += '  '.repeat(depth) + '<!--' + text + '-->\n'
-            }
-            return
-          }
-
-          if (node.nodeType !== Node.ELEMENT_NODE) return
-          const el = node as Element
-          const tag = el.tagName.toLowerCase()
-
-          // Skip script/style content to keep output manageable
-          if (tag === 'script' || tag === 'noscript') {
-            const attrs = serializeAttrs(el)
-            out += '  '.repeat(depth) + '<' + tag + attrs + '>...</' + tag + '>\n'
-            return
-          }
-          if (tag === 'style') {
-            const attrs = serializeAttrs(el)
-            out += '  '.repeat(depth) + '<' + tag + attrs + '>...</' + tag + '>\n'
-            return
-          }
-
-          const attrs = serializeAttrs(el)
-
-          if (SELF_CLOSING.has(tag)) {
-            out += '  '.repeat(depth) + '<' + tag + attrs + '>\n'
-            return
-          }
-
-          const children = Array.from(el.childNodes)
-          const hasOnlyText = children.length === 1 && children[0].nodeType === Node.TEXT_NODE
-          const text = hasOnlyText ? (children[0].textContent ?? '').trim() : ''
-
-          // Inline elements with short text: keep on one line
-          if (hasOnlyText && text.length < 100 && (INLINE_TAGS.has(tag) || text.length < 60)) {
-            out += '  '.repeat(depth) + '<' + tag + attrs + '>' + text + '</' + tag + '>\n'
-            return
-          }
-
-          out += '  '.repeat(depth) + '<' + tag + attrs + '>\n'
-          for (const child of children) {
-            serialize(child, depth + 1)
-          }
-          out += '  '.repeat(depth) + '</' + tag + '>\n'
-        }
-
-        function serializeAttrs(el: Element): string {
-          let s = ''
-          for (const attr of Array.from(el.attributes)) {
-            const val = attr.value
-            if (val.length > 200) {
-              s += ' ' + attr.name + '="' + val.slice(0, 200) + '..."'
-            } else {
-              s += ' ' + attr.name + '="' + val.replace(/"/g, '&quot;') + '"'
-            }
-          }
-          return s
-        }
-
-        serialize(document.documentElement, 0)
-        return out
-      })
+      const html = await page.evaluate(SERIALIZE_DOM_SCRIPT) as string
 
       if (html.length <= MAX_PAGE_HTML_SIZE) {
         pageHtml = html
