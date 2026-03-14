@@ -116,6 +116,112 @@ const tokenColors: Record<Token["type"], string> = {
   punct: "text-[#abb2bf]/60",
 };
 
+/** Find the line index of the issue's element in the formatted HTML using multiple strategies. */
+function findElementLine(
+  html: string | undefined,
+  lines: string[],
+  selector: string,
+  elementHtml: string
+): number {
+  if (!html || lines.length === 0) return -1;
+
+  // Strategy 1: ID selector → search for id="value"
+  if (selector) {
+    const idMatch = selector.match(/^#([\w-]+)/);
+    if (idMatch) {
+      const needle = `id="${idMatch[1]}"`;
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].includes(needle)) return i;
+      }
+    }
+
+    // Class selectors → search for all class names on one line
+    const classMatches = selector.match(/\.([\w-]+)/g);
+    if (classMatches && classMatches.length > 0) {
+      const classNames = classMatches.map((c) => c.slice(1));
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        if (line.includes('class="') && classNames.every((cn) => line.includes(cn))) {
+          return i;
+        }
+      }
+    }
+  }
+
+  // Strategy 2: Match on key attributes from elementHtml
+  if (elementHtml) {
+    const openTagMatch = elementHtml.match(/^<(\w+)([^>]*?)>/);
+    if (openTagMatch) {
+      const tagName = openTagMatch[1].toLowerCase();
+      const attrsStr = openTagMatch[2];
+
+      // Extract key attributes to search for
+      const attrPatterns: string[] = [];
+      const attrRegex = /(href|src|alt|title|name|role|aria-label|data-[\w-]+)="([^"]{3,60})"/g;
+      let attrMatch;
+      while ((attrMatch = attrRegex.exec(attrsStr)) !== null) {
+        attrPatterns.push(attrMatch[2]);
+      }
+
+      if (attrPatterns.length > 0) {
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (line.includes('<' + tagName) && attrPatterns.every((p) => line.includes(p))) {
+            return i;
+          }
+        }
+      }
+
+      // Fallback: match tag with first distinguishing attribute
+      const firstAttr = attrsStr.trim().slice(0, 80);
+      if (firstAttr) {
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i].includes('<' + tagName) && lines[i].includes(firstAttr.split('"')[0])) {
+            return i;
+          }
+        }
+      }
+    }
+  }
+
+  // Strategy 3: Direct substring match (last resort)
+  if (elementHtml) {
+    const needle = elementHtml.slice(0, 80);
+    const index = html.indexOf(needle);
+    if (index !== -1) {
+      const before = html.slice(0, index);
+      return before.split("\n").length - 1;
+    }
+  }
+
+  return -1;
+}
+
+/** Given a matched opening tag line, estimate how many lines the element spans. */
+function findClosingLine(lines: string[], startLine: number): number {
+  const line = lines[startLine];
+  // Check if it's a self-closing or single-line element
+  if (line.trimEnd().endsWith("/>") || /^.*<\/\w+>\s*$/.test(line)) return 1;
+
+  // Extract the tag name to find the closing tag
+  const tagMatch = line.match(/<(\w+)/);
+  if (!tagMatch) return 1;
+  const tagName = tagMatch[1].toLowerCase();
+
+  // Look ahead for the closing tag (max 20 lines)
+  let depth = 1;
+  for (let i = startLine + 1; i < Math.min(startLine + 20, lines.length); i++) {
+    const l = lines[i];
+    // Count opening tags of the same type
+    const opens = (l.match(new RegExp(`<${tagName}[\\s>]`, "g")) ?? []).length;
+    const closes = (l.match(new RegExp(`</${tagName}>`, "g")) ?? []).length;
+    depth += opens - closes;
+    if (depth <= 0) return i - startLine + 1;
+  }
+  // Default: highlight a few lines
+  return Math.min(3, lines.length - startLine);
+}
+
 // Lines to show around the highlighted line
 const CONTEXT_LINES = 100;
 const EXPAND_CHUNK = 100;
@@ -136,24 +242,15 @@ export function HtmlViewer({ scanId, issue }: HtmlViewerProps) {
   const lines = useMemo(() => (html ? html.split("\n") : []), [html]);
 
   // Find the line containing the issue's element
-  const matchLineIndex = useMemo(() => {
-    if (!html || !issue.elementHtml) return -1;
+  const matchLineIndex = useMemo(
+    () => findElementLine(html, lines, issue.elementSelector, issue.elementHtml),
+    [html, lines, issue.elementSelector, issue.elementHtml]
+  );
 
-    // Search for the element HTML in the source
-    const needle = issue.elementHtml.slice(0, 120); // Use first 120 chars for matching
-    const index = html.indexOf(needle);
-    if (index === -1) return -1;
-
-    // Count newlines before the match to find the line number
-    const beforeMatch = html.slice(0, index);
-    return beforeMatch.split("\n").length - 1;
-  }, [html, issue.elementHtml]);
-
-  // How many lines of the element HTML span
-  const matchLineCount = useMemo(() => {
-    if (matchLineIndex === -1 || !issue.elementHtml) return 1;
-    return Math.min(issue.elementHtml.split("\n").length, 10);
-  }, [matchLineIndex, issue.elementHtml]);
+  const matchLineCount = useMemo(
+    () => matchLineIndex >= 0 ? findClosingLine(lines, matchLineIndex) : 1,
+    [lines, matchLineIndex]
+  );
 
   // Windowed rendering: show lines around the match
   const defaultRange = useMemo(() => {
