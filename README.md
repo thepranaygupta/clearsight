@@ -45,7 +45,7 @@ graph LR
 
 | Layer      | Tech                                       |
 |------------|--------------------------------------------|
-| Framework  | Next.js 14+ (App Router), TypeScript        |
+| Framework  | Next.js 16 (App Router), TypeScript          |
 | UI         | Tailwind CSS, shadcn/ui, Lucide React       |
 | Database   | PostgreSQL 16, Prisma ORM                   |
 | Scanner    | Playwright (headless Chromium), axe-core     |
@@ -59,7 +59,7 @@ graph LR
 ```bash
 # 1. Clone and configure
 cp .env.example .env
-# Edit .env with your Azure OpenAI API key
+# Edit .env with your Azure OpenAI API keys
 
 # 2. Start everything
 docker compose up --build
@@ -71,32 +71,37 @@ docker compose up --build
 
 ```bash
 # 1. Install dependencies
-npm install
+pnpm install
 npx playwright install chromium
 
 # 2. Configure environment
 cp .env.example .env
-# Edit .env — set DATABASE_URL to your local Postgres, add Azure OpenAI key
+# Edit .env — set DATABASE_URL to your local Postgres, add Azure OpenAI keys
 
 # 3. Set up database
-npx prisma db push
+pnpm db:push
 
 # 4. Start the app and worker in separate terminals
-npm run dev          # Terminal 1: Next.js app on port 3000
-npm run worker       # Terminal 2: Scan worker
+pnpm dev          # Terminal 1: Next.js app on port 3000
+pnpm worker       # Terminal 2: Scan worker
 ```
 
 ## Scripts
 
-| Command              | Description                          |
-|----------------------|--------------------------------------|
-| `npm run dev`        | Start Next.js dev server             |
-| `npm run worker`     | Start scan worker process            |
-| `npm run build`      | Production build                     |
-| `npm run db:push`    | Push Prisma schema to database       |
-| `npm run db:migrate` | Run Prisma migrations                |
-| `npm run docker:up`  | Build and start all Docker services  |
-| `npm run docker:down`| Stop all Docker services             |
+| Command                | Description                              |
+|------------------------|------------------------------------------|
+| `pnpm dev`             | Start Next.js dev server                 |
+| `pnpm worker`          | Start scan worker process                |
+| `pnpm build`           | Production build                         |
+| `pnpm start`           | Start production server                  |
+| `pnpm lint`            | Run ESLint                               |
+| `pnpm db:push`         | Push Prisma schema to database           |
+| `pnpm db:migrate`      | Run Prisma migrations                    |
+| `pnpm db:generate`     | Generate Prisma client                   |
+| `pnpm docker:up`       | Build and start all Docker services      |
+| `pnpm docker:down`     | Stop all Docker services                 |
+| `pnpm docker:dev`      | Build and start dev Docker services      |
+| `pnpm docker:dev:down` | Stop dev Docker services                 |
 
 ## Project Structure
 
@@ -125,7 +130,7 @@ src/
 | Variable                   | Description                                    |
 |----------------------------|------------------------------------------------|
 | `DATABASE_URL`             | PostgreSQL connection string                   |
-| `AZURE_OPENAI_ENDPOINT`   | Azure OpenAI base URL (e.g. `https://your-endpoint.openai.azure.com`) |
+| `AZURE_OPENAI_ENDPOINT`   | Full Azure OpenAI chat completions URL (including deployment and api-version) |
 | `AZURE_OPENAI_API_KEY`    | Azure OpenAI API key                           |
 | `AZURE_OPENAI_API_VERSION`| API version (default: `2025-01-01-preview`)    |
 
@@ -137,3 +142,4 @@ src/
 | GET    | `/api/scans`              | List recent scans        |
 | GET    | `/api/scans/:id`          | Get scan status/results  |
 | POST   | `/api/scans/:id/cancel`   | Cancel a running scan    |
+| GET    | `/api/scans/:id/export`   | Export report (PDF/Excel) |
