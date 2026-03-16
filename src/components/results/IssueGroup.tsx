@@ -113,8 +113,8 @@ export function IssueGroup({
           )}
         </span>
 
-        {/* Total count */}
-        <span className="shrink-0 min-w-8 text-right text-xs tabular-nums font-medium text-muted-foreground">
+        {/* Total count — visible only on mobile where severity mini-bar is hidden */}
+        <span className="shrink-0 min-w-8 text-right text-xs tabular-nums font-medium text-muted-foreground sm:hidden">
           {issues.length}
         </span>
       </button>

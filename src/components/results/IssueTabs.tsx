@@ -146,7 +146,6 @@ function IssueList({ groups, onInspect }: { groups: IssueGroupData[]; onInspect?
         <span className="w-2" /> {/* dot spacer */}
         <span className="flex-1">Rule</span>
         <span className="hidden sm:block">WCAG</span>
-        <span className="hidden sm:block">Severity</span>
         <span className="min-w-8 text-right">
           {totalIssues}
         </span>
