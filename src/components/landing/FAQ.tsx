@@ -47,7 +47,7 @@ export function FAQSection() {
           </h2>
         </div>
 
-        <Accordion type="single" collapsible className="space-y-2">
+        <Accordion openMultiple={false} className="space-y-2">
           {faqs.map((faq, i) => (
             <AccordionItem
               key={i}
