@@ -23,7 +23,10 @@ export function normalizeUrl(rawUrl: string, baseUrl: string): string | null {
 
 export function isSameOrigin(url: string, rootUrl: string): boolean {
   try {
-    return new URL(url).origin === new URL(rootUrl).origin
+    const a = new URL(url)
+    const b = new URL(rootUrl)
+    // Treat www.example.com and example.com as same origin
+    return normalizeHostname(a.hostname) === normalizeHostname(b.hostname) && a.protocol === b.protocol
   } catch {
     return false
   }

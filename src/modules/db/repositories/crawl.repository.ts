@@ -43,6 +43,7 @@ export class PrismaCrawlRepository {
       WHERE id = ${id}
       RETURNING enriched_pages, total_pages
     `
+    if (!result[0]) throw new Error(`Crawl ${id} not found during enrichedPages increment`)
     return { enrichedPages: result[0].enriched_pages, totalPages: result[0].total_pages }
   }
 
@@ -54,6 +55,7 @@ export class PrismaCrawlRepository {
       WHERE id = ${id}
       RETURNING scanned_pages
     `
+    if (!result[0]) throw new Error(`Crawl ${id} not found during scannedPages increment`)
     return result[0].scanned_pages
   }
 

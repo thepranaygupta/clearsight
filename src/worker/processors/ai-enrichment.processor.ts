@@ -1,3 +1,4 @@
+import { UnrecoverableError } from 'bullmq'
 import type { Job } from 'bullmq'
 import type { AiEnrichmentJobData } from '@/modules/queue'
 import type { RenderedPage } from '@/modules/scanner/renderer/types'
@@ -24,7 +25,7 @@ export async function processAiEnrichment(job: Job<AiEnrichmentJobData>) {
   })
 
   if (!scan) {
-    throw new Error(`Scan ${scanId} not found`)
+    throw new UnrecoverableError(`Scan ${scanId} not found — will not retry`)
   }
 
   if (scan.status === 'cancelled') {
@@ -114,7 +115,7 @@ function reconstructRawFindings(
 }
 
 /** Aggregate per-page scores and finalize a completed crawl. */
-async function finalizeCrawl(crawlId: string) {
+export async function finalizeCrawl(crawlId: string) {
   const scans = await prisma.scan.findMany({
     where: { crawlId },
     include: { summary: true },

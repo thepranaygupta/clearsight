@@ -49,9 +49,11 @@ console.log(
   `[Worker] Running — page-scan concurrency: ${config.workerConcurrency.pageScan}, ai-enrichment concurrency: ${config.workerConcurrency.aiEnrichment}`,
 )
 
+const SHUTDOWN_TIMEOUT_MS = 30_000
+
 async function shutdown() {
-  console.log('[Worker] Shutting down...')
-  await Promise.all([
+  console.log('[Worker] Shutting down (30s timeout)...')
+  const closeAll = Promise.all([
     crawlWorker.close(),
     pageScanWorker.close(),
     aiEnrichmentWorker.close(),
@@ -59,6 +61,15 @@ async function shutdown() {
     pageScanQueue.close(),
     aiEnrichmentQueue.close(),
   ])
+
+  await Promise.race([
+    closeAll,
+    new Promise<void>((resolve) => setTimeout(() => {
+      console.warn('[Worker] Shutdown timed out, forcing exit')
+      resolve()
+    }, SHUTDOWN_TIMEOUT_MS)),
+  ])
+
   console.log('[Worker] Shutdown complete')
   process.exit(0)
 }

@@ -76,6 +76,21 @@ export async function processPageScan(job: Job<PageScanJobData>) {
       status: 'failed',
       errorMessage: error instanceof Error ? error.message : 'Unknown error',
     })
+
+    // On final retry failure, account for this page in crawl progress
+    // so the crawl doesn't hang forever waiting for enrichment
+    const isFinalAttempt = job.attemptsMade >= (job.opts?.attempts ?? 3) - 1
+    if (crawlId && isFinalAttempt) {
+      await crawlRepo.incrementScannedPages(crawlId)
+      const { enrichedPages, totalPages } = await crawlRepo.incrementEnrichedPages(crawlId)
+      if (enrichedPages >= totalPages) {
+        // Import finalizeCrawl lazily to avoid circular deps
+        const { finalizeCrawl } = await import('./ai-enrichment.processor')
+        await finalizeCrawl(crawlId)
+      }
+      console.log(`[PageScan] Final failure for scan ${scanId} in crawl ${crawlId} — counted as completed`)
+    }
+
     throw error
   }
 }

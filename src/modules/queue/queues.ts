@@ -7,6 +7,9 @@ const redisUrl = new URL(config.redis.url)
 const connection = {
   host: redisUrl.hostname,
   port: parseInt(redisUrl.port || '6379', 10),
+  ...(redisUrl.password ? { password: redisUrl.password } : {}),
+  ...(redisUrl.username ? { username: redisUrl.username } : {}),
+  maxRetriesPerRequest: null, // Required by BullMQ for blocking commands
 }
 
 export const crawlQueue = new Queue<CrawlJobData>(QUEUE_NAMES.CRAWL_DISCOVERY, {

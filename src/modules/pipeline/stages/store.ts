@@ -94,7 +94,7 @@ export class StoreStage implements PipelineStage {
     const pageTitle = context.renderedPage?.title ?? null
 
     await scanRepo.updateStatus(context.scanId, {
-      status: this.llmFailed ? 'completed_partial' : 'completed',
+      status: (this.llmFailed || context.llmFailed) ? 'completed_partial' : 'completed',
       completedAt: new Date(),
       pageTitle,
       pageScreenshot: screenshotBase64,

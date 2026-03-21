@@ -14,6 +14,7 @@ export interface PipelineContext {
   crawlId?: string
   pageId?: string
   siteId?: string
+  llmFailed?: boolean
 }
 
 export interface PipelineStage {

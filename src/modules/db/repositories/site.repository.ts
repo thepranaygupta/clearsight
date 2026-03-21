@@ -31,9 +31,11 @@ export class PrismaSiteRepository {
   }
 
   async findOrCreate(hostname: string, name?: string) {
-    const existing = await this.findByHostname(hostname)
-    if (existing) return existing
-    return this.create({ hostname, name: name ?? hostname })
+    return prisma.site.upsert({
+      where: { hostname },
+      update: {},
+      create: { hostname, name: name ?? hostname },
+    })
   }
 
   async delete(id: string) {
