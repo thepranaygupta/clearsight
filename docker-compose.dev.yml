@@ -29,6 +29,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    image: clearsight-dev
     ports:
       - "3000:3000"
     volumes:
@@ -51,6 +52,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    image: clearsight-dev
     volumes:
       - .:/app
       - /app/node_modules
@@ -61,6 +63,8 @@ services:
       AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION:-2025-01-01-preview}
       REDIS_URL: redis://redis:6379
     depends_on:
+      app:
+        condition: service_started
       postgres:
         condition: service_healthy
       redis:
@@ -71,12 +75,15 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    image: clearsight-dev
     ports:
       - "3001:3001"
     environment:
       REDIS_URL: redis://redis:6379
       BULL_BOARD_PORT: "3001"
     depends_on:
+      app:
+        condition: service_started
       redis:
         condition: service_healthy
     command: pnpm bull-board
