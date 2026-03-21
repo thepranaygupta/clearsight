@@ -1,0 +1,44 @@
+# Single-Page Scan
+
+Scan a single URL for WCAG 2.1 accessibility violations without creating a site or running a full crawl.
+
+## How It Works
+
+1. Enter a URL in the Dashboard scan form
+2. ClearSight renders the page in headless Chromium (1280x720)
+3. axe-core runs 50+ WCAG 2.1 A/AA checks
+4. Custom engines check link text quality and touch target sizing
+5. AI enriches each issue with descriptions and fix suggestions
+6. Results display with an overall score
+
+## Pipeline Stages
+
+| Stage | Progress | What Happens |
+|-------|----------|-------------|
+| Fetch | 20% | Playwright renders the page, captures screenshot |
+| Analyze | 40% | axe-core accessibility checks |
+| Custom Checks | 55% | Link text + touch target engines |
+| Element Locate | 65% | Bounding boxes for visual inspection |
+| Intermediate Store | 70% | Preliminary results saved (preview visible) |
+| Enrich | 80% | AI generates descriptions and fix suggestions |
+| Store | 100% | Final results saved |
+
+## Progressive Results
+
+You don't have to wait for the full pipeline. After the Intermediate Store stage (70%), you'll see preliminary results with basic descriptions. The AI enrichment runs in the background and upgrades the results in-place.
+
+## API
+
+```bash
+# Create a single-page scan
+curl -X POST http://localhost:3000/api/scans \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
+
+# Poll for results
+curl http://localhost:3000/api/scans/{scanId}
+```
+
+## Rate Limiting
+
+Single-page scans are rate-limited to 10 per hour per IP address.

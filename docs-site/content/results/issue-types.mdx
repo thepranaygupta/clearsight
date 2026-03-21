@@ -1,0 +1,41 @@
+# Issue Types and Severity
+
+ClearSight categorizes every finding by type and severity.
+
+## Issue Types
+
+### Confirmed
+
+Definite WCAG violations detected automatically. These are issues that the scanner can identify with certainty — for example, an image with no `alt` attribute.
+
+### Potential
+
+Issues flagged for human review. The scanner suspects a violation but can't be certain without manual verification — for example, an image with alt text that may not adequately describe the image content.
+
+## Severity Levels
+
+| Severity | Color | Description |
+|----------|-------|-------------|
+| **Critical** | Red | Blocks access for users with disabilities. Fix immediately. |
+| **Serious** | Orange | Significantly degrades the experience. Fix as priority. |
+| **Moderate** | Yellow | Creates barriers for some users. Should be addressed. |
+| **Minor** | Blue | Best practice violation. Low impact but worth fixing. |
+
+## WCAG Criteria
+
+Each issue references a specific WCAG 2.1 success criterion (e.g., `1.1.1 Non-text Content`) and conformance level:
+
+- **Level A** — minimum accessibility requirements
+- **Level AA** — standard compliance target (most legal frameworks require this)
+
+## Confidence Score
+
+AI enrichment assigns a confidence score (0-100) to each issue, indicating how certain the system is about the finding. Higher scores mean more definitive violations.
+
+## Engines
+
+Issues come from three engines:
+
+1. **axe-core** — industry-standard accessibility testing library (50+ rules)
+2. **LinkTextEngine** — custom checks for empty or non-descriptive link text
+3. **TouchTargetEngine** — custom checks for minimum touch target sizing (48x48px)

@@ -1,0 +1,57 @@
+# FAQ
+
+## General
+
+### What is ClearSight?
+
+ClearSight is an open-source accessibility checker that scans websites for WCAG 2.1 Level A and AA violations. It uses axe-core for detection, custom engines for link text and touch targets, and AI (Azure OpenAI) for enriched descriptions and fix suggestions.
+
+### Is ClearSight free?
+
+Yes. ClearSight is open-source. You need to provide your own Azure OpenAI API key for AI enrichment. Without it, scans still work but produce basic (non-AI) descriptions.
+
+## Scanning
+
+### How long does a scan take?
+
+A single page typically takes 30-60 seconds. A full site crawl depends on the number of pages — with 3 concurrent scanners, expect ~20 seconds per page after discovery.
+
+### Can I scan sites behind authentication?
+
+Not yet. ClearSight currently only scans publicly accessible pages.
+
+### Does ClearSight respect robots.txt?
+
+No. ClearSight does not check robots.txt. It scans all same-origin pages it discovers.
+
+### What if AI enrichment fails?
+
+Scans fall back to basic descriptions from axe-core rule help text. The scan completes with a `completed_partial` status. You still get all issues — just without AI-enhanced descriptions.
+
+## Results
+
+### What's the difference between confirmed and potential issues?
+
+**Confirmed** issues are definite WCAG violations (e.g., missing alt text). **Potential** issues need human review — the tool suspects a problem but can't be certain.
+
+### How is the score calculated?
+
+AI analyzes the type, severity, and count of issues to produce a 0-100 score. If AI is unavailable, a simple heuristic subtracts 5 points per issue from 100.
+
+### Can I dismiss false positives?
+
+Yes. From the Issues view, click **Dismiss** on any issue. Dismissed issues stay hidden across future crawls until you reopen them.
+
+## Technical
+
+### What browsers does ClearSight use?
+
+Headless Chromium via Playwright, running at 1280x720 viewport.
+
+### What WCAG rules are checked?
+
+50+ rules from axe-core covering WCAG 2.1 Level A and AA, plus custom engines for link text quality and touch target sizing (48x48px minimum).
+
+### Can I run ClearSight locally?
+
+Yes. Run `pnpm docker:dev` to start all services (PostgreSQL, Redis, Next.js app, worker, Bull Board) with Docker Compose.

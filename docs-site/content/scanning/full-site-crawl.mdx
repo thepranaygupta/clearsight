@@ -1,0 +1,78 @@
+# Full Site Crawl
+
+Crawl an entire website, scanning every discovered page for accessibility violations.
+
+## How It Works
+
+1. **Discovery** — BFS crawl follows internal links + parses sitemap.xml
+2. **Concurrent scanning** — Up to 3 pages scanned simultaneously
+3. **AI enrichment** — Up to 2 parallel enrichment calls
+4. **Finalization** — Aggregate scores, compute issue diff vs previous crawl
+
+## Starting a Crawl
+
+### From the UI
+
+1. Open the Dashboard
+2. Your site appears in the sidebar (auto-created on first scan)
+3. Click into the site → **Crawl Now**
+4. Watch live progress as pages are discovered and scanned
+
+### From the API
+
+```bash
+# Create a site (or get existing)
+curl -X POST http://localhost:3000/api/sites \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
+
+# Start a crawl
+curl -X POST http://localhost:3000/api/sites/{siteId}/crawl
+
+# Optionally limit pages
+curl -X POST http://localhost:3000/api/sites/{siteId}/crawl \
+  -H "Content-Type: application/json" \
+  -d '{"maxPages": 20}'
+```
+
+## Discovery
+
+The crawler uses lightweight HTTP fetch (not Playwright) for fast page discovery:
+
+- Follows `<a href>`, `<link href>`, `<iframe src>` tags
+- Parses `/sitemap.xml` for additional URLs
+- Same-origin filter — only crawls pages on the same domain
+- URL normalization — deduplicates trailing slashes, fragments, tracking params
+- Configurable delay between fetches (`CRAWL_DELAY_MS`, default 200ms)
+
+## Concurrency
+
+Three BullMQ queues handle the work:
+
+| Queue | Concurrency | Purpose |
+|-------|------------|---------|
+| `crawl-discovery` | 1 | BFS link discovery |
+| `page-scan` | 3 (configurable) | Playwright + axe-core per page |
+| `ai-enrichment` | 2 (configurable) | LLM enrichment per page |
+
+Configure via environment variables:
+- `WORKER_CONCURRENCY` — parallel Playwright instances (default 3)
+- `AI_CONCURRENCY` — parallel LLM calls (default 2)
+- `MAX_CRAWL_PAGES` — hard page cap (empty = unlimited)
+
+## Crawl Lifecycle
+
+```
+queued → discovering → scanning → completed
+                                → failed
+                                → cancelled
+```
+
+- Only one crawl can run per site at a time
+- Cancel anytime via the UI or `POST /api/sites/{siteId}/crawls/{crawlId}/cancel`
+
+## Limitations
+
+- Discovery uses plain HTTP fetch — JavaScript-rendered SPAs may yield fewer discovered links
+- `robots.txt` is not respected (by design)
+- No authentication support for protected pages (yet)

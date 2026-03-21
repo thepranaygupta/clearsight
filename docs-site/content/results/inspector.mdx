@@ -1,0 +1,48 @@
+# Visual Inspector
+
+The inspector lets you see exactly which element on the page has an accessibility issue.
+
+## Opening the Inspector
+
+From any issue card, click **Inspect Element** to open the full-screen inspector overlay.
+
+## Two View Modes
+
+### Page View
+
+Shows the captured screenshot with the problematic element highlighted:
+
+- **Red overlay** dims the rest of the page
+- **Colored highlight box** around the element (color matches severity)
+- **Label** shows severity + WCAG criterion
+- **Zoom controls** — zoom in/out (25%-200%), reset
+- **Bounding box coordinates** displayed at top
+
+The inspector auto-scrolls to center the highlighted element.
+
+### HTML View
+
+Shows the page's DOM source with syntax highlighting:
+
+- VS Code-style colors (tags cyan, attributes magenta, values green)
+- The problematic element's line is highlighted
+- Line numbers in the gutter
+- Windowed rendering (loads lines around the match for performance)
+- "Show more lines" buttons to expand context
+
+## Sidebar
+
+The left sidebar shows:
+
+- **Issue title** and description
+- **Severity badge**, WCAG criterion, level, and type
+- **"Why is this an issue?"** — expandable explanation
+- **Occurrences** — if multiple instances of the same rule, navigate between them
+- **Element HTML** — code snippet with copy button
+- **Selector** — CSS selector with copy button
+- **Fix suggestion** — amber-highlighted remediation steps
+
+## Keyboard Shortcuts
+
+- **Escape** — close inspector
+- **Arrow Up/Down** — navigate between occurrences of the same rule
