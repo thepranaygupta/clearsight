@@ -45,9 +45,9 @@ export function Footer() {
                 Standards
               </p>
               <div className="flex flex-col gap-2">
-                <span className="text-[13px] text-muted-foreground">WCAG 2.1 A</span>
-                <span className="text-[13px] text-muted-foreground">WCAG 2.1 AA</span>
-                <span className="text-[13px] text-muted-foreground">Section 508</span>
+                <a href="https://www.w3.org/TR/WCAG21/#conformance-level-a" target="_blank" rel="noopener noreferrer" className="text-[13px] text-muted-foreground transition-colors hover:text-foreground">WCAG 2.1 Level A</a>
+                <a href="https://www.w3.org/TR/WCAG21/#conformance-level-aa" target="_blank" rel="noopener noreferrer" className="text-[13px] text-muted-foreground transition-colors hover:text-foreground">WCAG 2.1 Level AA</a>
+                <a href="https://www.section508.gov/" target="_blank" rel="noopener noreferrer" className="text-[13px] text-muted-foreground transition-colors hover:text-foreground">Section 508</a>
               </div>
             </div>
           </div>
