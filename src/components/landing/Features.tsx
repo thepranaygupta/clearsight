@@ -5,6 +5,7 @@ import {
   MousePointerClick,
   FileDown,
   ShieldCheck,
+  Gauge,
 } from "lucide-react";
 
 const heroFeature = {
@@ -50,6 +51,12 @@ const features = [
     title: "WCAG 2.1 A & AA",
     description:
       "50+ axe-core rules plus custom engines for link text quality and touch target sizing.",
+  },
+  {
+    icon: Gauge,
+    title: "Progressive results",
+    description:
+      "See preliminary findings while AI enrichment is still running. No waiting for the full pipeline to finish.",
   },
 ];
 
