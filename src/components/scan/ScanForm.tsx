@@ -38,7 +38,7 @@ export function ScanForm() {
       }
 
       const scan = await res.json();
-      router.push(`/scan/${scan.id}`);
+      router.push(`/dashboard/scan/${scan.id}`);
     } catch {
       setError("Network error. Please try again.");
       setLoading(false);

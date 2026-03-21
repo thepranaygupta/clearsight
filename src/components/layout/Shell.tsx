@@ -16,7 +16,7 @@ export function Shell({ children }: ShellProps) {
     <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar
         activeScanId={activeScanId}
-        onNewScan={() => router.push("/")}
+        onNewScan={() => router.push("/dashboard")}
       />
       <main className="relative flex-1 overflow-y-auto">
         {/* Subtle top gradient wash */}
