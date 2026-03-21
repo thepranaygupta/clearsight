@@ -78,24 +78,28 @@ export function FAQSection() {
 
   return (
     <section className="py-24">
-      <div className="mx-auto max-w-3xl px-6">
-        <div className="mb-10 flex items-end justify-between">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#E90029]">
-              FAQ
-            </p>
-            <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.02em] text-foreground">
-              Common questions
-            </h2>
+      <div className="mx-auto max-w-6xl px-6">
+        <div className="mb-10 max-w-3xl">
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#E90029]">
+                FAQ
+              </p>
+              <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.02em] text-foreground">
+                Common questions
+              </h2>
+            </div>
+            <Link
+              href="/faq"
+              className="text-[13px] font-semibold text-[#E90029] transition-colors hover:text-[#D10025]"
+            >
+              See all &rarr;
+            </Link>
           </div>
-          <Link
-            href="/faq"
-            className="text-[13px] font-semibold text-[#E90029] transition-colors hover:text-[#D10025]"
-          >
-            See all &rarr;
-          </Link>
         </div>
-        <FAQList faqs={topFaqs} />
+        <div className="max-w-3xl">
+          <FAQList faqs={topFaqs} />
+        </div>
       </div>
     </section>
   );

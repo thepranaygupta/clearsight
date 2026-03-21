@@ -1,27 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, useInView } from "motion/react";
-import { useRef } from "react";
 import { ArrowRight, Loader2, Lightbulb } from "lucide-react";
 
 // ─── Animated Score Gauge ─────────────────────────────────────────
 
 function AnimatedGauge({ score, delay }: { score: number; delay: number }) {
-  const r = 28;
+  const r = 30;
   const c = 2 * Math.PI * r;
   const offset = c - (score / 100) * c;
 
   return (
-    <div className="relative size-[72px]">
-      <svg viewBox="0 0 68 68" className="size-full -rotate-90">
-        <circle
-          cx="34" cy="34" r={r} fill="none"
-          stroke="currentColor" className="text-border/40" strokeWidth="5"
-        />
+    <div className="relative size-[76px]">
+      <svg viewBox="0 0 72 72" className="size-full -rotate-90">
+        <circle cx="36" cy="36" r={r} fill="none" stroke="currentColor" className="text-border/40" strokeWidth="5" />
         <motion.circle
-          cx="34" cy="34" r={r} fill="none"
+          cx="36" cy="36" r={r} fill="none"
           stroke="#E90029" strokeWidth="5" strokeLinecap="round"
           strokeDasharray={c}
           initial={{ strokeDashoffset: c }}
@@ -30,7 +26,7 @@ function AnimatedGauge({ score, delay }: { score: number; delay: number }) {
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
-        <AnimatedNumber target={score} delay={delay} className="text-[16px] font-bold text-foreground" />
+        <AnimatedNumber target={score} delay={delay} className="text-[17px] font-bold text-foreground" />
       </div>
     </div>
   );
@@ -46,15 +42,13 @@ function AnimatedNumber({ target, delay, className }: { target: number; delay: n
   useEffect(() => {
     if (!inView) return;
     const timeout = setTimeout(() => {
-      let start = 0;
       const duration = 1200;
       const startTime = performance.now();
       function tick(now: number) {
         const elapsed = now - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const eased = 1 - Math.pow(1 - progress, 3);
-        start = Math.round(eased * target);
-        setCount(start);
+        setCount(Math.round(eased * target));
         if (progress < 1) requestAnimationFrame(tick);
       }
       requestAnimationFrame(tick);
@@ -65,7 +59,7 @@ function AnimatedNumber({ target, delay, className }: { target: number; delay: n
   return <span ref={ref} className={className}>{count}</span>;
 }
 
-// ─── Issue Row ────────────────────────────────────────────────────
+// ─── Data ─────────────────────────────────────────────────────────
 
 const issues = [
   { dot: "bg-red-500", text: "Images must have alternate text", tag: "1.1.1", count: 12 },
@@ -81,8 +75,8 @@ export function Hero() {
   const router = useRouter();
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(heroRef, { once: true, amount: 0.3 });
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(sectionRef, { once: true, amount: 0.2 });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -111,214 +105,188 @@ export function Hero() {
   }
 
   return (
-    <section ref={heroRef} className="relative pt-32 pb-20 sm:pt-40 sm:pb-28">
+    <section ref={sectionRef} className="relative overflow-hidden pt-32 pb-8 sm:pt-40 sm:pb-12">
       {/* Background */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 right-0 h-[800px] w-[800px] rounded-full bg-[#E90029]/[0.02] blur-[120px]" />
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute top-0 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-[#E90029]/[0.015] blur-[100px]" />
       </div>
 
       <div className="relative mx-auto max-w-6xl px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-
-          {/* ─── Left: Copy ─── */}
-          <div>
-            <motion.h1
-              className="text-[clamp(2.4rem,5vw,3.8rem)] leading-[1.08] font-extrabold tracking-[-0.03em] text-foreground"
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            >
-              Find every
-              <br />
-              accessibility issue.
-              <br />
-              <span className="text-[#E90029]">Fix them with AI.</span>
-            </motion.h1>
-
-            <motion.p
-              className="mt-6 max-w-[420px] text-[16px] leading-[1.75] text-muted-foreground"
-              initial={{ opacity: 0, y: 16 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            >
-              ClearSight crawls your entire website, checks every page against
-              WCAG 2.1, and generates fix suggestions for each issue — so you
-              ship accessible products, faster.
-            </motion.p>
-
-            {/* Inline stats */}
-            <motion.div
-              className="mt-8 flex gap-8"
-              initial={{ opacity: 0, y: 16 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            >
-              {[
-                { value: "50+", label: "WCAG rules" },
-                { value: "3x", label: "Parallel scanners" },
-                { value: "<2min", label: "Per site crawl" },
-              ].map((stat, i) => (
-                <div key={stat.label} className="flex items-center gap-8">
-                  <div>
-                    <div className="text-[22px] font-extrabold tracking-tight text-foreground">{stat.value}</div>
-                    <div className="text-[11px] font-medium text-muted-foreground/60">{stat.label}</div>
-                  </div>
-                  {i < 2 && <div className="h-8 w-px bg-border/60" />}
-                </div>
-              ))}
-            </motion.div>
-
-            {/* URL input */}
-            <motion.form
-              onSubmit={handleSubmit}
-              className="mt-10"
-              initial={{ opacity: 0, y: 16 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://your-site.com"
-                  className="h-[52px] flex-1 rounded-xl border border-border bg-background px-5 text-[15px] text-foreground shadow-sm placeholder:text-muted-foreground/30 focus:border-[#E90029]/30 focus:outline-none focus:ring-2 focus:ring-[#E90029]/10"
-                  disabled={loading}
-                />
-                <button
-                  type="submit"
-                  disabled={loading || !url.trim()}
-                  className="group flex h-[52px] shrink-0 items-center gap-2 rounded-xl bg-[#E90029] px-7 text-[14px] font-semibold text-white shadow-lg shadow-[#E90029]/10 transition-all hover:bg-[#D10025] hover:shadow-xl hover:shadow-[#E90029]/20 disabled:opacity-40 disabled:shadow-none"
-                >
-                  {loading ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    <>
-                      Scan now
-                      <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                    </>
-                  )}
-                </button>
-              </div>
-              <p className="mt-3 text-[12px] text-muted-foreground/40">
-                Free and open source. No account needed. Results in minutes.
-              </p>
-            </motion.form>
-          </div>
-
-          {/* ─── Right: Animated Product Mockup ─── */}
-          <motion.div
-            className="relative hidden lg:block"
-            initial={{ opacity: 0, scale: 0.96, y: 20 }}
-            animate={inView ? { opacity: 1, scale: 1, y: 0 } : {}}
-            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        {/* ─── Centered Copy ─── */}
+        <div className="mx-auto max-w-3xl text-center">
+          <motion.h1
+            className="text-[clamp(2.8rem,6vw,4.5rem)] leading-[1.05] font-extrabold tracking-[-0.035em] text-foreground"
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="absolute -inset-10 rounded-3xl bg-[#E90029]/[0.02] blur-3xl" />
+            Find every accessibility issue.{" "}
+            <span className="text-[#E90029]">Fix them with AI.</span>
+          </motion.h1>
 
-            <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-2xl shadow-black/[0.08]">
-              {/* Browser chrome */}
-              <div className="flex h-10 items-center gap-1.5 border-b border-border/50 bg-muted/50 px-4">
-                <div className="size-3 rounded-full bg-[#E90029]/40" />
-                <div className="size-3 rounded-full bg-orange-400/40" />
-                <div className="size-3 rounded-full bg-emerald-400/40" />
-                <div className="ml-3 flex-1 rounded-md bg-background/80 px-3 py-1">
-                  <span className="text-[11px] text-muted-foreground/50">clearsight / dashboard / site</span>
-                </div>
+          <motion.p
+            className="mx-auto mt-6 max-w-lg text-[17px] leading-[1.7] text-muted-foreground"
+            initial={{ opacity: 0, y: 16 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+          >
+            ClearSight crawls your entire website, checks every page against
+            WCAG 2.1, and tells you exactly what to fix — with AI-generated suggestions.
+          </motion.p>
+
+          {/* URL input — centered */}
+          <motion.form
+            onSubmit={handleSubmit}
+            className="mx-auto mt-10 max-w-xl"
+            initial={{ opacity: 0, y: 16 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.7, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://your-site.com"
+                className="h-[52px] flex-1 rounded-xl border border-border bg-background px-5 text-[15px] text-foreground shadow-sm placeholder:text-muted-foreground/30 focus:border-[#E90029]/30 focus:outline-none focus:ring-2 focus:ring-[#E90029]/10"
+                disabled={loading}
+              />
+              <button
+                type="submit"
+                disabled={loading || !url.trim()}
+                className="group flex h-[52px] shrink-0 items-center gap-2 rounded-xl bg-[#E90029] px-7 text-[14px] font-semibold text-white shadow-lg shadow-[#E90029]/10 transition-all hover:bg-[#D10025] hover:shadow-xl hover:shadow-[#E90029]/20 disabled:opacity-40 disabled:shadow-none"
+              >
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <>
+                    Scan now
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                  </>
+                )}
+              </button>
+            </div>
+            <div className="mt-4 flex items-center justify-center gap-6 text-[12px] text-muted-foreground/50">
+              <span>Free &amp; open source</span>
+              <span className="size-1 rounded-full bg-border" />
+              <span>No account needed</span>
+              <span className="size-1 rounded-full bg-border" />
+              <span>Results in minutes</span>
+            </div>
+          </motion.form>
+        </div>
+
+        {/* ─── Product Mockup Below ─── */}
+        <motion.div
+          className="relative mx-auto mt-16 max-w-4xl"
+          initial={{ opacity: 0, y: 40 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.9, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {/* Glow */}
+          <div className="absolute -inset-8 rounded-3xl bg-[#E90029]/[0.02] blur-3xl" />
+
+          <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-2xl shadow-black/[0.08]">
+            {/* Browser chrome */}
+            <div className="flex h-10 items-center gap-1.5 border-b border-border/50 bg-muted/50 px-4">
+              <div className="size-3 rounded-full bg-[#E90029]/40" />
+              <div className="size-3 rounded-full bg-orange-400/40" />
+              <div className="size-3 rounded-full bg-emerald-400/40" />
+              <div className="ml-4 flex-1 rounded-md bg-background/80 px-3 py-1">
+                <span className="text-[11px] text-muted-foreground/50">clearsight / dashboard / site / example.com</span>
               </div>
+            </div>
 
-              {/* Dashboard content */}
-              <div className="p-5">
-                {/* Scan progress bar — fills on mount */}
+            {/* Dashboard content */}
+            <div className="p-6 sm:p-8">
+              {/* Progress bar */}
+              <motion.div
+                className="mb-6 overflow-hidden rounded-full bg-muted/40"
+                initial={{ opacity: 0 }}
+                animate={inView ? { opacity: 1 } : {}}
+                transition={{ delay: 0.6 }}
+              >
                 <motion.div
-                  className="mb-5 overflow-hidden rounded-full bg-muted/40"
-                  initial={{ opacity: 0 }}
-                  animate={inView ? { opacity: 1 } : {}}
-                  transition={{ delay: 0.5 }}
-                >
-                  <motion.div
-                    className="h-1.5 rounded-full bg-[#E90029]"
-                    initial={{ width: "0%" }}
-                    animate={inView ? { width: "100%" } : {}}
-                    transition={{ duration: 2.5, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                  />
-                </motion.div>
+                  className="h-1.5 rounded-full bg-[#E90029]"
+                  initial={{ width: "0%" }}
+                  animate={inView ? { width: "100%" } : {}}
+                  transition={{ duration: 2.5, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                />
+              </motion.div>
 
-                {/* Score + site name */}
+              <div className="grid gap-6 sm:grid-cols-[auto_1fr]">
+                {/* Left: Score + meta */}
                 <motion.div
-                  className="mb-5 flex items-center gap-4"
+                  className="flex items-center gap-4 sm:flex-col sm:items-start sm:gap-3"
                   initial={{ opacity: 0 }}
                   animate={inView ? { opacity: 1 } : {}}
                   transition={{ delay: 1.2, duration: 0.5 }}
                 >
                   <AnimatedGauge score={72} delay={1.3} />
                   <div>
-                    <div className="text-[14px] font-bold text-foreground">example.com</div>
-                    <div className="text-[11px] text-muted-foreground">
-                      12 pages · <AnimatedNumber target={47} delay={1.5} className="tabular-nums" /> issues found
+                    <div className="text-[15px] font-bold text-foreground">example.com</div>
+                    <div className="text-[12px] text-muted-foreground">
+                      12 pages · <AnimatedNumber target={47} delay={1.5} className="tabular-nums" /> issues
                     </div>
                   </div>
                   <motion.div
-                    className="ml-auto flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-1"
+                    className="flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1 sm:mt-1"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={inView ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ delay: 2.8, duration: 0.3, type: "spring", stiffness: 300 }}
+                    transition={{ delay: 2.8, type: "spring", stiffness: 300 }}
                   >
                     <div className="size-1.5 rounded-full bg-emerald-500" />
-                    <span className="text-[9px] font-semibold text-emerald-700">Complete</span>
+                    <span className="text-[10px] font-semibold text-emerald-700">Complete</span>
                   </motion.div>
                 </motion.div>
 
-                {/* Issue cards — staggered entrance */}
-                <div className="space-y-1.5">
-                  {issues.map((item, i) => (
-                    <motion.div
-                      key={i}
-                      className="flex items-center gap-2.5 rounded-lg border border-border/40 bg-background p-3"
-                      initial={{ opacity: 0, x: 24 }}
-                      animate={inView ? { opacity: 1, x: 0 } : {}}
-                      transition={{
-                        duration: 0.4,
-                        delay: 1.4 + i * 0.2,
-                        ease: [0.16, 1, 0.3, 1],
-                      }}
-                    >
+                {/* Right: Issues */}
+                <div>
+                  <div className="space-y-1.5">
+                    {issues.map((item, i) => (
                       <motion.div
-                        className={`size-2 shrink-0 rounded-full ${item.dot}`}
-                        initial={{ scale: 0 }}
-                        animate={inView ? { scale: 1 } : {}}
-                        transition={{
-                          delay: 1.6 + i * 0.2,
-                          type: "spring",
-                          stiffness: 400,
-                          damping: 15,
-                        }}
-                      />
-                      <span className="flex-1 truncate text-[12px] text-foreground/90">{item.text}</span>
-                      <span className="shrink-0 text-[11px] font-medium tabular-nums text-muted-foreground/60">{item.count}</span>
-                      <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">{item.tag}</span>
-                    </motion.div>
-                  ))}
-                </div>
+                        key={i}
+                        className="flex items-center gap-3 rounded-lg border border-border/40 bg-background p-3"
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={inView ? { opacity: 1, x: 0 } : {}}
+                        transition={{ duration: 0.45, delay: 1.4 + i * 0.18, ease: [0.16, 1, 0.3, 1] }}
+                      >
+                        <motion.div
+                          className={`size-2 shrink-0 rounded-full ${item.dot}`}
+                          initial={{ scale: 0 }}
+                          animate={inView ? { scale: 1 } : {}}
+                          transition={{ delay: 1.55 + i * 0.18, type: "spring", stiffness: 400, damping: 15 }}
+                        />
+                        <span className="flex-1 truncate text-[13px] text-foreground/90">{item.text}</span>
+                        <span className="shrink-0 text-[12px] font-medium tabular-nums text-muted-foreground/60">{item.count}</span>
+                        <span className="shrink-0 rounded bg-muted px-2 py-0.5 text-[10px] font-mono text-muted-foreground">{item.tag}</span>
+                      </motion.div>
+                    ))}
+                  </div>
 
-                {/* AI suggestion — slides up last */}
-                <motion.div
-                  className="mt-3 rounded-lg border border-amber-300/60 bg-amber-50 p-3"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ delay: 2.8, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <div className="mb-1 flex items-center gap-1">
-                    <Lightbulb className="size-3 text-amber-600" />
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-amber-800/70">AI Fix Suggestion</span>
-                  </div>
-                  <div className="text-[12px] leading-relaxed text-amber-900/80">
-                    Add descriptive alt text: <code className="rounded bg-amber-100 px-1 py-0.5 text-[11px]">alt=&quot;Team collaborating on audit&quot;</code>
-                  </div>
-                </motion.div>
+                  {/* AI suggestion */}
+                  <motion.div
+                    className="mt-3 rounded-lg border border-amber-300/60 bg-amber-50 p-3.5"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={inView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ delay: 2.8, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <div className="mb-1.5 flex items-center gap-1.5">
+                      <Lightbulb className="size-3.5 text-amber-600" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800/70">AI Fix Suggestion</span>
+                    </div>
+                    <div className="text-[13px] leading-relaxed text-amber-900/80">
+                      Add descriptive alt text to the hero image:{" "}
+                      <code className="rounded bg-amber-100 px-1.5 py-0.5 text-[12px]">
+                        alt=&quot;Team collaborating on accessibility audit&quot;
+                      </code>
+                    </div>
+                  </motion.div>
+                </div>
               </div>
             </div>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
