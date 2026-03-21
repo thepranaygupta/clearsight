@@ -14,7 +14,8 @@
     "docker:dev": "docker compose -f docker-compose.dev.yml up --build",
     "docker:dev:down": "docker compose -f docker-compose.dev.yml down",
     "docker:up": "docker compose up --build",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "bull-board": "cd bull-board && tsx index.ts"
   },
   "dependencies": {
     "@axe-core/playwright": "^4.11.1",
