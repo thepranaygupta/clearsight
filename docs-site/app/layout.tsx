@@ -21,7 +21,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
-      <Head />
+      <Head color={{ hue: 355, saturation: 100, lightness: { light: 45, dark: 55 } }} />
       <body>
         <Layout
           navbar={<Navbar logo={themeConfig.logo} projectLink={themeConfig.project?.link} />}
