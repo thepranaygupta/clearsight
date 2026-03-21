@@ -84,7 +84,7 @@ export function ScanForm() {
 
       {/* Search bar */}
       <form onSubmit={handleSubmit} className="w-full max-w-2xl">
-        <div className="group relative flex items-center rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 focus-within:border-primary/25 focus-within:shadow-xl focus-within:shadow-primary/[0.04]">
+        <div className="group relative flex items-center rounded-lg border border-border bg-card shadow-sm transition-all duration-300 focus-within:border-primary/25 focus-within:shadow-xl focus-within:shadow-primary/[0.04]">
           <input
             type="url"
             value={url}

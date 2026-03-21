@@ -52,10 +52,10 @@ function LoadingSkeleton() {
           <Skeleton className="h-3 w-32" />
         </div>
       </div>
-      <Skeleton className="h-48 w-full rounded-2xl" />
+      <Skeleton className="h-48 w-full rounded-lg" />
       <div className="grid gap-4 sm:grid-cols-2">
-        <Skeleton className="h-32 rounded-2xl" />
-        <Skeleton className="h-32 rounded-2xl" />
+        <Skeleton className="h-32 rounded-lg" />
+        <Skeleton className="h-32 rounded-lg" />
       </div>
     </div>
   );
@@ -70,7 +70,7 @@ function ErrorState({
 }) {
   return (
     <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-      <div className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-red-50 shadow-sm">
+      <div className="mb-5 flex size-16 items-center justify-center rounded-lg bg-red-50 shadow-sm">
         <AlertTriangle className="size-7 text-[var(--severity-critical)]" />
       </div>
       <h2 className="mb-2 text-xl font-bold text-foreground">Scan failed</h2>
@@ -145,7 +145,7 @@ function ResultsView({ scan, isPreview }: { scan: ScanDetail; isPreview?: boolea
   return (
     <div className="space-y-6">
       {/* Score hero */}
-      <div className="rounded-2xl border border-border/40 bg-card">
+      <div className="rounded-lg border border-border/40 bg-card">
         <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:gap-8 sm:p-8">
           {/* Gauge */}
           {summary && (
@@ -217,8 +217,8 @@ function ResultsView({ scan, isPreview }: { scan: ScanDetail; isPreview?: boolea
 
       {/* Perfect score */}
       {isPerfect && (
-        <div className="flex flex-col items-center rounded-2xl border border-green-200/50 bg-gradient-to-br from-green-50/60 to-emerald-50/30 py-14 text-center">
-          <div className="mb-5 flex size-16 items-center justify-center rounded-2xl bg-green-100 shadow-sm">
+        <div className="flex flex-col items-center rounded-lg border border-green-200/50 bg-gradient-to-br from-green-50/60 to-emerald-50/30 py-14 text-center">
+          <div className="mb-5 flex size-16 items-center justify-center rounded-lg bg-green-100 shadow-sm">
             <PartyPopper className="size-7 text-green-600" />
           </div>
           <h3 className="mb-2 text-xl font-bold text-green-900">
@@ -320,7 +320,7 @@ export default function ScanDetailPage() {
   if (error || !scan) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-        <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-muted">
+        <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-muted">
           <AlertTriangle className="size-6 text-muted-foreground" />
         </div>
         <h2 className="mb-3 text-lg font-bold">{error || "Not found"}</h2>
@@ -387,7 +387,7 @@ export default function ScanDetailPage() {
 
       {scan.status === "cancelled" && (
         <div className="flex min-h-[40vh] flex-col items-center justify-center text-center">
-          <div className="mb-5 flex size-14 items-center justify-center rounded-2xl bg-muted/60">
+          <div className="mb-5 flex size-14 items-center justify-center rounded-lg bg-muted/60">
             <ShieldCheck className="size-6 text-muted-foreground/50" />
           </div>
           <p className="mb-1 text-sm font-medium text-foreground">

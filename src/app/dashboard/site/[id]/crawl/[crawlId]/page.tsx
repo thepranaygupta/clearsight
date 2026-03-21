@@ -104,7 +104,7 @@ function LoadingSkeleton() {
       </div>
 
       {/* Progress card skeleton */}
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
+      <div className="rounded-lg border border-border/40 bg-card p-6">
         <Skeleton className="mb-4 h-4 w-40" />
         <Skeleton className="mb-6 h-3 w-full rounded-full" />
         <div className="flex gap-4">
@@ -203,7 +203,7 @@ export default function CrawlDetailPage() {
   if (error || !crawl) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-        <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-muted">
+        <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-muted">
           <AlertTriangle className="size-6 text-muted-foreground" />
         </div>
         <h2 className="mb-3 text-lg font-bold">
@@ -261,7 +261,7 @@ export default function CrawlDetailPage() {
       {isActive && (
         <>
           {/* Progress card */}
-          <div className="rounded-2xl border border-border/40 bg-card p-6">
+          <div className="rounded-lg border border-border/40 bg-card p-6">
             {/* Progress text */}
             <div className="mb-4 flex items-center justify-between">
               <p className="text-sm font-medium text-foreground">
@@ -332,7 +332,7 @@ export default function CrawlDetailPage() {
       {crawl.status === "completed" && (
         <>
           {/* Score + stats card */}
-          <div className="rounded-2xl border border-border/40 bg-card">
+          <div className="rounded-lg border border-border/40 bg-card">
             <div className="flex flex-col items-center gap-6 p-6 sm:flex-row sm:gap-8 sm:p-8">
               {crawl.overallScore !== null && (
                 <div className="shrink-0">
@@ -506,7 +506,7 @@ export default function CrawlDetailPage() {
       {/* ── Failed state ───────────────────────────────────────── */}
       {crawl.status === "failed" && (
         <>
-          <div className="rounded-2xl border border-destructive/30 bg-destructive/5 p-6">
+          <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-6">
             <div className="flex items-start gap-3">
               <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-destructive/10">
                 <XCircle className="size-5 text-destructive" />
@@ -552,7 +552,7 @@ export default function CrawlDetailPage() {
       {/* ── Cancelled state ────────────────────────────────────── */}
       {crawl.status === "cancelled" && (
         <>
-          <div className="rounded-2xl border border-border/40 bg-card p-6">
+          <div className="rounded-lg border border-border/40 bg-card p-6">
             <div className="flex items-start gap-3">
               <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted/50">
                 <Ban className="size-5 text-muted-foreground" />

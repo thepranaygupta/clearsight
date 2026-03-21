@@ -89,7 +89,7 @@ function LoadingSkeleton() {
       </div>
 
       {/* Score card skeleton */}
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
+      <div className="rounded-lg border border-border/40 bg-card p-6">
         <div className="flex items-center gap-6">
           <Skeleton className="size-24 rounded-full" />
           <div className="flex flex-wrap gap-4">
@@ -103,7 +103,7 @@ function LoadingSkeleton() {
       <div className="space-y-3">
         <Skeleton className="h-5 w-32" />
         {[1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-16 w-full rounded-2xl" />
+          <Skeleton key={i} className="h-16 w-full rounded-lg" />
         ))}
       </div>
     </div>
@@ -161,7 +161,7 @@ export default function PageDetailPage() {
   if (error || !page) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-        <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-muted">
+        <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-muted">
           <AlertTriangle className="size-6 text-muted-foreground" />
         </div>
         <h2 className="mb-3 text-lg font-bold">
@@ -221,7 +221,7 @@ export default function PageDetailPage() {
 
       {/* Latest scan summary */}
       {latestScan && (
-        <div className="rounded-2xl border border-border/40 bg-card">
+        <div className="rounded-lg border border-border/40 bg-card">
           <div className="flex flex-col items-center gap-6 p-6 sm:flex-row sm:gap-8">
             {latestScore !== null && (
               <div className="shrink-0">
@@ -265,7 +265,7 @@ export default function PageDetailPage() {
 
       {/* No scans state */}
       {!latestScan && (
-        <div className="flex flex-col items-center rounded-2xl border border-dashed border-border/50 py-14 text-center">
+        <div className="flex flex-col items-center rounded-lg border border-dashed border-border/50 py-14 text-center">
           <Bug className="mb-3 size-8 text-muted-foreground/30" />
           <p className="text-sm font-medium text-muted-foreground">
             No scans yet for this page.
@@ -298,7 +298,7 @@ export default function PageDetailPage() {
                   onClick={() =>
                     router.push(`/dashboard/scan/${scan.id}`)
                   }
-                  className="flex w-full items-center gap-4 rounded-2xl border border-border/40 bg-card p-4 text-left transition-all hover:border-border hover:shadow-sm"
+                  className="flex w-full items-center gap-4 rounded-lg border border-border/40 bg-card p-4 text-left transition-all hover:border-border hover:shadow-sm"
                 >
                   {/* Status icon */}
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted/50">

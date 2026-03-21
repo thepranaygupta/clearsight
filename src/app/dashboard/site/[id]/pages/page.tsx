@@ -33,7 +33,7 @@ function LoadingSkeleton() {
       {/* Card skeletons */}
       <div className="space-y-2">
         {[1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} className="h-16 w-full rounded-2xl" />
+          <Skeleton key={i} className="h-16 w-full rounded-lg" />
         ))}
       </div>
     </div>
@@ -64,7 +64,7 @@ export default function PagesListPage() {
   if (error) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-        <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-muted">
+        <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-muted">
           <AlertTriangle className="size-6 text-muted-foreground" />
         </div>
         <h2 className="mb-3 text-lg font-bold">
@@ -101,7 +101,7 @@ export default function PagesListPage() {
 
       {/* Empty state */}
       {(!pages || pages.length === 0) && (
-        <div className="flex flex-col items-center rounded-2xl border border-dashed border-border/50 py-14 text-center">
+        <div className="flex flex-col items-center rounded-lg border border-dashed border-border/50 py-14 text-center">
           <FileText className="mb-3 size-8 text-muted-foreground/30" />
           <p className="text-sm font-medium text-muted-foreground">
             No pages discovered yet.
@@ -128,7 +128,7 @@ export default function PagesListPage() {
                     `/dashboard/site/${siteId}/page/${page.id}`
                   )
                 }
-                className="flex w-full items-center gap-4 rounded-2xl border border-border/40 bg-card p-4 text-left transition-all hover:border-border hover:shadow-sm"
+                className="flex w-full items-center gap-4 rounded-lg border border-border/40 bg-card p-4 text-left transition-all hover:border-border hover:shadow-sm"
               >
                 {/* Score gauge or placeholder */}
                 <div className="shrink-0">

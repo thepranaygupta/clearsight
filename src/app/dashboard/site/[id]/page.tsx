@@ -95,7 +95,7 @@ function LoadingSkeleton() {
         </div>
         <Skeleton className="h-8 w-28 rounded-lg" />
       </div>
-      <div className="rounded-2xl border border-border/40 bg-card p-6">
+      <div className="rounded-lg border border-border/40 bg-card p-6">
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:gap-8">
           <Skeleton className="size-36 rounded-full" />
           <div className="flex flex-1 flex-wrap gap-4">
@@ -114,7 +114,7 @@ function LoadingSkeleton() {
         <div className="space-y-3">
           <Skeleton className="h-5 w-28" />
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-2xl" />
+            <Skeleton key={i} className="h-20 w-full rounded-lg" />
           ))}
         </div>
       </div>
@@ -192,7 +192,7 @@ export default function SiteOverviewPage() {
   if (siteError || !site) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-        <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-muted">
+        <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-muted">
           <AlertTriangle className="size-6 text-muted-foreground" />
         </div>
         <h2 className="mb-3 text-lg font-bold">
@@ -258,7 +258,7 @@ export default function SiteOverviewPage() {
 
       {/* Score + stats */}
       {latestCrawl && latestCrawl.overallScore !== null && (
-        <div className="rounded-2xl border border-border/40 bg-card">
+        <div className="rounded-lg border border-border/40 bg-card">
           <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:gap-8 sm:p-8">
             <div className="shrink-0">
               <ScoreGauge score={latestCrawl.overallScore} size={130} strokeWidth={10} />
@@ -351,7 +351,7 @@ export default function SiteOverviewPage() {
           </div>
 
           {(!pages || pages.length === 0) && (
-            <div className="flex flex-col items-center rounded-2xl border border-dashed border-border/50 py-10 text-center">
+            <div className="flex flex-col items-center rounded-lg border border-dashed border-border/50 py-10 text-center">
               <FileText className="mb-2 size-6 text-muted-foreground/30" />
               <p className="text-sm font-medium text-muted-foreground">
                 No pages discovered yet
@@ -421,7 +421,7 @@ export default function SiteOverviewPage() {
           </h2>
 
           {(!crawls || crawls.length === 0) && (
-            <div className="flex flex-col items-center rounded-2xl border border-dashed border-border/50 py-10 text-center">
+            <div className="flex flex-col items-center rounded-lg border border-dashed border-border/50 py-10 text-center">
               <Globe className="mb-2 size-6 text-muted-foreground/30" />
               <p className="text-sm font-medium text-muted-foreground">
                 No crawls yet

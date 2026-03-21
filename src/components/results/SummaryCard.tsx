@@ -16,7 +16,7 @@ export function SummaryCard({ summary, positiveFindings }: SummaryCardProps) {
   return (
     <div className="space-y-4">
       {/* AI Summary */}
-      <div className="rounded-2xl border border-border/50 bg-card p-6">
+      <div className="rounded-lg border border-border/50 bg-card p-6">
         <div className="mb-3 flex items-center gap-2">
           <Sparkles className="size-4 text-primary/60" />
           <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground/60">
@@ -28,7 +28,7 @@ export function SummaryCard({ summary, positiveFindings }: SummaryCardProps) {
 
       {/* Positive findings */}
       {positiveFindings.length > 0 && (
-        <div className="rounded-2xl border border-green-200/50 bg-green-50/30 p-6">
+        <div className="rounded-lg border border-green-200/50 bg-green-50/30 p-6">
           <h4 className="mb-4 text-xs font-bold uppercase tracking-[0.12em] text-green-700/50">
             What&apos;s working well
           </h4>

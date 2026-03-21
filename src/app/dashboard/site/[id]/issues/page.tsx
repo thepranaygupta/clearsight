@@ -56,12 +56,12 @@ const fetcher = (url: string) =>
 
 const severityMeta: Record<
   Severity,
-  { dot: string; text: string; label: string }
+  { dot: string; text: string; label: string; bg: string; border: string; accent: string }
 > = {
-  critical: { dot: "bg-red-500", text: "text-red-700", label: "Critical" },
-  serious: { dot: "bg-orange-500", text: "text-orange-700", label: "Serious" },
-  moderate: { dot: "bg-yellow-500", text: "text-yellow-700", label: "Moderate" },
-  minor: { dot: "bg-blue-400", text: "text-blue-700", label: "Minor" },
+  critical: { dot: "bg-red-600", text: "text-red-700", label: "Critical", bg: "bg-red-50", border: "border-red-200", accent: "border-l-red-600" },
+  serious: { dot: "bg-orange-500", text: "text-orange-700", label: "Serious", bg: "bg-orange-50", border: "border-orange-200", accent: "border-l-orange-500" },
+  moderate: { dot: "bg-yellow-500", text: "text-yellow-700", label: "Moderate", bg: "bg-yellow-50", border: "border-yellow-200", accent: "border-l-yellow-500" },
+  minor: { dot: "bg-blue-400", text: "text-blue-700", label: "Minor", bg: "bg-blue-50", border: "border-blue-200", accent: "border-l-blue-400" },
 };
 
 const statusMeta: Record<
@@ -98,7 +98,7 @@ function LoadingSkeleton() {
       {/* Card skeletons */}
       <div className="space-y-2">
         {[1, 2, 3, 4, 5].map((i) => (
-          <Skeleton key={i} className="h-20 w-full rounded-2xl" />
+          <Skeleton key={i} className="h-20 w-full rounded-lg" />
         ))}
       </div>
     </div>
@@ -141,27 +141,35 @@ function IssueCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border transition-all duration-150",
+        "relative overflow-hidden rounded-lg border border-l-[3px] transition-all duration-150",
+        meta.accent,
         expanded
           ? "border-border bg-card shadow-sm"
           : "border-border/40 bg-card hover:border-border/80"
       )}
+      style={{ borderLeftColor: undefined }}
     >
       {/* Compact header */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="flex w-full items-start gap-3 p-4 text-left"
       >
-        {/* Severity dot */}
+        {/* Severity badge */}
         <span
-          className={cn("mt-1.5 size-2 shrink-0 rounded-full", meta.dot)}
-        />
+          className={cn(
+            "mt-0.5 inline-flex shrink-0 items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold uppercase",
+            meta.bg, meta.text, meta.border, "border"
+          )}
+        >
+          <span className={cn("size-1.5 rounded-full", meta.dot)} />
+          {meta.label}
+        </span>
 
         {/* Content */}
         <div className="min-w-0 flex-1">
           <p
             className={cn(
-              "text-sm leading-snug text-foreground/80",
+              "text-sm leading-snug text-foreground",
               !expanded && "line-clamp-2"
             )}
           >
@@ -170,15 +178,15 @@ function IssueCard({
 
           {/* Metadata row */}
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
-            <Badge variant="outline" className="font-mono text-[10px]">
+            <span className="inline-flex items-center gap-1 rounded border border-border bg-muted/50 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
               {issue.wcagCriterion} {issue.wcagLevel}
-            </Badge>
+            </span>
             <Badge variant={status.variant} className={cn("text-[10px]", status.className)}>
               {status.label}
             </Badge>
             {issue.pageUrl && (
-              <span className="truncate text-[10px] text-muted-foreground/50">
-                {issue.pageUrl}
+              <span className="truncate font-mono text-[10px] text-muted-foreground/50">
+                {new URL(issue.pageUrl).pathname}
               </span>
             )}
           </div>
@@ -358,7 +366,7 @@ export default function SiteIssuesPage() {
   if (error) {
     return (
       <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
-        <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-muted">
+        <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-muted">
           <AlertTriangle className="size-6 text-muted-foreground" />
         </div>
         <h2 className="mb-3 text-lg font-bold">Failed to load issues</h2>
@@ -463,7 +471,7 @@ export default function SiteIssuesPage() {
 
       {/* Issue list */}
       {issues.length === 0 && (
-        <div className="flex flex-col items-center rounded-2xl border border-dashed border-border/50 py-14 text-center">
+        <div className="flex flex-col items-center rounded-lg border border-dashed border-border/50 py-14 text-center">
           <Bug className="mb-3 size-8 text-muted-foreground/30" />
           <p className="text-sm font-medium text-muted-foreground">
             No issues found.
