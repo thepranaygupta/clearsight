@@ -1,4 +1,5 @@
 import 'nextra-theme-docs/style.css'
+import './globals.css'
 import type { Metadata } from 'next'
 import { Footer, Layout, Navbar } from 'nextra-theme-docs'
 import { Head } from 'nextra/components'
