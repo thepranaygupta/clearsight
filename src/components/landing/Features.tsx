@@ -73,8 +73,8 @@ export function Features() {
           </h2>
         </div>
 
-        {/* Hero feature — full width */}
-        <div className="mb-6 overflow-hidden rounded-2xl border border-border/50 bg-card">
+        {/* Hero feature — full width, visually distinct */}
+        <div className="mb-8 overflow-hidden rounded-2xl border border-[#E90029]/15 bg-card shadow-lg shadow-[#E90029]/[0.02]">
           <div className="grid lg:grid-cols-2">
             <div className="p-8 lg:p-10">
               <div className="mb-4 flex size-11 items-center justify-center rounded-xl bg-[#E90029]/[0.06]">

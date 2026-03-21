@@ -121,12 +121,12 @@ export function Hero() {
 
             <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-2xl shadow-black/[0.08]">
               {/* Browser chrome */}
-              <div className="flex h-9 items-center gap-1.5 border-b border-border/40 bg-muted/40 px-3">
-                <div className="size-2.5 rounded-full bg-[#E90029]/30" />
-                <div className="size-2.5 rounded-full bg-orange-400/30" />
-                <div className="size-2.5 rounded-full bg-emerald-400/30" />
-                <div className="ml-3 flex-1 rounded-md bg-background/60 px-3 py-1">
-                  <span className="text-[10px] text-muted-foreground/40">clearsight / dashboard / site</span>
+              <div className="flex h-10 items-center gap-1.5 border-b border-border/50 bg-muted/50 px-4">
+                <div className="size-3 rounded-full bg-[#E90029]/40" />
+                <div className="size-3 rounded-full bg-orange-400/40" />
+                <div className="size-3 rounded-full bg-emerald-400/40" />
+                <div className="ml-3 flex-1 rounded-md bg-background/80 px-3 py-1">
+                  <span className="text-[11px] text-muted-foreground/50">clearsight / dashboard / site</span>
                 </div>
               </div>
 
@@ -146,8 +146,8 @@ export function Hero() {
                     <span className="absolute inset-0 flex items-center justify-center text-[15px] font-bold text-foreground">72</span>
                   </div>
                   <div>
-                    <div className="text-[13px] font-bold text-foreground">example.com</div>
-                    <div className="text-[10px] text-muted-foreground/60">12 pages scanned · 47 issues</div>
+                    <div className="text-[14px] font-bold text-foreground">example.com</div>
+                    <div className="text-[11px] text-muted-foreground">12 pages scanned · 47 issues</div>
                   </div>
                   <div className="ml-auto flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-1">
                     <div className="size-1.5 rounded-full bg-emerald-500" />
@@ -164,20 +164,20 @@ export function Hero() {
                     { dot: "bg-blue-400", text: "Document must have one main landmark", tag: "1.3.1", count: "4" },
                     { dot: "bg-orange-500", text: "Touch targets below 48x48px", tag: "2.5.8", count: "6" },
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2.5 rounded-lg border border-border/30 bg-background p-2.5 transition-colors hover:bg-muted/20">
-                      <div className={`size-1.5 shrink-0 rounded-full ${item.dot}`} />
-                      <span className="flex-1 truncate text-[11px] text-foreground/80">{item.text}</span>
-                      <span className="shrink-0 text-[10px] font-medium tabular-nums text-muted-foreground/50">{item.count}</span>
-                      <span className="shrink-0 rounded bg-muted/80 px-1.5 py-0.5 text-[9px] font-mono text-muted-foreground/70">{item.tag}</span>
+                    <div key={i} className="flex items-center gap-2.5 rounded-lg border border-border/40 bg-background p-3 transition-colors hover:bg-muted/30">
+                      <div className={`size-2 shrink-0 rounded-full ${item.dot}`} />
+                      <span className="flex-1 truncate text-[12px] text-foreground/90">{item.text}</span>
+                      <span className="shrink-0 text-[11px] font-medium tabular-nums text-muted-foreground/60">{item.count}</span>
+                      <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">{item.tag}</span>
                     </div>
                   ))}
                 </div>
 
                 {/* AI suggestion preview */}
-                <div className="mt-3 rounded-lg border border-amber-200/50 bg-amber-50/50 p-3">
-                  <div className="mb-1 text-[9px] font-semibold uppercase tracking-wider text-amber-700/60">AI Fix Suggestion</div>
-                  <div className="text-[11px] leading-relaxed text-amber-900/70">
-                    Add descriptive alt text to the hero image: <code className="rounded bg-amber-100 px-1 text-[10px]">alt=&quot;Team collaborating on accessibility audit&quot;</code>
+                <div className="mt-3 rounded-lg border border-amber-300/60 bg-amber-50 p-3">
+                  <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-amber-800/70">AI Fix Suggestion</div>
+                  <div className="text-[12px] leading-relaxed text-amber-900/80">
+                    Add descriptive alt text to the hero image: <code className="rounded bg-amber-100 px-1 py-0.5 text-[11px]">alt=&quot;Team collaborating on accessibility audit&quot;</code>
                   </div>
                 </div>
               </div>
