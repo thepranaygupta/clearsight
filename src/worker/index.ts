@@ -7,6 +7,7 @@ import {
   AnalyzeStage,
   CustomChecksStage,
   ElementLocateStage,
+  IntermediateStoreStage,
   EnrichStage,
   StoreStage,
   CancelledError,
@@ -78,6 +79,7 @@ async function processJob(scanId: string, url: string): Promise<void> {
     new AnalyzeStage(),
     new CustomChecksStage(),
     new ElementLocateStage(),
+    new IntermediateStoreStage(),
     new EnrichStage(),
     storeStage,
   ]

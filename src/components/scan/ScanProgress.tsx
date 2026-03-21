@@ -34,7 +34,7 @@ function mapStageToIndex(currentStage: string | null): number {
   if (!currentStage) return 0;
   const lower = currentStage.toLowerCase();
   if (lower.includes("fetch") || lower.includes("render")) return 0;
-  if (lower.includes("analy") || lower.includes("custom")) return 1;
+  if (lower.includes("analy") || lower.includes("custom") || lower.includes("prepar")) return 1;
   if (lower.includes("enrich") || lower.includes("generat") || lower.includes("summar")) return 2;
   if (lower.includes("stor") || lower.includes("sav") || lower.includes("complete")) return 3;
   return 0;

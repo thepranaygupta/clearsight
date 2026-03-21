@@ -32,6 +32,12 @@ export async function GET(
           currentStage: scan.currentStage,
           createdAt: scan.createdAt,
           updatedAt: scan.updatedAt,
+          // Include preliminary data when available (after IntermediateStoreStage)
+          ...(scan.issues?.length ? {
+            pageTitle: scan.pageTitle,
+            pageScreenshot: scan.pageScreenshot,
+            issues: scan.issues,
+          } : {}),
         })
 
       case 'completed':

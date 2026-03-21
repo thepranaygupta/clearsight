@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScanProgress } from "@/components/scan/ScanProgress";
+import { EnrichmentBanner } from "@/components/scan/EnrichmentBanner";
 import { ScoreGauge } from "@/components/results/ScoreGauge";
 import { SummaryCard } from "@/components/results/SummaryCard";
 import { IssueTabs } from "@/components/results/IssueTabs";
@@ -130,7 +131,7 @@ function StatCard({
   );
 }
 
-function ResultsView({ scan }: { scan: ScanDetail }) {
+function ResultsView({ scan, isPreview }: { scan: ScanDetail; isPreview?: boolean }) {
   const inspector = useInspectorState();
   const summary = scan.summary;
   const issues = scan.issues ?? [];
@@ -231,16 +232,16 @@ function ResultsView({ scan }: { scan: ScanDetail }) {
         </div>
       )}
 
-      {/* Summary + positives */}
-      {summary && !isPerfect && (
+      {/* Summary + positives (hidden during preview — needs AI enrichment) */}
+      {!isPreview && summary && !isPerfect && (
         <SummaryCard
           summary={summary.summary}
           positiveFindings={summary.positiveFindings}
         />
       )}
 
-      {/* Top Priorities */}
-      {summary && summary.topPriorities.length > 0 && (
+      {/* Top Priorities (hidden during preview — needs AI enrichment) */}
+      {!isPreview && summary && summary.topPriorities.length > 0 && (
         <TopPriorities priorities={summary.topPriorities} />
       )}
 
@@ -277,6 +278,7 @@ export default function ScanDetailPage() {
     {
       refreshInterval: (data) => (isInProgress(data) ? 2000 : 0),
       revalidateOnFocus: false,
+      keepPreviousData: true,
     }
   );
 
@@ -333,6 +335,8 @@ export default function ScanDetailPage() {
 
   const isComplete =
     scan.status === "completed" || scan.status === "completed_partial";
+  const hasPreviewIssues =
+    scan.status === "running" && (scan.issues?.length ?? 0) > 0;
 
   return (
     <div className="space-y-6">
@@ -356,7 +360,18 @@ export default function ScanDetailPage() {
       </div>
 
       {/* Content */}
-      {(scan.status === "queued" || scan.status === "running") && (
+      {scan.status === "running" && hasPreviewIssues && (
+        <>
+          <EnrichmentBanner
+            progress={scan.progress}
+            currentStage={scan.currentStage}
+            onCancel={handleCancel}
+          />
+          <ResultsView scan={scan} isPreview />
+        </>
+      )}
+
+      {(scan.status === "queued" || (scan.status === "running" && !hasPreviewIssues)) && (
         <ScanProgress
           url={scan.url}
           progress={scan.progress}

@@ -1,5 +1,4 @@
 import {
-  PrismaIssueRepository,
   PrismaScanRepository,
   PrismaSummaryRepository,
 } from '@/modules/db'
@@ -24,7 +23,6 @@ export class StoreStage implements PipelineStage {
 
   async execute(context: PipelineContext): Promise<PipelineContext> {
     const scanRepo = new PrismaScanRepository()
-    const issueRepo = new PrismaIssueRepository()
     const summaryRepo = new PrismaSummaryRepository()
 
     // Map enriched issues to database records
@@ -45,8 +43,28 @@ export class StoreStage implements PipelineStage {
       elementBoundingBox: issue.boundingBox ?? null,
     }))
 
-    // Create issues in bulk
-    await issueRepo.createMany(issueInputs)
+    // Atomically replace preliminary issues with enriched ones
+    await prisma.$transaction(async (tx) => {
+      await tx.issue.deleteMany({ where: { scanId: context.scanId } })
+      await tx.issue.createMany({
+        data: issueInputs.map((issue) => ({
+          scanId: issue.scanId,
+          type: issue.type,
+          severity: issue.severity,
+          confidenceScore: issue.confidenceScore ?? null,
+          wcagCriterion: issue.wcagCriterion,
+          wcagLevel: issue.wcagLevel,
+          elementSelector: issue.elementSelector,
+          elementHtml: issue.elementHtml,
+          description: issue.description,
+          fixSuggestion: issue.fixSuggestion,
+          axeRuleId: issue.axeRuleId ?? null,
+          ruleId: issue.ruleId ?? null,
+          ruleHelp: issue.ruleHelp ?? null,
+          elementBoundingBox: issue.elementBoundingBox ?? undefined,
+        })),
+      })
+    })
 
     // Create scan summary
     if (context.summary) {

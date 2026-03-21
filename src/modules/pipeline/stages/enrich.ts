@@ -1,5 +1,6 @@
 import { createAIProvider } from '@/modules/ai'
-import type { PageContext, EnrichedIssue, ScanSummary } from '@/modules/ai/types'
+import { rawFindingsToFallbackIssues, generateFallbackSummary } from '@/modules/ai/fallback'
+import type { PageContext, EnrichedIssue } from '@/modules/ai/types'
 import type { BoundingBox } from '@/modules/scanner/types'
 import type { PipelineContext, PipelineStage } from '../types'
 
@@ -44,35 +45,8 @@ export class EnrichStage implements PipelineStage {
       )
 
       // Fall back: convert raw findings to enriched issues without LLM
-      const fallbackIssues: EnrichedIssue[] = context.rawFindings.map((finding) => ({
-        ruleId: finding.ruleId,
-        ruleHelp: finding.ruleHelp,
-        type: finding.type,
-        severity: finding.severity,
-        confidenceScore: finding.type === 'potential' ? 0.5 : null,
-        wcagCriterion: finding.wcagCriterion,
-        wcagLevel: finding.wcagLevel,
-        elementSelector: finding.elementSelector,
-        elementHtml: finding.elementHtml,
-        description: finding.description,
-        fixSuggestion: `Review and fix the ${finding.severity} accessibility issue for WCAG ${finding.wcagCriterion}.`,
-        axeRuleId: finding.engineName === 'axe-core' ? finding.ruleId : null,
-        boundingBox: finding.boundingBox ?? null,
-      }))
-
-      const fallbackSummary: ScanSummary = {
-        overallScore: calculateFallbackScore(context.rawFindings.length),
-        summary: `Accessibility scan found ${context.rawFindings.length} issue(s). AI enrichment was unavailable; results contain basic descriptions only.`,
-        topPriorities: fallbackIssues
-          .filter((i) => i.severity === 'critical' || i.severity === 'serious')
-          .slice(0, 3)
-          .map((i, idx) => ({
-            issueId: `priority-${idx}`,
-            title: `${i.severity} ${i.wcagCriterion} violation`,
-            reason: i.description,
-          })),
-        positiveFindings: [],
-      }
+      const fallbackIssues = rawFindingsToFallbackIssues(context.rawFindings)
+      const fallbackSummary = generateFallbackSummary(context.rawFindings, fallbackIssues)
 
       return {
         ...context,
@@ -81,12 +55,6 @@ export class EnrichStage implements PipelineStage {
       }
     }
   }
-}
-
-function calculateFallbackScore(issueCount: number): number {
-  // Simple heuristic: start at 100 and subtract points per issue
-  const score = Math.max(0, 100 - issueCount * 5)
-  return score
 }
 
 /** Merge bounding boxes from raw findings into enriched issues by matching ruleId + selector. */
