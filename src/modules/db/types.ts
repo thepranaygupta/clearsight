@@ -3,6 +3,7 @@ import type {
   Issue,
   ScanSummary,
   ScanStatus,
+  CrawlStatus,
   IssueType,
   Severity,
   WcagLevel,
@@ -21,6 +22,8 @@ export type ScanWithRelations = Omit<Scan, 'pageHtml'> & {
 export interface CreateScanInput {
   url: string
   metadata?: InputJsonValue
+  pageId?: string
+  crawlId?: string
 }
 
 export interface UpdateScanStatusInput {
@@ -93,4 +96,39 @@ export interface IssueRepository {
 
 export interface SummaryRepository {
   create(input: CreateSummaryInput): Promise<ScanSummary>
+}
+
+// ─── Site ────────────────────────────────────────────────────────────
+
+export interface CreateSiteInput {
+  hostname: string
+  name: string
+}
+
+// ─── Crawl ───────────────────────────────────────────────────────────
+
+export interface CreateCrawlInput {
+  siteId: string
+  maxPages?: number | null
+}
+
+export interface UpdateCrawlInput {
+  status?: CrawlStatus
+  totalPages?: number
+  scannedPages?: number
+  enrichedPages?: number
+  overallScore?: number
+  maxPages?: number
+  newIssues?: number
+  fixedIssues?: number
+  completedAt?: Date
+}
+
+// ─── Page ────────────────────────────────────────────────────────────
+
+export interface CreatePageInput {
+  siteId: string
+  url: string
+  path: string
+  firstSeenCrawlId: string
 }
