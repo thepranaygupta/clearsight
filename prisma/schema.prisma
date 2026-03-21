@@ -34,6 +34,22 @@ enum WcagLevel {
   AAA
 }
 
+enum CrawlStatus {
+  queued
+  discovering
+  scanning
+  completed
+  failed
+  cancelled
+}
+
+enum IssueStatus {
+  open
+  fixed
+  dismissed
+  cant_fix
+}
+
 model Scan {
   id             String     @id @default(uuid())
   url            String
@@ -49,10 +65,16 @@ model Scan {
   errorMessage   String?    @map("error_message")
   retryCount     Int        @default(0) @map("retry_count")
   metadata       Json?
+  pageId         String?    @map("page_id")
+  crawlId        String?    @map("crawl_id")
 
   issues  Issue[]
   summary ScanSummary?
+  page    Page?  @relation(fields: [pageId], references: [id], onDelete: SetNull)
+  crawl   Crawl? @relation(fields: [crawlId], references: [id], onDelete: Cascade)
 
+  @@index([pageId])
+  @@index([crawlId])
   @@map("scans")
 }
 
@@ -71,11 +93,20 @@ model Issue {
   axeRuleId       String?   @map("axe_rule_id")
   ruleId          String?   @map("rule_id")
   ruleHelp        String?   @map("rule_help")
-  elementBoundingBox Json?  @map("element_bounding_box")
-  createdAt       DateTime  @default(now()) @map("created_at")
+  elementBoundingBox Json?       @map("element_bounding_box")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  issueHash       String?        @map("issue_hash")
+  issueStatus     IssueStatus    @default(open) @map("issue_status")
+  pageUrl         String?        @map("page_url")
+  firstSeenScanId String?        @map("first_seen_scan_id")
+  lastSeenScanId  String?        @map("last_seen_scan_id")
+  fixedAtCrawlId  String?        @map("fixed_at_crawl_id")
 
   scan Scan @relation(fields: [scanId], references: [id], onDelete: Cascade)
 
+  @@index([issueHash])
+  @@index([issueStatus])
+  @@index([scanId, issueHash])
   @@map("issues")
 }
 
@@ -91,4 +122,59 @@ model ScanSummary {
   scan Scan @relation(fields: [scanId], references: [id], onDelete: Cascade)
 
   @@map("scan_summaries")
+}
+
+model Site {
+  id        String   @id @default(uuid())
+  hostname  String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  crawls Crawl[]
+  pages  Page[]
+
+  @@map("sites")
+}
+
+model Crawl {
+  id            String      @id @default(uuid())
+  siteId        String      @map("site_id")
+  status        CrawlStatus @default(queued)
+  totalPages    Int         @default(0) @map("total_pages")
+  scannedPages  Int         @default(0) @map("scanned_pages")
+  enrichedPages Int         @default(0) @map("enriched_pages")
+  overallScore  Float?      @map("overall_score")
+  maxPages      Int?        @map("max_pages")
+  newIssues     Int         @default(0) @map("new_issues")
+  fixedIssues   Int         @default(0) @map("fixed_issues")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  completedAt   DateTime?   @map("completed_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  site  Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  scans Scan[]
+  pages Page[] @relation("firstSeenCrawl")
+
+  @@index([siteId])
+  @@index([status])
+  @@map("crawls")
+}
+
+model Page {
+  id               String   @id @default(uuid())
+  siteId           String   @map("site_id")
+  url              String
+  path             String
+  firstSeenCrawlId String   @map("first_seen_crawl_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  site           Site   @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  firstSeenCrawl Crawl  @relation("firstSeenCrawl", fields: [firstSeenCrawlId], references: [id])
+  scans          Scan[]
+
+  @@unique([siteId, url])
+  @@index([siteId])
+  @@map("pages")
 }
