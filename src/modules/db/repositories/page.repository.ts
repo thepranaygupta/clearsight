@@ -43,7 +43,7 @@ export class PrismaPageRepository {
         scans: {
           orderBy: { createdAt: 'desc' },
           take: 5,
-          include: { summary: true },
+          include: { summary: true, _count: { select: { issues: true } } },
         },
       },
     })
