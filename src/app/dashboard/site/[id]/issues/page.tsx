@@ -397,26 +397,41 @@ export default function SiteIssuesPage() {
         </Badge>
       </div>
 
+      {/* Severity summary chips */}
+      {issues.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {(["critical", "serious", "moderate", "minor"] as Severity[]).map((sev) => {
+            const count = issues.filter((i) => i.severity === sev).length;
+            if (count === 0 && severityFilter && severityFilter !== sev) return null;
+            const meta = severityMeta[sev];
+            const isActive = severityFilter === sev;
+            return (
+              <button
+                key={sev}
+                onClick={() => updateFilters({ severity: isActive ? "" : sev })}
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-[13px] font-medium transition-colors",
+                  isActive
+                    ? "border-foreground/20 bg-foreground/5 text-foreground"
+                    : "border-border/60 text-muted-foreground hover:border-border hover:text-foreground"
+                )}
+              >
+                <span className={`size-2 rounded-full ${meta.dot}`} />
+                {meta.label}
+                <span className="ml-0.5 tabular-nums text-muted-foreground">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* Filters row */}
       <div className="flex flex-wrap items-center gap-2">
-        {/* Severity filter */}
-        <select
-          value={severityFilter}
-          onChange={(e) => updateFilters({ severity: e.target.value })}
-          className="h-8 rounded-lg border border-border/60 bg-background px-2.5 text-sm text-foreground outline-none transition-colors hover:border-border focus:border-ring focus:ring-2 focus:ring-ring/50"
-        >
-          <option value="">All Severities</option>
-          <option value="critical">Critical</option>
-          <option value="serious">Serious</option>
-          <option value="moderate">Moderate</option>
-          <option value="minor">Minor</option>
-        </select>
-
         {/* Status filter */}
         <select
           value={statusFilter}
           onChange={(e) => updateFilters({ status: e.target.value })}
-          className="h-8 rounded-lg border border-border/60 bg-background px-2.5 text-sm text-foreground outline-none transition-colors hover:border-border focus:border-ring focus:ring-2 focus:ring-ring/50"
+          className="h-8 rounded-lg border border-border/60 bg-background px-2.5 text-[13px] text-foreground outline-none transition-colors hover:border-border focus:border-ring focus:ring-2 focus:ring-ring/50"
         >
           <option value="">All Statuses</option>
           <option value="open">Open</option>
@@ -431,7 +446,7 @@ export default function SiteIssuesPage() {
             updateFilters({ showDismissed: showDismissed ? "" : "true" })
           }
           className={cn(
-            "inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-sm transition-colors",
+            "inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-[13px] transition-colors",
             showDismissed
               ? "border-foreground/20 bg-foreground/5 text-foreground"
               : "border-border/60 text-muted-foreground hover:border-border hover:text-foreground"

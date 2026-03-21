@@ -26,9 +26,10 @@ interface SidebarProps {
   activeScanId?: string;
   activeSiteId?: string;
   onNewScan?: () => void;
+  onNavigate?: () => void;
 }
 
-export function Sidebar({ activeScanId, activeSiteId, onNewScan }: SidebarProps) {
+export function Sidebar({ activeScanId, activeSiteId, onNewScan, onNavigate }: SidebarProps) {
   const [search, setSearch] = useState("");
 
   const { data: sitesData } = useSWR<{ sites: Site[] }>(
@@ -87,6 +88,7 @@ export function Sidebar({ activeScanId, activeSiteId, onNewScan }: SidebarProps)
                 <Link
                   key={site.id}
                   href={`/dashboard/site/${site.id}`}
+                  onClick={onNavigate}
                   className={cn(
                     "relative flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] transition-colors",
                     isActive
