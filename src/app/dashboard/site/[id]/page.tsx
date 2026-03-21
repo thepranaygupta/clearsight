@@ -217,23 +217,34 @@ export default function SiteOverviewPage() {
             <div className="shrink-0">
               <ScoreGauge score={latestCrawl.overallScore} size={150} strokeWidth={10} />
             </div>
-            <div className="flex flex-1 flex-wrap gap-3">
-              <div className="flex flex-col items-center rounded-xl bg-muted/30 px-5 py-3">
-                <span className="font-mono text-2xl font-bold tabular-nums text-foreground">
-                  {latestCrawl.scannedPages}
-                </span>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-                  Pages scanned
-                </span>
+            <div className="flex flex-1 flex-col gap-3">
+              <div className="flex flex-wrap gap-3">
+                <div className="flex flex-col items-center rounded-xl bg-muted/30 px-5 py-3">
+                  <span className="font-mono text-2xl font-bold tabular-nums text-foreground">
+                    {latestCrawl.scannedPages}
+                  </span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                    Pages scanned
+                  </span>
+                </div>
+                <div className="flex flex-col items-center rounded-xl bg-muted/30 px-5 py-3">
+                  <span className="font-mono text-2xl font-bold tabular-nums text-foreground">
+                    {latestCrawl.totalPages}
+                  </span>
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                    Total pages
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-col items-center rounded-xl bg-muted/30 px-5 py-3">
-                <span className="font-mono text-2xl font-bold tabular-nums text-foreground">
-                  {latestCrawl.totalPages}
-                </span>
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-                  Total pages
-                </span>
-              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push(`/dashboard/site/${siteId}/pages`)}
+                className="w-fit gap-1.5 text-xs"
+              >
+                <FileText className="size-3" />
+                View all pages
+              </Button>
             </div>
           </div>
           <div className="border-t border-border/30 px-6 py-2.5 sm:px-8">
