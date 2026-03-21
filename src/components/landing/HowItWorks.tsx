@@ -1,37 +1,45 @@
-import { Globe, Scan, Brain, FileBarChart } from "lucide-react";
+import { Globe, Scan, Brain, FileBarChart, ArrowDown } from "lucide-react";
 
 const steps = [
   {
     num: "01",
     icon: Globe,
-    title: "Enter your URL",
+    title: "Discover every page",
     description:
-      "Paste any website URL. We follow every internal link and parse sitemaps to discover all pages automatically.",
-    accent: "from-[#E90029]/20 to-transparent",
+      "Enter a URL. ClearSight follows every internal link, parses sitemaps, and builds a complete map of your site. Same-origin only, fully automated.",
+    detail: "BFS crawl · sitemap.xml · URL normalization",
+    color: "text-[#E90029]",
+    bg: "bg-[#E90029]/[0.06]",
   },
   {
     num: "02",
     icon: Scan,
-    title: "We crawl & analyze",
+    title: "Scan with real browsers",
     description:
-      "Each page is rendered in a real Chromium browser, then tested against 50+ WCAG 2.1 rules. Concurrently.",
-    accent: "from-orange-500/15 to-transparent",
+      "Each page is rendered in headless Chromium, then checked against 50+ WCAG 2.1 rules using axe-core. Custom engines catch link text and touch target issues too.",
+    detail: "Playwright · axe-core · 3 concurrent browsers",
+    color: "text-orange-600",
+    bg: "bg-orange-600/[0.06]",
   },
   {
     num: "03",
     icon: Brain,
-    title: "AI enriches results",
+    title: "Enrich with AI",
     description:
-      "Every issue gets an AI-generated explanation, confidence score, and actionable fix suggestion.",
-    accent: "from-violet-500/15 to-transparent",
+      "Every issue gets an AI-generated explanation in plain English, a step-by-step fix suggestion, and a confidence score. No more cryptic rule IDs.",
+    detail: "Azure OpenAI · confidence scoring · graceful fallback",
+    color: "text-violet-600",
+    bg: "bg-violet-600/[0.06]",
   },
   {
     num: "04",
     icon: FileBarChart,
-    title: "Actionable report",
+    title: "Act on the results",
     description:
-      "See your score. Drill into issues. Compare across crawls. Export to PDF or Excel.",
-    accent: "from-emerald-500/15 to-transparent",
+      "See your score, drill into issues by severity, track what's new or fixed across crawls, and export PDF or Excel reports for stakeholders.",
+    detail: "0-100 score · issue tracking · PDF & Excel export",
+    color: "text-emerald-600",
+    bg: "bg-emerald-600/[0.06]",
   },
 ];
 
@@ -39,46 +47,56 @@ export function HowItWorks() {
   return (
     <section className="py-24">
       <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-16">
+        <div className="mb-16 max-w-lg">
           <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#E90029]">
             How it works
           </p>
-          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+          <h2 className="mt-3 text-[clamp(1.8rem,3.5vw,2.5rem)] font-extrabold tracking-[-0.02em] text-foreground">
             URL in. Audit out.
           </h2>
-          <p className="mt-3 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+          <p className="mt-3 text-[15px] leading-[1.7] text-muted-foreground">
             Four stages, fully automated. Most sites complete in under two minutes.
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {steps.map((step) => {
+        {/* Vertical timeline */}
+        <div className="relative">
+          {steps.map((step, i) => {
             const Icon = step.icon;
+            const isLast = i === steps.length - 1;
             return (
-              <div
-                key={step.num}
-                className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-500 hover:border-border hover:shadow-xl hover:shadow-black/[0.03]"
-              >
-                {/* Gradient accent top */}
-                <div className={`h-1 w-full bg-gradient-to-r ${step.accent}`} />
+              <div key={step.num} className="relative pb-12 last:pb-0">
+                {/* Connector line */}
+                {!isLast && (
+                  <div className="absolute top-14 bottom-0 left-5 w-px bg-gradient-to-b from-border to-border/20 sm:left-6" />
+                )}
 
-                <div className="p-6">
-                  {/* Number + Icon row */}
-                  <div className="mb-5 flex items-center justify-between">
-                    <span className="font-mono text-[32px] font-black leading-none text-foreground/[0.06]">
-                      {step.num}
-                    </span>
-                    <div className="flex size-10 items-center justify-center rounded-xl bg-muted/80 transition-colors duration-300 group-hover:bg-[#E90029]/[0.08]">
-                      <Icon className="size-[18px] text-muted-foreground transition-colors duration-300 group-hover:text-[#E90029]" />
+                <div className="flex gap-5 sm:gap-8">
+                  {/* Icon column */}
+                  <div className="relative shrink-0">
+                    <div className={`flex size-10 items-center justify-center rounded-xl ${step.bg} sm:size-12`}>
+                      <Icon className={`size-[18px] ${step.color} sm:size-5`} />
                     </div>
+                    {!isLast && (
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2">
+                        <ArrowDown className="size-3 text-border" />
+                      </div>
+                    )}
                   </div>
 
-                  <h3 className="mb-2 text-[15px] font-bold text-foreground">
-                    {step.title}
-                  </h3>
-                  <p className="text-[13px] leading-[1.7] text-muted-foreground">
-                    {step.description}
-                  </p>
+                  {/* Content */}
+                  <div className="min-w-0 flex-1 pt-1">
+                    <div className="mb-1 flex items-baseline gap-3">
+                      <span className="font-mono text-[11px] font-bold text-muted-foreground/30">{step.num}</span>
+                      <h3 className="text-[17px] font-bold text-foreground">{step.title}</h3>
+                    </div>
+                    <p className="max-w-lg text-[14px] leading-[1.7] text-muted-foreground">
+                      {step.description}
+                    </p>
+                    <p className="mt-2 font-mono text-[11px] text-muted-foreground/40">
+                      {step.detail}
+                    </p>
+                  </div>
                 </div>
               </div>
             );
