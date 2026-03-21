@@ -94,5 +94,15 @@ services:
         condition: service_healthy
     command: pnpm bull-board
 
+  docs:
+    image: node:20-slim
+    working_dir: /app
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./docs-site:/app
+      - /app/node_modules
+    command: sh -c "npm install -g pnpm@latest && pnpm install && pnpm dev"
+
 volumes:
   pgdata:
