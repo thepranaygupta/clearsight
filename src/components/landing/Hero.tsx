@@ -120,8 +120,8 @@ export function Hero() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
-            Find every accessibility issue.{" "}
-            <span className="text-[#E90029]">Fix them with AI.</span>
+            Your website has accessibility issues.{" "}
+            <span className="text-[#E90029]">We&apos;ll find every one.</span>
           </motion.h1>
 
           <motion.p
