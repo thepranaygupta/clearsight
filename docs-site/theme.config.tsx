@@ -1,6 +1,4 @@
-import type { DocsThemeConfig } from 'nextra-theme-docs'
-
-const config: DocsThemeConfig = {
+const config = {
   logo: (
     <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
