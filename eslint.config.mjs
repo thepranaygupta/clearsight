@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Sub-packages (separate projects with own configs)
+    "docs-site/**",
+    "bull-board/**",
   ]),
 ]);
 

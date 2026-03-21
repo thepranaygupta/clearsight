@@ -156,6 +156,20 @@ export default function SiteOverviewPage() {
   const pages = pagesData?.pages;
   const totalPages = pagesData?.total ?? 0;
 
+  // Fetch issues for severity breakdown
+  const { data: issuesData } = useSWR<{ issues: Array<{ severity: string }>; total: number }>(
+    siteId ? `/api/sites/${siteId}/issues?limit=50` : null,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+  const totalIssues = issuesData?.total ?? 0;
+  const sevCounts = issuesData?.issues ? {
+    critical: issuesData.issues.filter((i) => i.severity === "critical").length,
+    serious: issuesData.issues.filter((i) => i.severity === "serious").length,
+    moderate: issuesData.issues.filter((i) => i.severity === "moderate").length,
+    minor: issuesData.issues.filter((i) => i.severity === "minor").length,
+  } : null;
+
   async function handleCrawl() {
     setCrawling(true);
     try {
@@ -242,36 +256,77 @@ export default function SiteOverviewPage() {
         </Button>
       </div>
 
-      {/* Score card */}
+      {/* Score + stats */}
       {latestCrawl && latestCrawl.overallScore !== null && (
         <div className="rounded-2xl border border-border/40 bg-card">
-          <div className="flex flex-col items-center gap-6 p-6 sm:flex-row sm:gap-8 sm:p-8">
+          <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:gap-8 sm:p-8">
             <div className="shrink-0">
-              <ScoreGauge score={latestCrawl.overallScore} size={150} strokeWidth={10} />
+              <ScoreGauge score={latestCrawl.overallScore} size={130} strokeWidth={10} />
             </div>
-            <div className="flex flex-1 flex-col gap-4">
-              <div className="flex flex-wrap gap-3">
-                <div className="flex flex-col items-center rounded-xl bg-muted/30 px-5 py-3">
-                  <span className="font-mono text-2xl font-bold tabular-nums text-foreground">
-                    {latestCrawl.scannedPages}
-                  </span>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-                    Pages scanned
-                  </span>
+            <div className="flex-1 space-y-4">
+              {/* Stats row */}
+              <div className="flex flex-wrap gap-6">
+                <div>
+                  <div className="text-2xl font-extrabold tabular-nums text-foreground">{totalIssues}</div>
+                  <div className="text-[11px] text-muted-foreground">Total issues</div>
                 </div>
-                <div className="flex flex-col items-center rounded-xl bg-muted/30 px-5 py-3">
-                  <span className="font-mono text-2xl font-bold tabular-nums text-foreground">
-                    {latestCrawl.totalPages}
-                  </span>
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-                    Total pages
-                  </span>
+                <div>
+                  <div className="text-2xl font-extrabold tabular-nums text-foreground">{pageCount}</div>
+                  <div className="text-[11px] text-muted-foreground">Pages</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-extrabold tabular-nums text-foreground">{latestCrawl.overallScore}</div>
+                  <div className="text-[11px] text-muted-foreground">Score</div>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground/50">
-                Latest crawl {relativeTime(latestCrawl.completedAt ?? latestCrawl.createdAt)}
-              </p>
+
+              {/* Severity chips */}
+              {sevCounts && totalIssues > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {sevCounts.critical > 0 && (
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-red-50 px-2 py-1 text-[11px] font-semibold text-red-700">
+                      <span className="size-1.5 rounded-full bg-red-500" />{sevCounts.critical} critical
+                    </span>
+                  )}
+                  {sevCounts.serious > 0 && (
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-orange-50 px-2 py-1 text-[11px] font-semibold text-orange-700">
+                      <span className="size-1.5 rounded-full bg-orange-500" />{sevCounts.serious} serious
+                    </span>
+                  )}
+                  {sevCounts.moderate > 0 && (
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-yellow-50 px-2 py-1 text-[11px] font-semibold text-yellow-700">
+                      <span className="size-1.5 rounded-full bg-yellow-500" />{sevCounts.moderate} moderate
+                    </span>
+                  )}
+                  {sevCounts.minor > 0 && (
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2 py-1 text-[11px] font-semibold text-blue-700">
+                      <span className="size-1.5 rounded-full bg-blue-400" />{sevCounts.minor} minor
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Quick links */}
+              <div className="flex gap-4">
+                <button
+                  onClick={() => router.push(`/dashboard/site/${siteId}/issues`)}
+                  className="text-[12px] font-semibold text-[#E90029] transition-colors hover:text-[#D10025]"
+                >
+                  View all issues &rarr;
+                </button>
+                <button
+                  onClick={() => router.push(`/dashboard/site/${siteId}/pages`)}
+                  className="text-[12px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  View all pages &rarr;
+                </button>
+              </div>
             </div>
+          </div>
+          <div className="border-t border-border/30 px-6 py-2.5 sm:px-8">
+            <p className="text-xs text-muted-foreground/50">
+              Latest crawl {relativeTime(latestCrawl.completedAt ?? latestCrawl.createdAt)}
+            </p>
           </div>
         </div>
       )}
