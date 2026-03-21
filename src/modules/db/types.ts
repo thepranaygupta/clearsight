@@ -55,6 +55,10 @@ export interface CreateIssueInput {
   ruleId?: string | null
   ruleHelp?: string | null
   elementBoundingBox?: { x: number; y: number; width: number; height: number } | null
+  issueHash?: string | null
+  pageUrl?: string | null
+  firstSeenScanId?: string | null
+  lastSeenScanId?: string | null
 }
 
 export interface CreateSummaryInput {

@@ -49,9 +49,6 @@ services:
     command: sh -c "npx prisma db push && pnpm dev"
 
   worker:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
     image: clearsight-dev
     volumes:
       - .:/app
@@ -72,9 +69,6 @@ services:
     command: pnpm worker
 
   bull-board:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
     image: clearsight-dev
     ports:
       - "3001:3001"
