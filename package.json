@@ -16,7 +16,7 @@
     "docker:up": "docker compose up --build",
     "docker:down": "docker compose down",
     "bull-board": "cd bull-board && tsx index.ts",
-    "docs": "cd docs-site && pnpm dev"
+    "docs:dev": "cd docs-site && pnpm dev"
   },
   "dependencies": {
     "@axe-core/playwright": "^4.11.1",
