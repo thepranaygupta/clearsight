@@ -157,13 +157,32 @@ export default function CrawlDetailPage() {
     crawl?.status === "discovering" ||
     crawl?.status === "scanning";
 
-  // Fetch pages for this site (shown in completed state)
+  // Fetch pages and issues for completed crawl
+  const isCompleted = crawl?.status === "completed";
   const { data: pagesData } = useSWR<{ pages: PageSummary[]; total: number }>(
-    siteId && crawl?.status === "completed" ? `/api/sites/${siteId}/pages` : null,
+    siteId && isCompleted ? `/api/sites/${siteId}/pages` : null,
     fetcher,
     { revalidateOnFocus: false }
   );
   const pages = pagesData?.pages;
+
+  const { data: issuesData } = useSWR<{ issues: Array<{ id: string; severity: string; description: string; wcagCriterion: string; pageUrl: string | null; issueStatus: string }>; total: number }>(
+    siteId && isCompleted ? `/api/sites/${siteId}/issues?limit=10` : null,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+  const topIssues = issuesData?.issues;
+  const totalIssues = issuesData?.total ?? 0;
+
+  // Severity counts from issues
+  const severityCounts = topIssues
+    ? {
+        critical: topIssues.filter((i) => i.severity === "critical").length,
+        serious: topIssues.filter((i) => i.severity === "serious").length,
+        moderate: topIssues.filter((i) => i.severity === "moderate").length,
+        minor: topIssues.filter((i) => i.severity === "minor").length,
+      }
+    : null;
 
   async function handleCancel() {
     setCancelling(true);
@@ -367,60 +386,120 @@ export default function CrawlDetailPage() {
             </div>
           </div>
 
-          {/* Action buttons */}
-          <div className="flex flex-wrap gap-2">
-            <Button
-              onClick={() => router.push(`/dashboard/site/${siteId}/issues`)}
-              className="gap-2"
-            >
-              <Bug className="size-4" />
-              View All Issues ({crawl.newIssues})
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => router.push(`/dashboard/site/${siteId}/pages`)}
-              className="gap-2"
-            >
-              <FileText className="size-4" />
-              View All Pages ({crawl.totalPages})
-            </Button>
-          </div>
-
-          {/* Pages scanned with scores */}
-          {pages && pages.length > 0 && (
+          {/* Two-column layout: Issues summary + Pages scanned */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            {/* Left: Issues */}
             <div>
-              <h3 className="mb-3 text-sm font-bold text-foreground">Pages scanned</h3>
-              <div className="space-y-1.5">
-                {pages.map((page) => {
-                  const latestScan = page.scans?.[0];
-                  const score = latestScan?.summary?.overallScore ?? null;
-                  const issueCount = latestScan?._count?.issues ?? 0;
-                  return (
-                    <button
-                      key={page.id}
-                      onClick={() => router.push(`/dashboard/site/${siteId}/page/${page.id}`)}
-                      className="flex w-full items-center gap-3 rounded-xl border border-border/40 bg-card p-3 text-left transition-colors hover:bg-muted/30"
-                    >
-                      {score !== null ? (
-                        <ScoreGauge score={score} size={36} strokeWidth={3} />
-                      ) : (
-                        <div className="flex size-9 items-center justify-center rounded-full bg-muted/50">
-                          <FileText className="size-4 text-muted-foreground/50" />
-                        </div>
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[13px] font-medium text-foreground">{page.path}</p>
-                        <p className="text-[11px] text-muted-foreground">
-                          {issueCount} {issueCount === 1 ? "issue" : "issues"}
-                          {score !== null && <> · Score: {score}</>}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-bold text-foreground">Issues found</h3>
+                <button
+                  onClick={() => router.push(`/dashboard/site/${siteId}/issues`)}
+                  className="text-[12px] font-semibold text-[#E90029] transition-colors hover:text-[#D10025]"
+                >
+                  View all {totalIssues} &rarr;
+                </button>
               </div>
+
+              {/* Severity breakdown */}
+              {severityCounts && (
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {severityCounts.critical > 0 && (
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-red-50 px-2 py-1 text-[12px] font-semibold text-red-700">
+                      <span className="size-1.5 rounded-full bg-red-500" />{severityCounts.critical} critical
+                    </span>
+                  )}
+                  {severityCounts.serious > 0 && (
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-orange-50 px-2 py-1 text-[12px] font-semibold text-orange-700">
+                      <span className="size-1.5 rounded-full bg-orange-500" />{severityCounts.serious} serious
+                    </span>
+                  )}
+                  {severityCounts.moderate > 0 && (
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-yellow-50 px-2 py-1 text-[12px] font-semibold text-yellow-700">
+                      <span className="size-1.5 rounded-full bg-yellow-500" />{severityCounts.moderate} moderate
+                    </span>
+                  )}
+                  {severityCounts.minor > 0 && (
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2 py-1 text-[12px] font-semibold text-blue-700">
+                      <span className="size-1.5 rounded-full bg-blue-400" />{severityCounts.minor} minor
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Top issues list */}
+              {topIssues && topIssues.length > 0 && (
+                <div className="space-y-1">
+                  {topIssues.map((issue) => {
+                    const dotColor =
+                      issue.severity === "critical" ? "bg-red-500" :
+                      issue.severity === "serious" ? "bg-orange-500" :
+                      issue.severity === "moderate" ? "bg-yellow-500" : "bg-blue-400";
+                    return (
+                      <div
+                        key={issue.id}
+                        className="flex items-start gap-2.5 rounded-lg border border-border/30 bg-card p-3"
+                      >
+                        <span className={`mt-1.5 size-1.5 shrink-0 rounded-full ${dotColor}`} />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[13px] leading-snug text-foreground/90 line-clamp-2">{issue.description}</p>
+                          <p className="mt-1 flex items-center gap-2 text-[11px] text-muted-foreground">
+                            <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px]">{issue.wcagCriterion}</span>
+                            {issue.pageUrl && (
+                              <span className="truncate">{new URL(issue.pageUrl).pathname}</span>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Right: Pages scanned */}
+            <div>
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="text-sm font-bold text-foreground">Pages scanned</h3>
+                <button
+                  onClick={() => router.push(`/dashboard/site/${siteId}/pages`)}
+                  className="text-[12px] font-semibold text-[#E90029] transition-colors hover:text-[#D10025]"
+                >
+                  View all {crawl.totalPages} &rarr;
+                </button>
+              </div>
+
+              {pages && pages.length > 0 && (
+                <div className="space-y-1.5">
+                  {pages.map((page) => {
+                    const latestScan = page.scans?.[0];
+                    const score = latestScan?.summary?.overallScore ?? null;
+                    const issueCount = latestScan?._count?.issues ?? 0;
+                    return (
+                      <button
+                        key={page.id}
+                        onClick={() => router.push(`/dashboard/site/${siteId}/page/${page.id}`)}
+                        className="flex w-full items-center gap-3 rounded-lg border border-border/30 bg-card p-3 text-left transition-colors hover:bg-muted/20"
+                      >
+                        {score !== null ? (
+                          <ScoreGauge score={score} size={36} strokeWidth={3} />
+                        ) : (
+                          <div className="flex size-9 items-center justify-center rounded-full bg-muted/50">
+                            <FileText className="size-4 text-muted-foreground/50" />
+                          </div>
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[13px] font-medium text-foreground">{page.path}</p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {issueCount} {issueCount === 1 ? "issue" : "issues"}
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
         </>
       )}
 
