@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Scan, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { LogoFull } from "@/components/Logo";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -20,12 +21,9 @@ export function Navbar() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex items-center gap-2 text-foreground transition-opacity hover:opacity-80"
+          className="text-foreground transition-opacity hover:opacity-80"
         >
-          <div className="flex size-7 items-center justify-center rounded-lg bg-primary">
-            <Scan className="size-3.5 text-primary-foreground" strokeWidth={2.5} />
-          </div>
-          <span className="text-sm font-bold tracking-tight">ClearSight</span>
+          <LogoFull size={28} />
         </Link>
 
         {/* Nav links */}

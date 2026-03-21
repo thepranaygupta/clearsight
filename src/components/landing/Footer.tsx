@@ -1,16 +1,11 @@
 import Link from "next/link";
-import { Scan } from "lucide-react";
+import { LogoFull } from "@/components/Logo";
 
 export function Footer() {
   return (
     <footer className="border-t border-border/30 py-10">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 sm:flex-row">
-        <div className="flex items-center gap-2 text-muted-foreground">
-          <div className="flex size-6 items-center justify-center rounded-md bg-primary/10">
-            <Scan className="size-3 text-primary" strokeWidth={2.5} />
-          </div>
-          <span className="text-xs font-semibold">ClearSight</span>
-        </div>
+        <LogoFull size={20} className="text-muted-foreground" />
 
         <div className="flex items-center gap-6">
           <Link

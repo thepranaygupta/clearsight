@@ -1,7 +1,13 @@
 import type { DocsThemeConfig } from 'nextra-theme-docs'
 
 const config: DocsThemeConfig = {
-  logo: <span style={{ fontWeight: 700, fontSize: 14 }}>ClearSight Docs</span>,
+  logo: (
+    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/icon.svg" alt="ClearSight" width={22} height={22} />
+      <span style={{ fontWeight: 700, fontSize: 14 }}>ClearSight Docs</span>
+    </span>
+  ),
   project: {
     link: 'https://github.com/thepranaygupta/clearsight',
   },

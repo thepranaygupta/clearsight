@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Plus, Scan, Globe } from "lucide-react";
+import { Plus, Globe } from "lucide-react";
+import { LogoFull } from "@/components/Logo";
 import useSWR from "swr";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ScanHistory, ScanSearch } from "@/components/scan/ScanHistory";
@@ -40,11 +41,8 @@ export function Sidebar({ activeScanId, activeSiteId, onNewScan }: SidebarProps)
   return (
     <aside className="flex h-screen w-[264px] shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
       {/* Header */}
-      <div className="flex h-[52px] items-center gap-2 px-4">
-        <Scan className="size-4 text-sidebar-primary" strokeWidth={2.5} />
-        <span className="text-[14px] font-semibold tracking-tight text-sidebar-foreground">
-          ClearSight
-        </span>
+      <div className="flex h-[52px] items-center px-4">
+        <LogoFull size={20} />
       </div>
 
       {/* New scan button */}
