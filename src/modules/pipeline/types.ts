@@ -11,6 +11,9 @@ export interface PipelineContext {
   enrichedIssues: EnrichedIssue[]
   summary?: ScanSummary
   pageHtml?: string
+  crawlId?: string
+  pageId?: string
+  siteId?: string
 }
 
 export interface PipelineStage {
