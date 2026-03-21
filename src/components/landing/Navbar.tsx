@@ -18,15 +18,10 @@ export function Navbar() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
       <nav className="mx-auto flex h-14 max-w-6xl items-center justify-between px-6">
-        {/* Logo */}
-        <Link
-          href="/"
-          className="text-foreground transition-opacity hover:opacity-80"
-        >
+        <Link href="/" className="transition-opacity hover:opacity-80">
           <LogoFull size={28} />
         </Link>
 
-        {/* Nav links */}
         <div className="hidden items-center gap-1 sm:flex">
           {navLinks.map((link) => (
             <Link
@@ -45,7 +40,6 @@ export function Navbar() {
           ))}
         </div>
 
-        {/* CTA */}
         <Link
           href="/dashboard"
           className="group flex items-center gap-1.5 rounded-lg bg-foreground px-3.5 py-1.5 text-[13px] font-semibold text-background transition-all hover:opacity-90"

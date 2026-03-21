@@ -14,35 +14,35 @@ const faqs = [
   },
   {
     q: "How long does a full site crawl take?",
-    a: "It depends on the number of pages. A 10-page site typically completes in under 2 minutes. We run up to 3 concurrent Playwright browsers and 2 parallel AI enrichment calls to maximize throughput.",
+    a: "It depends on the number of pages. A 10-page site typically completes in under 2 minutes. We run up to 3 concurrent browsers and 2 parallel AI enrichment calls to maximize throughput.",
   },
   {
     q: "What's the difference between confirmed and potential issues?",
-    a: "Confirmed issues are definite WCAG violations detected automatically (e.g., missing alt text). Potential issues are flagged for human review — the tool suspects a violation but can't be certain without manual verification.",
+    a: "Confirmed issues are definite WCAG violations detected automatically (e.g., missing alt text). Potential issues need human review — the tool suspects a violation but can't be certain without manual verification.",
   },
   {
     q: "How does AI enrichment work?",
-    a: "After axe-core identifies issues, we send them to Azure OpenAI for enrichment. The AI generates human-readable descriptions, actionable fix suggestions, and confidence scores for each issue.",
+    a: "After axe-core identifies issues, we send them to Azure OpenAI. The AI generates human-readable descriptions, actionable fix suggestions, and confidence scores for each issue. If AI is unavailable, scans still complete with basic descriptions.",
   },
   {
     q: "Can I track issues across multiple crawls?",
-    a: "Yes. Each issue gets a deterministic hash based on the rule, element, and page. When you re-crawl, ClearSight compares hashes to show which issues are new, fixed, or recurring.",
+    a: "Yes. Each issue gets a deterministic hash based on the rule, element, and page. When you re-crawl, ClearSight shows which issues are new, fixed, or recurring — and carries over any dismissals.",
   },
   {
-    q: "What export formats are supported?",
+    q: "What export formats are available?",
     a: "PDF reports with AI-generated executive summaries, and Excel spreadsheets with filterable issue data across multiple sheets. Both include full issue details, WCAG references, and fix suggestions.",
   },
 ];
 
 export function FAQSection() {
   return (
-    <section className="border-t border-border/30 bg-muted/20 py-20">
+    <section className="py-24">
       <div className="mx-auto max-w-3xl px-6">
-        <div className="mb-10 text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary/60">
+        <div className="mb-12 text-center">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#E90029]">
             FAQ
           </p>
-          <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
             Common questions
           </h2>
         </div>
@@ -52,12 +52,12 @@ export function FAQSection() {
             <AccordionItem
               key={i}
               value={`faq-${i}`}
-              className="rounded-xl border border-border/40 bg-card px-5 data-[state=open]:border-primary/20"
+              className="rounded-xl border border-border/50 bg-card px-6 transition-colors data-[state=open]:border-[#E90029]/20 data-[state=open]:bg-card/80"
             >
-              <AccordionTrigger className="py-4 text-left text-sm font-semibold text-foreground hover:no-underline">
+              <AccordionTrigger className="py-5 text-left text-[15px] font-semibold text-foreground hover:no-underline">
                 {faq.q}
               </AccordionTrigger>
-              <AccordionContent className="pb-4 text-[13px] leading-relaxed text-muted-foreground">
+              <AccordionContent className="pb-5 text-[14px] leading-[1.7] text-muted-foreground">
                 {faq.a}
               </AccordionContent>
             </AccordionItem>

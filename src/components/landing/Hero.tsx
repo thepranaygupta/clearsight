@@ -2,14 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Loader2, Shield, Zap, Brain, FileBarChart } from "lucide-react";
-
-const stats = [
-  { icon: Shield, value: "50+", label: "WCAG rules" },
-  { icon: Brain, value: "AI", label: "Fix suggestions" },
-  { icon: Zap, value: "Full", label: "Site crawl" },
-  { icon: FileBarChart, value: "PDF", label: "& Excel reports" },
-];
+import { ArrowRight, Loader2 } from "lucide-react";
 
 export function Hero() {
   const router = useRouter();
@@ -22,7 +15,6 @@ export function Hero() {
     setLoading(true);
 
     try {
-      // Create site and start crawl
       const siteRes = await fetch("/api/sites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -42,7 +34,6 @@ export function Hero() {
         }
       }
 
-      // Fallback: go to dashboard with URL
       router.push(`/dashboard`);
     } catch {
       router.push(`/dashboard`);
@@ -51,94 +42,131 @@ export function Hero() {
   }
 
   return (
-    <section className="relative overflow-hidden pt-28 pb-20">
-      {/* Background texture */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(var(--primary)/0.08),transparent)]" />
-        <div
-          className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-      </div>
+    <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28">
+      <div className="mx-auto max-w-6xl px-6">
+        {/* Two-column hero: text left, mockup right */}
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Left: Copy */}
+          <div>
+            <h1 className="text-[clamp(2.2rem,5vw,3.5rem)] leading-[1.1] font-extrabold tracking-[-0.025em] text-foreground">
+              Find every
+              <br />
+              accessibility issue.
+              <br />
+              <span className="text-[#E90029]">Fix them with AI.</span>
+            </h1>
 
-      <div className="relative mx-auto max-w-6xl px-6">
-        {/* Badge */}
-        <div className="mb-8 flex justify-center">
-          <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-primary/[0.04] px-4 py-1.5">
-            <Shield className="size-3.5 text-primary" />
-            <span className="text-xs font-semibold text-primary">
-              WCAG 2.1 Level A & AA
-            </span>
-          </div>
-        </div>
+            <p className="mt-6 max-w-md text-[16px] leading-[1.7] text-muted-foreground">
+              ClearSight crawls your entire website, checks every page against
+              WCAG 2.1, and generates AI-powered fix suggestions — so you know
+              exactly what to change and why.
+            </p>
 
-        {/* Headline */}
-        <div className="mx-auto max-w-3xl text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-            Full-site accessibility
-            <br />
-            <span className="text-primary">audits, powered by AI</span>
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Crawl every page. Find every issue. Get AI-generated fix suggestions
-            with confidence scores — all in one scan.
-          </p>
-        </div>
-
-        {/* URL Input */}
-        <form
-          onSubmit={handleSubmit}
-          className="mx-auto mt-10 flex max-w-xl flex-col gap-2 sm:flex-row"
-        >
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://example.com"
-              className="h-12 w-full rounded-xl border border-border bg-card px-4 pr-4 text-sm text-foreground shadow-sm placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
-              disabled={loading}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={loading || !url.trim()}
-            className="group flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-90 disabled:opacity-50"
-          >
-            {loading ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <>
-                Start scanning
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-              </>
-            )}
-          </button>
-        </form>
-
-        {/* Stats strip */}
-        <div className="mx-auto mt-14 grid max-w-2xl grid-cols-2 gap-4 sm:grid-cols-4">
-          {stats.map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={stat.label}
-                className="flex flex-col items-center gap-2 rounded-xl border border-border/40 bg-card/50 p-4"
-              >
-                <Icon className="size-5 text-primary/70" />
-                <span className="text-lg font-bold tracking-tight text-foreground">
-                  {stat.value}
-                </span>
-                <span className="text-[11px] font-medium text-muted-foreground">
-                  {stat.label}
-                </span>
+            {/* Inline stats */}
+            <div className="mt-8 flex gap-8">
+              <div>
+                <div className="text-2xl font-extrabold tracking-tight text-foreground">50+</div>
+                <div className="text-[12px] text-muted-foreground">WCAG rules</div>
               </div>
-            );
-          })}
+              <div className="h-10 w-px bg-border" />
+              <div>
+                <div className="text-2xl font-extrabold tracking-tight text-foreground">3x</div>
+                <div className="text-[12px] text-muted-foreground">Parallel scanners</div>
+              </div>
+              <div className="h-10 w-px bg-border" />
+              <div>
+                <div className="text-2xl font-extrabold tracking-tight text-foreground">&lt;2m</div>
+                <div className="text-[12px] text-muted-foreground">Per site crawl</div>
+              </div>
+            </div>
+
+            {/* URL input */}
+            <form onSubmit={handleSubmit} className="mt-10">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="https://your-site.com"
+                  className="h-12 flex-1 rounded-xl border border-border bg-background px-4 text-[15px] text-foreground shadow-sm placeholder:text-muted-foreground/40 focus:border-[#E90029]/40 focus:outline-none focus:ring-2 focus:ring-[#E90029]/10"
+                  disabled={loading}
+                />
+                <button
+                  type="submit"
+                  disabled={loading || !url.trim()}
+                  className="group flex h-12 shrink-0 items-center gap-2 rounded-xl bg-[#E90029] px-6 text-[14px] font-semibold text-white transition-all hover:bg-[#D10025] disabled:opacity-40"
+                >
+                  {loading ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <>
+                      Scan now
+                      <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                    </>
+                  )}
+                </button>
+              </div>
+              <p className="mt-2.5 text-[12px] text-muted-foreground/50">
+                Free. No account needed. Results in minutes.
+              </p>
+            </form>
+          </div>
+
+          {/* Right: Product mockup */}
+          <div className="relative hidden lg:block">
+            {/* Subtle red glow behind */}
+            <div className="absolute -inset-8 rounded-3xl bg-[#E90029]/[0.03] blur-3xl" />
+
+            <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-2xl shadow-black/[0.06]">
+              {/* Browser chrome */}
+              <div className="flex h-9 items-center gap-1.5 border-b border-border/40 bg-muted/30 px-3">
+                <div className="size-2 rounded-full bg-border" />
+                <div className="size-2 rounded-full bg-border" />
+                <div className="size-2 rounded-full bg-border" />
+                <div className="ml-3 flex-1 rounded bg-background/60 px-2 py-0.5">
+                  <span className="text-[10px] text-muted-foreground/50">clearsight / dashboard</span>
+                </div>
+              </div>
+
+              {/* Dashboard mockup content */}
+              <div className="p-5">
+                {/* Score + header */}
+                <div className="mb-5 flex items-center gap-4">
+                  <div className="relative size-16">
+                    <svg viewBox="0 0 64 64" className="size-full -rotate-90">
+                      <circle cx="32" cy="32" r="27" fill="none" stroke="currentColor" className="text-muted/30" strokeWidth="5" />
+                      <circle
+                        cx="32" cy="32" r="27" fill="none"
+                        stroke="#E90029" strokeWidth="5" strokeLinecap="round"
+                        strokeDasharray={`${0.72 * 2 * Math.PI * 27} ${2 * Math.PI * 27}`}
+                      />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-foreground">72</span>
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-foreground">example.com</div>
+                    <div className="text-[11px] text-muted-foreground">12 pages · 47 issues found</div>
+                  </div>
+                </div>
+
+                {/* Issue list mockup */}
+                <div className="space-y-1.5">
+                  {[
+                    { dot: "bg-red-500", text: "Images must have alternate text", tag: "1.1.1" },
+                    { dot: "bg-orange-500", text: "Links must have discernible text", tag: "2.4.4" },
+                    { dot: "bg-yellow-500", text: "Elements must have sufficient color contrast", tag: "1.4.3" },
+                    { dot: "bg-blue-400", text: "Document should have one main landmark", tag: "BP" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-2.5 rounded-lg border border-border/30 bg-background p-2.5">
+                      <div className={`size-1.5 shrink-0 rounded-full ${item.dot}`} />
+                      <span className="flex-1 truncate text-[11px] text-foreground/80">{item.text}</span>
+                      <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[9px] font-mono text-muted-foreground">{item.tag}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
