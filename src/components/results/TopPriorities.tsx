@@ -26,7 +26,7 @@ export function TopPriorities({ priorities }: TopPrioritiesProps) {
 
       <div className="space-y-4">
         {priorities.map((priority, index) => (
-          <div key={priority.issueId} className="flex items-start gap-4">
+          <div key={`${priority.issueId}-${index}`} className="flex items-start gap-4">
             <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary font-mono text-sm font-bold text-primary-foreground shadow-sm shadow-primary/20">
               {index + 1}
             </div>
