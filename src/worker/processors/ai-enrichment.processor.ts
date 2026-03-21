@@ -10,6 +10,7 @@ import {
   CancelledError,
 } from '@/modules/pipeline'
 import { PrismaCrawlRepository } from '@/modules/db'
+import { computeIssueDiff } from '@/modules/crawler'
 import { prisma } from '@/modules/db/prisma'
 
 const crawlRepo = new PrismaCrawlRepository()
@@ -128,13 +129,21 @@ async function finalizeCrawl(crawlId: string) {
       ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
       : null
 
-  // Issue diff computation will be added in Phase 3
+  // Compute issue diff vs previous crawl
+  const crawl = await crawlRepo.findById(crawlId)
+  const diff = crawl
+    ? await computeIssueDiff(crawl.siteId, crawlId)
+    : { newIssues: 0, fixedIssues: 0, recurring: 0 }
 
   await crawlRepo.update(crawlId, {
     status: 'completed',
     overallScore: overallScore ?? undefined,
+    newIssues: diff.newIssues,
+    fixedIssues: diff.fixedIssues,
     completedAt: new Date(),
   })
 
-  console.log(`[AiEnrichment] Crawl ${crawlId} completed. Score: ${overallScore}`)
+  console.log(
+    `[AiEnrichment] Crawl ${crawlId} completed. Score: ${overallScore}, New: ${diff.newIssues}, Fixed: ${diff.fixedIssues}, Recurring: ${diff.recurring}`
+  )
 }
