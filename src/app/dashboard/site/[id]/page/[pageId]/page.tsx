@@ -249,10 +249,16 @@ export default function PageDetailPage() {
               )}
             </div>
           </div>
-          <div className="border-t border-border/30 px-6 py-2.5">
+          <div className="flex items-center justify-between border-t border-border/30 px-6 py-2.5">
             <p className="text-xs text-muted-foreground/50">
               Latest scan {latestScan.status === "completed" || latestScan.status === "completed_partial" ? "completed" : latestScan.status}
             </p>
+            <button
+              onClick={() => router.push(`/dashboard/scan/${latestScan.id}`)}
+              className="text-xs font-semibold text-[#E90029] transition-colors hover:text-[#D10025]"
+            >
+              View full results &rarr;
+            </button>
           </div>
         </div>
       )}

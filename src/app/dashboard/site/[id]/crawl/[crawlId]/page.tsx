@@ -19,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScoreGauge } from "@/components/results/ScoreGauge";
 import { relativeTime } from "@/lib/relative-time";
-import type { CrawlDetail, CrawlStatus } from "@/lib/types";
+import type { CrawlDetail, CrawlStatus, PageSummary } from "@/lib/types";
 
 const fetcher = (url: string) =>
   fetch(url).then((r) => {
@@ -156,6 +156,14 @@ export default function CrawlDetailPage() {
     crawl?.status === "queued" ||
     crawl?.status === "discovering" ||
     crawl?.status === "scanning";
+
+  // Fetch pages for this site (shown in completed state)
+  const { data: pagesData } = useSWR<{ pages: PageSummary[]; total: number }>(
+    siteId && crawl?.status === "completed" ? `/api/sites/${siteId}/pages` : null,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+  const pages = pagesData?.pages;
 
   async function handleCancel() {
     setCancelling(true);
@@ -362,12 +370,11 @@ export default function CrawlDetailPage() {
           {/* Action buttons */}
           <div className="flex flex-wrap gap-2">
             <Button
-              variant="outline"
               onClick={() => router.push(`/dashboard/site/${siteId}/issues`)}
               className="gap-2"
             >
               <Bug className="size-4" />
-              View All Issues
+              View All Issues ({crawl.newIssues})
             </Button>
             <Button
               variant="outline"
@@ -375,9 +382,45 @@ export default function CrawlDetailPage() {
               className="gap-2"
             >
               <FileText className="size-4" />
-              View All Pages
+              View All Pages ({crawl.totalPages})
             </Button>
           </div>
+
+          {/* Pages scanned with scores */}
+          {pages && pages.length > 0 && (
+            <div>
+              <h3 className="mb-3 text-sm font-bold text-foreground">Pages scanned</h3>
+              <div className="space-y-1.5">
+                {pages.map((page) => {
+                  const latestScan = page.scans?.[0];
+                  const score = latestScan?.summary?.overallScore ?? null;
+                  const issueCount = latestScan?._count?.issues ?? 0;
+                  return (
+                    <button
+                      key={page.id}
+                      onClick={() => router.push(`/dashboard/site/${siteId}/page/${page.id}`)}
+                      className="flex w-full items-center gap-3 rounded-xl border border-border/40 bg-card p-3 text-left transition-colors hover:bg-muted/30"
+                    >
+                      {score !== null ? (
+                        <ScoreGauge score={score} size={36} strokeWidth={3} />
+                      ) : (
+                        <div className="flex size-9 items-center justify-center rounded-full bg-muted/50">
+                          <FileText className="size-4 text-muted-foreground/50" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[13px] font-medium text-foreground">{page.path}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {issueCount} {issueCount === 1 ? "issue" : "issues"}
+                          {score !== null && <> · Score: {score}</>}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </>
       )}
 
