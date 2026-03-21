@@ -1,5 +1,9 @@
 import 'nextra-theme-docs/style.css'
 import type { Metadata } from 'next'
+import { Footer, Layout, Navbar } from 'nextra-theme-docs'
+import { Head } from 'nextra/components'
+import { getPageMap } from 'nextra/page-map'
+import themeConfig from '../theme.config'
 
 export const metadata: Metadata = {
   title: {
@@ -9,14 +13,23 @@ export const metadata: Metadata = {
   description: 'Documentation for ClearSight accessibility checker',
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>{children}</body>
+    <html lang="en" dir="ltr" suppressHydrationWarning>
+      <Head />
+      <body>
+        <Layout
+          navbar={<Navbar logo={themeConfig.logo} projectLink={themeConfig.project?.link} />}
+          footer={<Footer>{typeof themeConfig.footer?.content === 'string' ? themeConfig.footer.content : null}</Footer>}
+          pageMap={await getPageMap()}
+        >
+          {children}
+        </Layout>
+      </body>
     </html>
   )
 }
