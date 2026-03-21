@@ -1,6 +1,6 @@
 import { Worker } from 'bullmq'
 import { config } from '@/config'
-import { QUEUE_NAMES, redisConnection } from '@/modules/queue'
+import { QUEUE_NAMES, redisConnection, crawlQueue, pageScanQueue, aiEnrichmentQueue } from '@/modules/queue'
 import { processPageScan } from './processors/page-scan.processor'
 import { processAiEnrichment } from './processors/ai-enrichment.processor'
 import { processCrawlDiscovery } from './processors/crawl.processor'
@@ -55,6 +55,9 @@ async function shutdown() {
     crawlWorker.close(),
     pageScanWorker.close(),
     aiEnrichmentWorker.close(),
+    crawlQueue.close(),
+    pageScanQueue.close(),
+    aiEnrichmentQueue.close(),
   ])
   console.log('[Worker] Shutdown complete')
   process.exit(0)

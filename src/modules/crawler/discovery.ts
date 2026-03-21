@@ -4,7 +4,7 @@ import { normalizeUrl, isSameOrigin, extractPath } from './url-normalizer'
 export async function discoverPages(
   rootUrl: string,
   crawlConfig: CrawlConfig,
-  onProgress?: (discovered: number) => void,
+  onProgress?: (discovered: number) => void | Promise<void>,
 ): Promise<DiscoveredPage[]> {
   const visited = new Set<string>()
   const queue: string[] = [rootUrl]
@@ -17,18 +17,19 @@ export async function discoverPages(
   // Also discover from sitemap
   const sitemapUrls = await fetchSitemap(rootUrl, crawlConfig)
   for (const sitemapUrl of sitemapUrls) {
-    if (isSameOrigin(sitemapUrl, rootUrl) && !visited.has(sitemapUrl)) {
-      visited.add(sitemapUrl)
-      queue.push(sitemapUrl)
+    const normalized = normalizeUrl(sitemapUrl, rootUrl)
+    if (normalized && isSameOrigin(normalized, rootUrl) && !visited.has(normalized)) {
+      visited.add(normalized)
+      queue.push(normalized)
     }
   }
 
   while (queue.length > 0) {
     const url = queue.shift()!
-    if (crawlConfig.maxPages && pages.length >= crawlConfig.maxPages) break
+    if (crawlConfig.maxPages != null && pages.length >= crawlConfig.maxPages) break
 
     pages.push({ url, path: extractPath(url) })
-    onProgress?.(pages.length)
+    await onProgress?.(pages.length)
 
     if (crawlConfig.delayMs > 0) {
       await new Promise((r) => setTimeout(r, crawlConfig.delayMs))

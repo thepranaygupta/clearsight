@@ -67,12 +67,11 @@ export async function processAiEnrichment(job: Job<AiEnrichmentJobData>) {
       pageHtml: scan.pageHtml ?? undefined,
     })
 
-    // If part of a crawl, increment enriched count and check completion
+    // If part of a crawl, atomically increment enriched count and check completion
     if (crawlId) {
-      const enrichedCount = await crawlRepo.incrementEnrichedPages(crawlId)
-      const crawl = await crawlRepo.findById(crawlId)
+      const { enrichedPages, totalPages } = await crawlRepo.incrementEnrichedPages(crawlId)
 
-      if (crawl && enrichedCount >= crawl.totalPages) {
+      if (enrichedPages >= totalPages) {
         await finalizeCrawl(crawlId)
       }
     }

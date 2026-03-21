@@ -35,15 +35,15 @@ export class PrismaCrawlRepository {
     return prisma.crawl.update({ where: { id }, data: input })
   }
 
-  /** Atomically increment enrichedPages and return new value. Used for crawl completion detection. */
-  async incrementEnrichedPages(id: string): Promise<number> {
-    const result = await prisma.$queryRaw<[{ enriched_pages: number }]>`
+  /** Atomically increment enrichedPages and return both new value and totalPages. Prevents race conditions on crawl completion. */
+  async incrementEnrichedPages(id: string): Promise<{ enrichedPages: number; totalPages: number }> {
+    const result = await prisma.$queryRaw<[{ enriched_pages: number; total_pages: number }]>`
       UPDATE crawls
       SET enriched_pages = enriched_pages + 1, updated_at = NOW()
       WHERE id = ${id}
-      RETURNING enriched_pages
+      RETURNING enriched_pages, total_pages
     `
-    return result[0].enriched_pages
+    return { enrichedPages: result[0].enriched_pages, totalPages: result[0].total_pages }
   }
 
   /** Atomically increment scannedPages. */
