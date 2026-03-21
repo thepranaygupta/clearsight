@@ -1,0 +1,44 @@
+# Getting Started
+
+ClearSight scans websites for WCAG 2.1 Level A and AA accessibility violations, enriches findings with AI, and delivers actionable reports.
+
+## Prerequisites
+
+- A running ClearSight instance (see [deployment docs](/deployment))
+- A website URL to scan
+
+## Your First Scan
+
+### Quick Single-Page Scan
+
+1. Open the **Dashboard**
+2. Enter a URL in the scan form (e.g., `https://example.com`)
+3. Click **Scan**
+4. Wait for the pipeline to complete (~30-60 seconds per page)
+5. Review your results
+
+### Full Site Crawl
+
+1. Open the **Dashboard**
+2. Enter your site URL — ClearSight will create a Site record
+3. Navigate to the Site Overview page
+4. Click **Crawl Now**
+5. Watch the live progress as pages are discovered and scanned
+6. Review aggregated results across all pages
+
+## Understanding Results
+
+After a scan completes, you'll see:
+
+- **Score** — 0-100 accessibility score
+- **Issues** — categorized as Confirmed or Potential
+- **Severity** — Critical, Serious, Moderate, or Minor
+- **AI Summary** — overview of your page's accessibility
+- **Fix Suggestions** — actionable steps for each issue
+- **Visual Inspector** — see the exact element on a screenshot
+
+## Next Steps
+
+- Learn about [single-page scanning](/scanning/single-page)
+- Set up [full-site crawling](/scanning/full-site-crawl)
+- Understand [issue tracking](/scanning/issue-tracking)
