@@ -2,7 +2,7 @@ const metrics = [
   { value: "50+", label: "WCAG rules", sublabel: "axe-core + custom engines" },
   { value: "3x", label: "Concurrent scanners", sublabel: "Parallel Playwright instances" },
   { value: "<2m", label: "Per site", sublabel: "Average crawl time for 10 pages" },
-  { value: "2", label: "Export formats", sublabel: "PDF reports & Excel sheets" },
+  { value: "100%", label: "AI-enriched", sublabel: "Every issue gets a fix suggestion" },
 ];
 
 export function Metrics() {
