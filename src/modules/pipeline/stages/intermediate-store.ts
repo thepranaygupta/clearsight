@@ -72,11 +72,21 @@ export class IntermediateStoreStage implements PipelineStage {
 
     const pageTitle = context.renderedPage?.title ?? null
 
+    // Build metadata for ai-enrichment processor to reconstruct renderedPage
+    const metadata = context.renderedPage ? {
+      pageLoadTimeMs: context.renderedPage.pageLoadTimeMs,
+      totalElements: context.renderedPage.totalElements,
+      redirectCount: context.renderedPage.redirectCount,
+      metaDescription: context.renderedPage.metaDescription,
+    } : undefined
+
     await prisma.scan.update({
       where: { id: context.scanId },
       data: {
         pageTitle,
         pageScreenshot: screenshotBase64,
+        pageHtml: context.pageHtml ?? null,
+        ...(metadata ? { metadata } : {}),
       },
     })
 
