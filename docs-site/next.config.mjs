@@ -4,8 +4,4 @@ const withNextra = nextra({
   contentDirBasePath: '/',
 })
 
-export default withNextra({
-  turbopack: {
-    root: process.cwd(),
-  },
-})
+export default withNextra({})
