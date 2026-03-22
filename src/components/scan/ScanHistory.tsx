@@ -153,7 +153,7 @@ export function ScanHistory({ activeScanId, search = "" }: ScanHistoryProps) {
                 <TooltipTrigger
                   render={
                     <Link
-                      href={`/scan/${scan.id}`}
+                      href={`/dashboard/scan/${scan.id}`}
                       className={cn(
                         "relative flex items-center gap-2.5 rounded-lg px-2.5 py-[7px] transition-colors",
                         isActive

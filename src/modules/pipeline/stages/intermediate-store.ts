@@ -1,5 +1,6 @@
 import { prisma } from '@/modules/db/prisma'
 import { rawFindingsToFallbackIssues } from '@/modules/ai/fallback'
+import { computeIssueHash } from '../issue-hash'
 import type { CreateIssueInput } from '@/modules/db'
 import type { PipelineContext, PipelineStage } from '../types'
 
@@ -31,6 +32,10 @@ export class IntermediateStoreStage implements PipelineStage {
       ruleId: issue.ruleId,
       ruleHelp: issue.ruleHelp,
       elementBoundingBox: issue.boundingBox ?? null,
+      issueHash: computeIssueHash(issue.ruleId, issue.axeRuleId, issue.elementSelector, issue.wcagCriterion, context.url),
+      pageUrl: context.url,
+      firstSeenScanId: context.scanId,
+      lastSeenScanId: context.scanId,
     }))
 
     // Atomically replace any existing issues (handles stale job re-runs)
@@ -52,6 +57,10 @@ export class IntermediateStoreStage implements PipelineStage {
           ruleId: issue.ruleId ?? null,
           ruleHelp: issue.ruleHelp ?? null,
           elementBoundingBox: issue.elementBoundingBox ?? undefined,
+          issueHash: issue.issueHash ?? null,
+          pageUrl: issue.pageUrl ?? null,
+          firstSeenScanId: issue.firstSeenScanId ?? null,
+          lastSeenScanId: issue.lastSeenScanId ?? null,
         })),
       }),
     ])
@@ -63,11 +72,21 @@ export class IntermediateStoreStage implements PipelineStage {
 
     const pageTitle = context.renderedPage?.title ?? null
 
+    // Build metadata for ai-enrichment processor to reconstruct renderedPage
+    const metadata = context.renderedPage ? {
+      pageLoadTimeMs: context.renderedPage.pageLoadTimeMs,
+      totalElements: context.renderedPage.totalElements,
+      redirectCount: context.renderedPage.redirectCount,
+      metaDescription: context.renderedPage.metaDescription,
+    } : undefined
+
     await prisma.scan.update({
       where: { id: context.scanId },
       data: {
         pageTitle,
         pageScreenshot: screenshotBase64,
+        pageHtml: context.pageHtml ?? null,
+        ...(metadata ? { metadata } : {}),
       },
     })
 

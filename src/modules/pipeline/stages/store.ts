@@ -3,6 +3,7 @@ import {
   PrismaSummaryRepository,
 } from '@/modules/db'
 import { prisma } from '@/modules/db/prisma'
+import { computeIssueHash } from '../issue-hash'
 import type { CreateIssueInput } from '@/modules/db'
 import type { PipelineContext, PipelineStage } from '../types'
 
@@ -41,6 +42,10 @@ export class StoreStage implements PipelineStage {
       ruleId: issue.ruleId,
       ruleHelp: issue.ruleHelp,
       elementBoundingBox: issue.boundingBox ?? null,
+      issueHash: computeIssueHash(issue.ruleId, issue.axeRuleId, issue.elementSelector, issue.wcagCriterion, context.url),
+      pageUrl: context.url,
+      firstSeenScanId: context.scanId,
+      lastSeenScanId: context.scanId,
     }))
 
     // Atomically replace preliminary issues with enriched ones
@@ -62,6 +67,10 @@ export class StoreStage implements PipelineStage {
           ruleId: issue.ruleId ?? null,
           ruleHelp: issue.ruleHelp ?? null,
           elementBoundingBox: issue.elementBoundingBox ?? undefined,
+          issueHash: issue.issueHash ?? null,
+          pageUrl: issue.pageUrl ?? null,
+          firstSeenScanId: issue.firstSeenScanId ?? null,
+          lastSeenScanId: issue.lastSeenScanId ?? null,
         })),
       })
     })
@@ -85,7 +94,7 @@ export class StoreStage implements PipelineStage {
     const pageTitle = context.renderedPage?.title ?? null
 
     await scanRepo.updateStatus(context.scanId, {
-      status: this.llmFailed ? 'completed_partial' : 'completed',
+      status: (this.llmFailed || context.llmFailed) ? 'completed_partial' : 'completed',
       completedAt: new Date(),
       pageTitle,
       pageScreenshot: screenshotBase64,

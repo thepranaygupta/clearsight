@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaScanRepository } from '@/modules/db'
+import { pageScanQueue } from '@/modules/queue'
 import { validateUrl } from '@/lib/url-validation'
 import { checkRateLimit } from '@/lib/rate-limit'
 
@@ -50,8 +51,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create scan
+    // Create scan and enqueue via BullMQ
     const scan = await scanRepo.create({ url: url!.trim() })
+
+    await pageScanQueue.add(`scan-${scan.id}`, {
+      scanId: scan.id,
+      url: scan.url,
+    })
 
     return NextResponse.json(scan, {
       status: 201,

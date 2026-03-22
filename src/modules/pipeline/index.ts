@@ -25,11 +25,18 @@ export class PipelineOrchestrator {
     this.rendererCleanup = fn
   }
 
-  async run(initialContext: PipelineContext): Promise<PipelineContext> {
+  async run(
+    initialContext: PipelineContext,
+    options?: { fromStage?: number; toStage?: number }
+  ): Promise<PipelineContext> {
     let context = initialContext
+    const from = options?.fromStage ?? 0
+    const to = options?.toStage ?? this.stages.length - 1
 
     try {
-      for (const stage of this.stages) {
+      for (let i = from; i <= to; i++) {
+        const stage = this.stages[i]
+
         // Check if the scan has been cancelled before starting this stage
         await this.checkCancelled(context.scanId)
 
@@ -89,6 +96,14 @@ export class PipelineOrchestrator {
   }
 }
 
+/** Stage indices for partial execution */
+export const STAGE_SPLIT = {
+  /** Stages 0-4: Fetch → Analyze → CustomChecks → ElementLocate → IntermediateStore */
+  SCAN_END: 4,
+  /** Stages 5-6: Enrich → Store */
+  ENRICH_START: 5,
+} as const
+
 export { ProgressReporter } from './progress'
 export { FetchStage } from './stages/fetch'
 export { AnalyzeStage } from './stages/analyze'
@@ -97,4 +112,5 @@ export { ElementLocateStage } from './stages/element-locate'
 export { IntermediateStoreStage } from './stages/intermediate-store'
 export { EnrichStage } from './stages/enrich'
 export { StoreStage } from './stages/store'
+export { computeIssueHash } from './issue-hash'
 export type { PipelineContext, PipelineStage } from './types'

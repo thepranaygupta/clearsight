@@ -21,3 +21,6 @@ RUN npx prisma generate
 RUN npx playwright install chromium
 
 COPY . .
+
+# Install bull-board dependencies
+RUN cd bull-board && CI=true pnpm install

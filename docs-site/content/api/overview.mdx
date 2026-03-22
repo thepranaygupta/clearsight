@@ -1,0 +1,79 @@
+# API Overview
+
+ClearSight exposes a REST API for all operations. The Next.js app serves both the UI and the API.
+
+## Base URL
+
+```
+http://localhost:3000/api
+```
+
+## Endpoints
+
+### Scans (Single-Page)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/scans` | Create a single-page scan |
+| `GET` | `/api/scans` | List scans (paginated) |
+| `GET` | `/api/scans/:id` | Get scan status/results |
+| `POST` | `/api/scans/:id/cancel` | Cancel a running scan |
+| `GET` | `/api/scans/:id/export?format=pdf\|excel` | Export scan report |
+
+### Sites
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/sites` | Create site (or return existing) |
+| `GET` | `/api/sites` | List all sites |
+| `GET` | `/api/sites/:id` | Get site detail |
+| `DELETE` | `/api/sites/:id` | Delete site and all data |
+
+### Crawls
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `POST` | `/api/sites/:id/crawl` | Start a new crawl |
+| `GET` | `/api/sites/:id/crawls` | List crawls (paginated) |
+| `GET` | `/api/sites/:id/crawls/:crawlId` | Get crawl detail |
+| `POST` | `/api/sites/:id/crawls/:crawlId/cancel` | Cancel a crawl |
+
+### Pages
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/sites/:id/pages` | List pages (paginated) |
+| `GET` | `/api/sites/:id/pages/:pageId` | Get page detail |
+
+### Issues
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/api/sites/:id/issues` | List issues (filterable) |
+| `PATCH` | `/api/sites/:id/issues/:issueId` | Update issue status |
+
+## Pagination
+
+List endpoints support `limit` and `offset` query parameters:
+
+```bash
+GET /api/scans?limit=20&offset=0
+GET /api/sites/:id/pages?limit=50&offset=0
+```
+
+## Filtering (Issues)
+
+The issues endpoint supports these query parameters:
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `severity` | `critical`, `serious`, `moderate`, `minor` | Filter by severity |
+| `wcagLevel` | `A`, `AA` | Filter by WCAG level |
+| `status` | `open`, `fixed`, `dismissed`, `cant_fix` | Filter by issue status |
+| `pageId` | UUID | Filter by specific page |
+
+## Rate Limiting
+
+- Single-page scans: 10 per hour per IP
+- Crawl creation: 1 concurrent crawl per site
+- Intra-crawl page scans bypass IP rate limits

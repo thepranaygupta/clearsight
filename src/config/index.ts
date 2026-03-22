@@ -20,4 +20,19 @@ export const config = {
     maxScansPerHour: 10,
     windowMs: 3600000,
   },
+  redis: {
+    url: process.env.REDIS_URL || 'redis://localhost:6379',
+  },
+  crawler: {
+    maxPages: process.env.MAX_CRAWL_PAGES ? parseInt(process.env.MAX_CRAWL_PAGES, 10) : null,
+    delayMs: parseInt(process.env.CRAWL_DELAY_MS || '200', 10),
+    userAgent: 'ClearSight/1.0 Accessibility Scanner',
+  },
+  workerConcurrency: {
+    pageScan: parseInt(process.env.WORKER_CONCURRENCY || '3', 10),
+    aiEnrichment: parseInt(process.env.AI_CONCURRENCY || '2', 10),
+  },
+  bullBoard: {
+    port: parseInt(process.env.BULL_BOARD_PORT || '3001', 10),
+  },
 }

@@ -32,12 +32,6 @@ export class PlaywrightRenderer implements PageRenderer {
       }
     })
 
-    if (redirectCount > MAX_REDIRECTS) {
-      throw new Error(
-        `Too many redirects (${redirectCount}) when navigating to ${url}`
-      )
-    }
-
     await this.page.goto(url, {
       waitUntil: 'domcontentloaded',
       timeout: NAVIGATION_TIMEOUT_MS,

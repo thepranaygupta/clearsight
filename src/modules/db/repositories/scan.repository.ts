@@ -17,6 +17,8 @@ export class PrismaScanRepository implements ScanRepository {
         data: {
           url: input.url,
           metadata: input.metadata ?? undefined,
+          pageId: input.pageId ?? null,
+          crawlId: input.crawlId ?? null,
         },
       })
     } catch (error) {

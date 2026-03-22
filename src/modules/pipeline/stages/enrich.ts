@@ -52,6 +52,7 @@ export class EnrichStage implements PipelineStage {
         ...context,
         enrichedIssues: fallbackIssues,
         summary: fallbackSummary,
+        llmFailed: true,
       }
     }
   }

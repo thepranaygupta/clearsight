@@ -15,22 +15,37 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   app:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    image: clearsight-dev
     ports:
       - "3000:3000"
     volumes:
       - .:/app
       - /app/node_modules
+      - /app/bull-board/node_modules
     environment:
       DATABASE_URL: postgresql://clearsight:clearsight@postgres:5432/clearsight
       AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
       AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
       AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION:-2025-01-01-preview}
+      REDIS_URL: redis://redis:6379
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     command: sh -c "npx prisma db push && pnpm dev"
 
@@ -38,18 +53,56 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    image: clearsight-dev
     volumes:
       - .:/app
       - /app/node_modules
+      - /app/bull-board/node_modules
     environment:
       DATABASE_URL: postgresql://clearsight:clearsight@postgres:5432/clearsight
       AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
       AZURE_OPENAI_API_KEY: ${AZURE_OPENAI_API_KEY}
       AZURE_OPENAI_API_VERSION: ${AZURE_OPENAI_API_VERSION:-2025-01-01-preview}
+      REDIS_URL: redis://redis:6379
     depends_on:
+      app:
+        condition: service_started
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     command: pnpm worker
+
+  bull-board:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: clearsight-dev
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/bull-board/node_modules
+    environment:
+      REDIS_URL: redis://redis:6379
+      BULL_BOARD_PORT: "3001"
+    depends_on:
+      app:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    command: pnpm bull-board
+
+  docs:
+    image: node:20-slim
+    working_dir: /app
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./docs-site:/app
+      - /app/node_modules
+    command: sh -c "npm install -g pnpm@latest && pnpm install && pnpm dev"
 
 volumes:
   pgdata:

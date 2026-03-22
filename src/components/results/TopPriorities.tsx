@@ -16,7 +16,7 @@ export function TopPriorities({ priorities }: TopPrioritiesProps) {
   if (priorities.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-border/50 bg-card p-6">
+    <div className="rounded-lg border border-border/50 bg-card p-6">
       <div className="mb-5 flex items-center gap-2">
         <AlertTriangle className="size-4 text-primary/60" />
         <h3 className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground/60">

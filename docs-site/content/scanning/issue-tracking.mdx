@@ -1,0 +1,53 @@
+# Issue Tracking
+
+ClearSight tracks issues across crawls so you can see your accessibility progress over time.
+
+## How It Works
+
+Each issue gets a **deterministic hash** based on:
+- Rule ID (axe-core or custom engine)
+- Element selector
+- WCAG criterion
+- Page URL
+
+The same violation on the same element on the same page produces the same hash — even across different crawls.
+
+## Issue Lifecycle
+
+```
+New issue detected     → status: open
+Same issue next crawl  → status: open (recurring, lastSeenScanId updated)
+Issue disappears       → status: fixed
+User dismisses         → status: dismissed (persists across crawls)
+User marks can't fix   → status: cant_fix (persists across crawls)
+```
+
+## Crawl Comparison
+
+When a crawl completes, ClearSight compares issue hashes with the previous crawl:
+
+- **New issues** — hash exists in current crawl but not previous
+- **Fixed issues** — hash exists in previous crawl but not current (and was `open`)
+- **Recurring** — hash exists in both crawls
+
+These counts are displayed on the crawl detail page.
+
+## Dismissing Issues
+
+From the Issues view, you can:
+
+- **Dismiss** — marks as "not relevant." Hidden from default view but still detected by scanner. Status persists across future crawls.
+- **Can't Fix** — marks as "acknowledged." Visible but muted. Persists across crawls.
+- **Reopen** — restores to `open` status.
+
+Use the "Show dismissed" toggle to view dismissed issues.
+
+## Status Carryover
+
+When you dismiss an issue and re-crawl:
+1. The scanner still detects the same element/rule violation
+2. ClearSight matches the hash to the previous crawl
+3. The `dismissed` or `cant_fix` status is automatically carried over
+4. The issue stays hidden/muted in the new crawl's results
+
+This means you only need to dismiss an issue once.

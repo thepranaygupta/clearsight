@@ -94,14 +94,19 @@ export function ScoreGauge({
         {/* Center */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span
-            className="font-mono text-3xl font-bold tabular-nums tracking-tighter"
-            style={{ color }}
+            className={`font-mono font-bold tabular-nums tracking-tighter leading-none ${size >= 60 ? "text-3xl" : ""}`}
+            style={{
+              color,
+              ...(size < 60 ? { fontSize: `${size * 0.3}px` } : {}),
+            }}
           >
             {animatedScore}
           </span>
-          <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-            {getScoreLabel(score)}
-          </span>
+          {size >= 60 && (
+            <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+              {getScoreLabel(score)}
+            </span>
+          )}
         </div>
       </div>
     </div>
