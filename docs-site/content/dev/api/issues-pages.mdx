@@ -1,0 +1,76 @@
+---
+title: Issues & Pages
+description: API reference for querying issues and pages within a site.
+---
+
+# Issues & Pages API
+
+## Issues
+
+### List issues
+
+```http
+GET /api/sites/:id/issues
+```
+
+Supports filtering:
+
+| Parameter | Values | Description |
+|-----------|--------|-------------|
+| `severity` | `critical`, `serious`, `moderate`, `minor` | Filter by severity |
+| `wcagLevel` | `A`, `AA` | Filter by WCAG level |
+| `status` | `open`, `fixed`, `dismissed`, `cant_fix` | Filter by issue status |
+| `pageId` | UUID | Filter to a specific page |
+| `limit` | Integer | Default 20 |
+| `offset` | Integer | Default 0 |
+
+**Example:**
+```http
+GET /api/sites/:id/issues?severity=critical&status=open&limit=50
+```
+
+### Get issue detail
+
+```http
+GET /api/sites/:id/issues/:issueId
+```
+
+Returns the full issue object including description, fix suggestion, element HTML, and status history.
+
+### Update issue status
+
+```http
+PATCH /api/sites/:id/issues/:issueId
+Content-Type: application/json
+
+{
+  "status": "dismissed"
+}
+```
+
+Valid status values: `open`, `dismissed`, `cant_fix`.
+
+---
+
+## Pages
+
+### List pages
+
+```http
+GET /api/sites/:id/pages?limit=50&offset=0
+```
+
+**Response:** Paginated array of page objects with their latest scan score and issue counts.
+
+### Get page detail
+
+```http
+GET /api/sites/:id/pages/:pageId
+```
+
+**Response:** Page object with full scan history and all issues found on this page.
+
+## Next steps
+
+- [Error Codes →](/dev/api/error-codes)
+- [Sites & Crawls API →](/dev/api/sites-crawls)

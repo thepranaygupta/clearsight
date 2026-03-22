@@ -1,0 +1,125 @@
+---
+title: Sites & Crawls
+description: API reference for managing sites and triggering full-site crawls.
+---
+
+# Sites & Crawls API
+
+## Sites
+
+### Create or get a site
+
+```http
+POST /api/sites
+Content-Type: application/json
+
+{
+  "url": "https://example.com"
+}
+```
+
+If a site for that hostname already exists, returns the existing site. Otherwise creates a new one.
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "hostname": "example.com",
+  "name": "example.com",
+  "createdAt": "2026-03-22T14:30:00.000Z"
+}
+```
+
+### List sites
+
+```http
+GET /api/sites
+```
+
+**Response:** Array of site objects.
+
+### Get site detail
+
+```http
+GET /api/sites/:id
+```
+
+**Response:** Site object with latest crawl summary.
+
+---
+
+## Crawls
+
+### Start a crawl
+
+```http
+POST /api/sites/:id/crawl
+Content-Type: application/json
+
+{
+  "maxPages": 50
+}
+```
+
+`maxPages` is optional. Omit to crawl the entire site (subject to `MAX_CRAWL_PAGES` env var).
+
+**Response:**
+```json
+{
+  "crawlId": "uuid",
+  "status": "queued"
+}
+```
+
+### List crawls
+
+```http
+GET /api/sites/:id/crawls?limit=10&offset=0
+```
+
+**Response:** Paginated array of crawl objects, newest first.
+
+### Get crawl detail
+
+```http
+GET /api/sites/:id/crawls/:crawlId
+```
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "siteId": "uuid",
+  "status": "completed",
+  "totalPages": 42,
+  "scannedPages": 42,
+  "enrichedPages": 41,
+  "overallScore": 78,
+  "newIssues": 3,
+  "fixedIssues": 7,
+  "createdAt": "2026-03-22T14:30:00.000Z",
+  "completedAt": "2026-03-22T14:38:22.000Z"
+}
+```
+
+### Cancel a crawl
+
+```http
+POST /api/sites/:id/crawls/:crawlId/cancel
+```
+
+Cancels a running crawl. Already-scanned pages are preserved.
+
+### Export crawl report
+
+```http
+GET /api/sites/:id/crawls/:crawlId/export?format=pdf
+GET /api/sites/:id/crawls/:crawlId/export?format=excel
+```
+
+Returns the report file as a download. `format` defaults to `pdf`.
+
+## Next steps
+
+- [Scans API →](/dev/api/scans)
+- [Issues & Pages API →](/dev/api/issues-pages)
