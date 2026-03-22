@@ -1,4 +1,4 @@
-{
+export default {
   "index": "Auth & Conventions",
   "sites-crawls": "Sites & Crawls",
   "scans": "Scans",

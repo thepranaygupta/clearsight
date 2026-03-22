@@ -1,28 +1,42 @@
 ---
 title: ClearSight Docs
 description: Everything you need to audit, fix, and understand web accessibility.
+asIndexPage: true
 ---
 
-import { Cards } from 'nextra/components'
+import './index.css'
 
-# ClearSight Docs
+<div className="cs-hero">
+  <div className="cs-badge">WCAG 2.1 A & AA</div>
+  <h1 className="cs-hero-title">ClearSight Documentation</h1>
+  <span className="cs-hero-desc">
+    Audit your site for accessibility violations, understand your score, and fix what matters.
+  </span>
+</div>
 
-Everything you need to audit, fix, and understand web accessibility.
+<div className="cs-role-grid">
+  <a href="/user/getting-started" className="cs-role-card">
+    <div className="cs-role-icon">📋</div>
+    <div className="cs-role-title">I'm using ClearSight</div>
+    <div className="cs-role-desc">Run scans, read your score, fix violations, and export reports — no setup required.</div>
+    <div className="cs-role-cta">Get started →</div>
+  </a>
 
-<Cards>
-  <Cards.Card title="I'm using ClearSight" href="/user/getting-started" arrow>
-    Audit your site for accessibility issues, understand your score, fix violations, and export reports — no setup required.
-  </Cards.Card>
-  <Cards.Card title="I'm hosting or building" href="/dev/self-hosting" arrow>
-    Self-host with Docker, explore the architecture, use the REST API, or contribute a custom scan engine.
-  </Cards.Card>
-</Cards>
+  <a href="/dev/self-hosting" className="cs-role-card">
+    <div className="cs-role-icon">🔧</div>
+    <div className="cs-role-title">I'm hosting or building</div>
+    <div className="cs-role-desc">Self-host with Docker, explore the architecture, use the REST API, or contribute.</div>
+    <div className="cs-role-cta">Self-hosting guide →</div>
+  </a>
+</div>
 
-## Popular pages
+<div className="cs-quick-label">Quick links</div>
 
-<Cards>
-  <Cards.Card title="Quick Start" href="/user/getting-started/quick-start" arrow />
-  <Cards.Card title="API Reference" href="/dev/api" arrow />
-  <Cards.Card title="Self-Hosting" href="/dev/self-hosting" arrow />
-  <Cards.Card title="Changelog" href="/reference/changelog" arrow />
-</Cards>
+<div className="cs-quick-grid">
+  <a href="/user/getting-started/quick-start" className="cs-quick-link">Quick Start <span>→</span></a>
+  <a href="/user/results/score-explained" className="cs-quick-link">Understanding Your Score <span>→</span></a>
+  <a href="/dev/self-hosting" className="cs-quick-link">Self-Hosting <span>→</span></a>
+  <a href="/dev/api" className="cs-quick-link">API Reference <span>→</span></a>
+  <a href="/reference/changelog" className="cs-quick-link">Changelog <span>→</span></a>
+  <a href="/user/help/troubleshooting" className="cs-quick-link">Troubleshooting <span>→</span></a>
+</div>

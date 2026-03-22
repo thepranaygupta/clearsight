@@ -1,4 +1,4 @@
-{
+export default {
   "index": "Dev Setup",
   "scan-engines": "Adding Scan Engines",
   "extension": "Chrome Extension Dev",
