@@ -22,12 +22,14 @@ export const metadata: Metadata = {
     "Scan any webpage for ADA/WCAG 2.1 A & AA accessibility violations. AI-powered analysis with actionable fix suggestions.",
   keywords: ["accessibility", "WCAG", "ADA", "a11y", "compliance", "axe-core"],
   authors: [{ name: "ClearSight" }],
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL("https://clearsight.pranaygupta.in"),
   openGraph: {
     title: "ClearSight — WCAG Accessibility Checker",
     description:
       "Scan any webpage for ADA/WCAG 2.1 A & AA accessibility violations. AI-powered analysis with actionable fix suggestions.",
     type: "website",
+    url: "https://clearsight.pranaygupta.in",
+    siteName: "ClearSight",
   },
   twitter: {
     card: "summary",
@@ -35,6 +37,7 @@ export const metadata: Metadata = {
     description:
       "Scan any webpage for ADA/WCAG 2.1 A & AA accessibility violations.",
   },
+  manifest: "/manifest.json",
   other: {
     "theme-color": "#E90029",
   },

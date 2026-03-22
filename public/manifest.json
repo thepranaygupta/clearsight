@@ -1,0 +1,17 @@
+{
+  "name": "ClearSight",
+  "short_name": "ClearSight",
+  "description": "WCAG 2.1 accessibility checker — scan any site for ADA compliance violations.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#E90029",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

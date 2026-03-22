@@ -1,0 +1,21 @@
+# ClearSight
+
+> ADA/WCAG 2.1 accessibility checker — full-site crawl and scan for WCAG Level A & AA violations with AI-enriched reports.
+
+ClearSight is an open-source web accessibility auditing tool. It scans websites for WCAG 2.1 Level A and AA violations using headless Chromium and axe-core, enriches findings with AI-generated descriptions and fix suggestions, and provides detailed reports with scores, severity levels, and export options.
+
+## Features
+
+- Single-page scan and full-site crawl
+- WCAG 2.1 Level A & AA coverage via axe-core
+- AI-enriched issue descriptions and fix suggestions
+- Accessibility score (0–100) with severity-weighted penalties
+- PDF and Excel report export
+- Chrome extension for one-click scanning
+- Self-hostable via Docker
+
+## Docs
+
+- Documentation: https://docs.clearsight.pranaygupta.in
+- Self-hosting guide: https://docs.clearsight.pranaygupta.in/dev/self-hosting
+- API reference: https://docs.clearsight.pranaygupta.in/dev/api

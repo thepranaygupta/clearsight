@@ -1,0 +1,3 @@
+Contact: https://github.com/thepranaygupta/clearsight/issues
+Preferred-Languages: en
+Canonical: https://clearsight.pranaygupta.in/.well-known/security.txt

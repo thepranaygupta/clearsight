@@ -1,0 +1,21 @@
+# ClearSight Docs
+
+> Documentation for ClearSight — WCAG 2.1 accessibility checker.
+
+## Sections
+
+- User Guide: https://docs.clearsight.pranaygupta.in/user
+- Developer Guide: https://docs.clearsight.pranaygupta.in/dev
+- References: https://docs.clearsight.pranaygupta.in/reference
+
+## Key pages
+
+- Quick Start: https://docs.clearsight.pranaygupta.in/user/getting-started/quick-start
+- Understanding Your Score: https://docs.clearsight.pranaygupta.in/user/results/score
+- Self-Hosting: https://docs.clearsight.pranaygupta.in/dev/self-hosting
+- API Reference: https://docs.clearsight.pranaygupta.in/dev/api
+- Architecture: https://docs.clearsight.pranaygupta.in/dev/architecture
+
+## App
+
+https://clearsight.pranaygupta.in

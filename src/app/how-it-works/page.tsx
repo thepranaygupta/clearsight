@@ -1,4 +1,16 @@
+import type { Metadata } from "next";
 import { Navbar } from "@/components/landing/Navbar";
+
+export const metadata: Metadata = {
+  title: "How It Works",
+  description: "Learn how ClearSight scans pages with headless Chromium, runs axe-core accessibility checks, and enriches results with AI fix suggestions.",
+  alternates: { canonical: "https://clearsight.pranaygupta.in/how-it-works" },
+  openGraph: {
+    title: "How It Works · ClearSight",
+    description: "Learn how ClearSight scans pages with headless Chromium, runs axe-core, and enriches results with AI.",
+    url: "https://clearsight.pranaygupta.in/how-it-works",
+  },
+};
 import { CTABand } from "@/components/landing/CTABand";
 import { Footer } from "@/components/landing/Footer";
 import {

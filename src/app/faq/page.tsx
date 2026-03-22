@@ -1,4 +1,16 @@
+import type { Metadata } from "next";
 import { Navbar } from "@/components/landing/Navbar";
+
+export const metadata: Metadata = {
+  title: "FAQ",
+  description: "Answers to common questions about ClearSight — how scanning works, what WCAG rules are checked, and how to interpret your results.",
+  alternates: { canonical: "https://clearsight.pranaygupta.in/faq" },
+  openGraph: {
+    title: "FAQ · ClearSight",
+    description: "Answers to common questions about ClearSight accessibility scanning.",
+    url: "https://clearsight.pranaygupta.in/faq",
+  },
+};
 import { CTABand } from "@/components/landing/CTABand";
 import { Footer } from "@/components/landing/Footer";
 import { allFaqs } from "@/components/landing/FAQ";

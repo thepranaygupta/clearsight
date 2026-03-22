@@ -1,0 +1,56 @@
+# ClearSight — Full Context
+
+> ADA/WCAG 2.1 accessibility checker — full-site crawl and scan for WCAG Level A & AA violations with AI-enriched reports.
+
+## What it does
+
+ClearSight audits websites for accessibility violations defined by WCAG 2.1 Level A and AA. It renders pages in a real browser (headless Chromium via Playwright), runs axe-core accessibility checks, applies custom engines for link text quality and touch target sizes, and enriches findings with AI-generated descriptions and fix suggestions via Azure OpenAI.
+
+## How it works
+
+1. User submits a URL via the web app or REST API
+2. A BullMQ job is queued for page scanning
+3. The worker renders the page with Playwright, runs axe-core, applies custom checks
+4. Azure OpenAI enriches each issue with a plain-English description and fix suggestion
+5. An accessibility score (0–100) is computed with severity-weighted penalties
+6. Results are stored in PostgreSQL and surfaced via the UI and API
+
+For full-site crawls, a BFS crawler discovers all pages via `<a>` links and `/sitemap.xml`, then queues each page for scanning.
+
+## Scoring
+
+Score starts at 100. Penalties per issue:
+- Critical: -10 points
+- Serious: -5 points
+- Moderate: -3 points
+- Minor: -1 point
+
+Dismissed issues are excluded. Score is capped at 0.
+
+## Tech stack
+
+- **Frontend:** Next.js 16 (App Router), TypeScript, Tailwind CSS v4, shadcn/ui
+- **Database:** PostgreSQL 16, Prisma ORM
+- **Queues:** BullMQ + Redis
+- **Scanner:** Playwright 1.58 (headless Chromium), axe-core
+- **AI:** Azure OpenAI (GPT-4)
+- **Export:** PDFKit, ExcelJS
+- **Docs:** Nextra 4
+
+## API
+
+Base URL: `https://clearsight.pranaygupta.in/api`
+
+- `POST /api/scans` — scan a single page
+- `GET /api/scans/:id` — get scan results
+- `POST /api/sites` — create a site
+- `POST /api/sites/:id/crawl` — trigger full-site crawl
+- `GET /api/sites/:id/crawls/:crawlId` — get crawl results
+
+Full API docs: https://docs.clearsight.pranaygupta.in/dev/api
+
+## Links
+
+- App: https://clearsight.pranaygupta.in
+- Docs: https://docs.clearsight.pranaygupta.in
+- GitHub: https://github.com/thepranaygupta/clearsight

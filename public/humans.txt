@@ -1,0 +1,13 @@
+/* TEAM */
+Developer: Pranay Gupta
+Site: https://pranaygupta.in
+GitHub: https://github.com/thepranaygupta
+
+/* SITE */
+Name: ClearSight
+Description: WCAG 2.1 A & AA accessibility checker
+URL: https://clearsight.pranaygupta.in
+Docs: https://docs.clearsight.pranaygupta.in
+
+/* TECHNOLOGY */
+Next.js, TypeScript, Tailwind CSS, PostgreSQL, Redis, BullMQ, Playwright, axe-core, Azure OpenAI

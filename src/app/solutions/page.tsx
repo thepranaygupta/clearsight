@@ -1,4 +1,16 @@
+import type { Metadata } from "next";
 import { Navbar } from "@/components/landing/Navbar";
+
+export const metadata: Metadata = {
+  title: "Solutions",
+  description: "ClearSight for agencies, enterprise teams, and developers. Automated WCAG compliance monitoring at scale.",
+  alternates: { canonical: "https://clearsight.pranaygupta.in/solutions" },
+  openGraph: {
+    title: "Solutions · ClearSight",
+    description: "ClearSight for agencies, enterprise teams, and developers. Automated WCAG compliance monitoring at scale.",
+    url: "https://clearsight.pranaygupta.in/solutions",
+  },
+};
 import { CTABand } from "@/components/landing/CTABand";
 import { Footer } from "@/components/landing/Footer";
 import Link from "next/link";
