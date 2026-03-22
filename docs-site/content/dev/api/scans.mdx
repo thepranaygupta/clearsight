@@ -1,0 +1,115 @@
+---
+title: Scans
+description: API reference for single-page scans.
+---
+
+import { Callout } from 'nextra/components'
+
+# Scans API
+
+Single-page scans are the legacy scan API. They're still fully supported and route through the same BullMQ pipeline as crawl-initiated scans.
+
+<Callout type="info">
+  For auditing entire sites, use the [Sites & Crawls API](/dev/api/sites-crawls) instead.
+</Callout>
+
+## Create a scan
+
+```http
+POST /api/scans
+Content-Type: application/json
+
+{
+  "url": "https://example.com/page"
+}
+```
+
+**Rate limit:** 10 per hour per IP.
+
+**Response:**
+```json
+{
+  "id": "uuid",
+  "url": "https://example.com/page",
+  "status": "queued",
+  "progress": 0,
+  "createdAt": "2026-03-22T14:30:00.000Z"
+}
+```
+
+## List scans
+
+```http
+GET /api/scans?limit=20&offset=0
+```
+
+**Response:** Paginated array of scan objects, newest first.
+
+## Get scan status and results
+
+```http
+GET /api/scans/:id
+```
+
+Poll this endpoint to track progress. Once `status` is `completed` or `completed_partial`, the full results are available.
+
+**Response (in progress):**
+```json
+{
+  "id": "uuid",
+  "status": "running",
+  "progress": 55,
+  "currentStage": "CustomChecks"
+}
+```
+
+**Response (completed):**
+```json
+{
+  "id": "uuid",
+  "status": "completed",
+  "progress": 100,
+  "url": "https://example.com/page",
+  "pageTitle": "Example Page",
+  "summary": {
+    "overallScore": 82,
+    "summary": "The page is largely accessible...",
+    "topPriorities": [],
+    "positiveFindings": []
+  },
+  "issues": [
+    {
+      "id": "uuid",
+      "type": "confirmed",
+      "severity": "critical",
+      "wcagCriterion": "1.1.1",
+      "wcagLevel": "A",
+      "elementSelector": "img.hero",
+      "elementHtml": "<img class=\"hero\" src=\"hero.jpg\">",
+      "description": "Image is missing alt text.",
+      "fixSuggestion": "Add an alt attribute describing the image content.",
+      "axeRuleId": "image-alt"
+    }
+  ]
+}
+```
+
+## Cancel a scan
+
+```http
+POST /api/scans/:id/cancel
+```
+
+## Export scan report
+
+```http
+GET /api/scans/:id/export?format=pdf
+GET /api/scans/:id/export?format=excel
+```
+
+Scan must be in `completed` or `completed_partial` status.
+
+## Next steps
+
+- [Sites & Crawls API →](/dev/api/sites-crawls)
+- [Issues & Pages API →](/dev/api/issues-pages)

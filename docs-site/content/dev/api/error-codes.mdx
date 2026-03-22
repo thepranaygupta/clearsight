@@ -1,0 +1,45 @@
+---
+title: Error Codes
+description: HTTP status codes and error messages returned by the ClearSight API.
+---
+
+# Error Codes
+
+All errors return JSON with an `error` field:
+
+```json
+{
+  "error": "Human-readable error message"
+}
+```
+
+## HTTP status codes
+
+| Status | Meaning |
+|--------|---------|
+| `400` | Bad request — invalid input (malformed URL, missing required field) |
+| `404` | Resource not found |
+| `409` | Conflict — e.g. a crawl is already running for this site |
+| `429` | Rate limit exceeded — 10 scans/hour per IP for single-page scans |
+| `500` | Internal server error |
+
+## Common errors
+
+| Error message | Cause | Fix |
+|---------------|-------|-----|
+| `"Invalid URL"` | URL failed validation | Ensure the URL includes `https://` and is a valid public URL |
+| `"Private IP addresses are not allowed"` | URL resolves to a private/internal IP (SSRF prevention) | Use a public URL |
+| `"Rate limit exceeded"` | More than 10 single-page scans per hour from this IP | Wait and retry |
+| `"A crawl is already running for this site"` | Concurrent crawl conflict | Wait for the current crawl to finish or cancel it |
+| `"Scan not found"` | Invalid scan ID | Check the ID and retry |
+| `"Crawl not found"` | Invalid crawl ID | Check the ID and retry |
+
+## SSRF prevention
+
+The URL validator (`src/lib/url-validation.ts`) blocks URLs that resolve to:
+- `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16` (RFC 1918 private ranges)
+- `127.0.0.0/8` (loopback)
+- `169.254.0.0/16` (link-local)
+- `::1` (IPv6 loopback)
+
+This is intentional and cannot be disabled in production.

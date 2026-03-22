@@ -1,0 +1,59 @@
+---
+title: Auth & Conventions
+description: Base URL, request format, pagination, and response conventions for the ClearSight REST API.
+---
+
+# API Reference
+
+ClearSight exposes a REST API served by the Next.js app. All scan operations are available via API.
+
+## Base URL
+
+```
+http://localhost:3000/api
+```
+
+Replace `localhost:3000` with your deployment URL in production.
+
+## Authentication
+
+The API has no authentication by default. All endpoints are publicly accessible. If you're exposing ClearSight to the internet, put it behind a reverse proxy with auth (e.g., Nginx + BasicAuth, Cloudflare Access).
+
+## Request format
+
+All `POST` and `PATCH` requests expect `Content-Type: application/json`.
+
+## Response format
+
+All responses return JSON. Successful responses use the shape relevant to the resource. Errors return:
+
+```json
+{
+  "error": "Human-readable error message"
+}
+```
+
+## Pagination
+
+List endpoints support `limit` and `offset` query params:
+
+```
+GET /api/scans?limit=20&offset=0
+GET /api/sites/:id/pages?limit=50&offset=100
+```
+
+Default `limit` is 20. No maximum enforced, but large limits may be slow.
+
+## Dates
+
+All timestamps are ISO 8601 strings in UTC: `2026-03-22T14:30:00.000Z`.
+
+## IDs
+
+All resource IDs are UUIDs.
+
+## Next steps
+
+- [Sites & Crawls API →](/dev/api/sites-crawls)
+- [Scans API →](/dev/api/scans)
+- [Issues & Pages API →](/dev/api/issues-pages)
