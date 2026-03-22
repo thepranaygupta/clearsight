@@ -43,7 +43,7 @@ export function Sidebar({ activeScanId, activeSiteId, onNewScan, onNavigate }: S
     <aside className="flex h-screen w-[264px] shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
       {/* Header */}
       <div className="flex h-[52px] items-center px-4">
-        <LogoFull size={20} />
+        <Link href="/"><LogoFull size={20} /></Link>
       </div>
 
       {/* New scan button */}
