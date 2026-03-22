@@ -11,6 +11,8 @@ ADA/WCAG compliance checker for websites. Crawl an entire site, scan every page 
 - **Issue tracking across crawls** — detects new, recurring, and fixed issues using content hashing (`issueHash`)
 - Classifies issues as **Confirmed** (definitive failures) or **Potential** (needs review) with confidence scoring
 - Dashboard with site overview, crawl history, per-page results, filterable issue cards
+- **Solutions page** — marketing page describing use cases for agencies, developers, and enterprises
+- **Chrome extension** — one-click single-page scan from any browser tab (Manifest V3, activeTab permission only)
 
 ## Architecture
 
@@ -115,6 +117,7 @@ pnpm docs:dev     # Terminal 4: Docs site on port 3002 (optional)
 
 | Command                | Description                              |
 |------------------------|------------------------------------------|
+| `pnpm postinstall`     | Generate Prisma client (runs automatically after `pnpm install`) |
 | `pnpm dev`             | Start Next.js dev server                 |
 | `pnpm worker`          | Start BullMQ worker (all 3 queues)       |
 | `pnpm build`           | Production build                         |
@@ -139,7 +142,8 @@ src/
 │   │   ├── sites/              # Sites + crawls + pages + issues API
 │   │   └── scans/              # Legacy single-page scan API
 │   ├── dashboard/              # Dashboard (site overview, crawl detail, pages, issues)
-│   ├── scan/[id]/              # Legacy single-page scan results
+│   ├── scan/[id]/              # Redirect → /dashboard/scan/[id]
+│   ├── solutions/              # Solutions marketing page
 │   ├── how-it-works/           # Marketing page
 │   ├── faq/                    # FAQ page
 │   └── page.tsx                # Landing page
@@ -147,7 +151,8 @@ src/
 │   ├── landing/                # Hero, Features, HowItWorks, etc.
 │   ├── layout/                 # Shell, Sidebar
 │   ├── scan/                   # ScanForm, ScanProgress, ScanHistory
-│   └── results/                # ScoreGauge, IssueCard, IssueTabs, etc.
+│   ├── results/                # ScoreGauge, IssueCard, IssueTabs, etc.
+│   └── inspector/              # InspectorPanel, ScreenshotViewer, HtmlViewer
 ├── modules/
 │   ├── ai/                     # AI provider interface + Azure OpenAI
 │   ├── scanner/                # Playwright renderer + axe-core + custom engines
@@ -160,10 +165,11 @@ src/
 │   ├── index.ts                # Worker entry point
 │   └── processors/             # crawl, page-scan, ai-enrichment processors
 ├── config/                     # Centralized environment config
-└── lib/                        # Utilities (rate limiting, URL validation, types)
+└── lib/                        # Utilities (rate limiting, URL validation, design tokens, types)
 
 bull-board/                     # Standalone Bull Board admin UI
 docs-site/                      # Nextra documentation site
+extension/                      # Chrome extension — one-click single-page scan
 ```
 
 ## Data Model
