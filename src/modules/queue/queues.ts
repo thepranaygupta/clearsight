@@ -10,6 +10,7 @@ const connection = {
   ...(redisUrl.password ? { password: redisUrl.password } : {}),
   ...(redisUrl.username ? { username: redisUrl.username } : {}),
   maxRetriesPerRequest: null, // Required by BullMQ for blocking commands
+  lazyConnect: true, // Don't connect immediately — only when first command is sent
 }
 
 export const crawlQueue = new Queue<CrawlJobData>(QUEUE_NAMES.CRAWL_DISCOVERY, {
