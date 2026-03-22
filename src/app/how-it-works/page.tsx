@@ -44,10 +44,10 @@ const pipeline = [
   {
     icon: Brain,
     title: "AI enrichment",
-    subtitle: "Azure OpenAI analysis",
+    subtitle: "ClearSight AI engine",
     description: "Every issue gets enriched with AI-generated descriptions and fix suggestions.",
     details: [
-      "Issues sent to LLM with full page context for human-readable descriptions",
+      "Each issue analyzed with full page context for human-readable descriptions",
       "Actionable fix suggestions with code examples",
       "Confidence scores (0-100) assigned to each finding",
       "Falls back to axe-core help text if AI is unavailable",

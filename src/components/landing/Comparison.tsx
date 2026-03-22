@@ -16,11 +16,11 @@ const rows = [
   { feature: "Cost", clearsight: "Free", free: "Free", manual: "$5,000+" },
 ];
 
-function Cell({ value, highlight }: { value: boolean | string; highlight?: boolean }) {
-  if (value === true) return <Check className={`mx-auto size-4 ${highlight ? "text-emerald-600" : "text-emerald-600"}`} />;
-  if (value === false) return <X className="mx-auto size-4 text-muted-foreground/20" />;
-  if (value === "partial") return <Minus className="mx-auto size-4 text-amber-500/60" />;
-  return <span className={`text-[13px] font-semibold ${highlight ? "text-foreground" : "text-foreground"}`}>{value}</span>;
+function Cell({ value }: { value: boolean | string }) {
+  if (value === true) return <Check className="mx-auto size-4 text-emerald-600" aria-label="Yes" />;
+  if (value === false) return <X className="mx-auto size-4 text-muted-foreground/20" aria-label="No" />;
+  if (value === "partial") return <Minus className="mx-auto size-4 text-amber-500/60" aria-label="Partial" />;
+  return <span className="text-[13px] font-semibold text-foreground">{value}</span>;
 }
 
 export function Comparison() {
@@ -52,7 +52,7 @@ export function Comparison() {
               {rows.map((row) => (
                 <tr key={row.feature} className="border-b border-border/30">
                   <td className="py-3 pr-4 text-[14px] text-foreground">{row.feature}</td>
-                  <td className="py-3 px-4 text-center bg-foreground/[0.015]"><Cell value={row.clearsight} highlight /></td>
+                  <td className="py-3 px-4 text-center bg-foreground/[0.015]"><Cell value={row.clearsight} /></td>
                   <td className="py-3 px-4 text-center"><Cell value={row.free} /></td>
                   <td className="py-3 px-4 text-center"><Cell value={row.manual} /></td>
                 </tr>

@@ -8,7 +8,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string; issueId: string }> },
 ) {
   try {
-    const { issueId } = await params
+    const { id: siteId, issueId } = await params
 
     let body: unknown
     try {
@@ -23,6 +23,17 @@ export async function PATCH(
         { error: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}` },
         { status: 400 },
       )
+    }
+
+    // Verify issue belongs to this site before updating
+    const existing = await prisma.issue.findFirst({
+      where: {
+        id: issueId,
+        scan: { page: { siteId } },
+      },
+    })
+    if (!existing) {
+      return NextResponse.json({ error: 'Issue not found' }, { status: 404 })
     }
 
     const issue = await prisma.issue.update({

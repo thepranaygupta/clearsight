@@ -4,7 +4,7 @@ import { LogoFull } from "@/components/Logo";
 const links = [
   { href: "/how-it-works", label: "How it works" },
   { href: "/faq", label: "FAQ" },
-  { href: "http://localhost:3002", label: "Docs", external: true },
+  { href: process.env.NEXT_PUBLIC_DOCS_URL || "http://localhost:3002", label: "Docs", external: true },
   { href: "/dashboard", label: "Dashboard" },
 ];
 
@@ -56,7 +56,7 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-2 border-t border-border/20 pt-6 sm:flex-row">
           <p className="text-[12px] text-muted-foreground/40">
-            Built with axe-core, Playwright, and Azure OpenAI
+            Powered by axe-core, Playwright, and AI-driven analysis
           </p>
           <div className="flex items-center gap-1.5">
             <div className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_1px_rgba(16,185,129,0.4)]" />

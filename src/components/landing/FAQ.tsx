@@ -1,14 +1,6 @@
-"use client";
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import Link from "next/link";
 
-const allFaqs = [
+export const allFaqs = [
   {
     q: "Is the scan really free?",
     a: "Yes. ClearSight is open source. You run it on your own infrastructure. The scan is free, unlimited, and requires no account.",
@@ -23,7 +15,7 @@ const allFaqs = [
   },
   {
     q: "How does AI enrichment work?",
-    a: "After axe-core flags issues, ClearSight sends them to Azure OpenAI with page context. The AI writes a plain-English description and a specific fix suggestion for each issue. If AI is unavailable, scans still complete with basic descriptions.",
+    a: "After axe-core flags issues, ClearSight's AI engine analyzes each one with full page context. It writes a plain-English description and a specific fix suggestion for every issue. If the AI engine is unavailable, scans still complete with basic descriptions.",
   },
   {
     q: "Can I scan pages behind a login?",
@@ -51,33 +43,12 @@ const allFaqs = [
   },
 ];
 
-function FAQList({ faqs }: { faqs: typeof allFaqs }) {
-  return (
-    <Accordion className="space-y-2">
-      {faqs.map((faq, i) => (
-        <AccordionItem
-          key={i}
-          value={`faq-${i}`}
-          className="rounded-xl border border-border bg-card px-6 transition-colors data-[state=open]:border-[#E90029]/20 data-[state=open]:shadow-sm"
-        >
-          <AccordionTrigger className="py-4 text-left text-[15px] font-semibold text-foreground hover:no-underline">
-            {faq.q}
-          </AccordionTrigger>
-          <AccordionContent className="pb-4 text-[14px] leading-[1.7] text-muted-foreground">
-            {faq.a}
-          </AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
-  );
-}
-
-/** Homepage FAQ — 2-column grid with visible answers (like Silktide) */
+/** Homepage FAQ — 2-column grid with card-style items */
 export function FAQSection() {
   const topFaqs = allFaqs.slice(0, 6);
 
   return (
-    <section className="border-t border-border/30 bg-muted/20 py-20">
+    <section className="py-24">
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-10 flex items-end justify-between">
           <h2 className="text-2xl font-extrabold tracking-[-0.02em] text-foreground">
@@ -90,38 +61,17 @@ export function FAQSection() {
             See all &rarr;
           </Link>
         </div>
-        <div className="grid gap-x-12 gap-y-8 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           {topFaqs.map((faq, i) => (
-            <div key={i}>
-              <h3 className="mb-2 text-[15px] font-bold text-foreground">
+            <div key={i} className="rounded-lg border border-border/50 bg-card p-5">
+              <h3 className="mb-2 text-[14px] font-bold text-foreground">
                 {faq.q}
               </h3>
-              <p className="text-[14px] leading-[1.7] text-muted-foreground">
+              <p className="text-[13px] leading-[1.7] text-muted-foreground">
                 {faq.a}
               </p>
             </div>
           ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/** Full FAQ for /faq page */
-export function FAQFull() {
-  return (
-    <section className="py-24">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-12 max-w-md">
-          <h1 className="text-3xl font-extrabold tracking-[-0.02em] text-foreground">
-            Frequently asked questions
-          </h1>
-          <p className="mt-3 text-[15px] leading-[1.7] text-muted-foreground">
-            Everything you need to know about ClearSight.
-          </p>
-        </div>
-        <div className="max-w-3xl">
-          <FAQList faqs={allFaqs} />
         </div>
       </div>
     </section>
