@@ -1,7 +1,7 @@
 import 'nextra-theme-docs/style.css'
 import './globals.css'
 import type { Metadata } from 'next'
-import { Footer, Layout, Navbar } from 'nextra-theme-docs'
+import { Layout, Navbar } from 'nextra-theme-docs'
 import { Head } from 'nextra/components'
 import { getPageMap } from 'nextra/page-map'
 import themeConfig from '../theme.config'
@@ -25,7 +25,7 @@ export default async function RootLayout({
       <body>
         <Layout
           navbar={<Navbar logo={themeConfig.logo} projectLink={themeConfig.project?.link} />}
-          footer={<Footer>{typeof themeConfig.footer?.content === 'string' ? themeConfig.footer.content : null}</Footer>}
+          footer={null}
           pageMap={await getPageMap()}
           docsRepositoryBase={themeConfig.docsRepositoryBase}
           feedback={{ content: null }}

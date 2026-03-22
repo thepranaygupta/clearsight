@@ -1,1 +1,35 @@
 /* Custom overrides for ClearSight docs theme */
+
+.cs-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.cs-card {
+  display: block;
+  padding: 20px 22px;
+  border-radius: 10px;
+  border: 1px solid var(--nextra-border, rgba(128,128,128,0.2));
+  text-decoration: none !important;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.cs-card:hover {
+  border-color: hsl(355 100% 45%);
+  box-shadow: 0 0 0 1px hsl(355 100% 45% / 0.2);
+}
+
+.cs-card-title {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--nextra-fg) !important;
+  margin-bottom: 4px;
+}
+
+.cs-card-desc {
+  font-size: 13px;
+  color: color-mix(in srgb, var(--nextra-fg) 55%, transparent);
+  line-height: 1.5;
+}

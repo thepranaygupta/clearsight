@@ -1,22 +1,29 @@
 ---
-title: Reference
+title: References
 description: WCAG criteria, axe-core rules, changelog, and roadmap.
 ---
 
-import { Cards } from 'nextra/components'
+# References
 
-# Reference
-
-<Cards>
-  <Cards.Card title="WCAG Level A" href="/reference/wcag/level-a" arrow>
-    All WCAG 2.1 Level A success criteria checked by ClearSight.
-  </Cards.Card>
-  <Cards.Card title="WCAG Level AA" href="/reference/wcag/level-aa" arrow>
-    WCAG 2.1 Level AA success criteria.
-  </Cards.Card>
-  <Cards.Card title="axe-core Rule Index" href="/reference/wcag/axe-core-rules" arrow>
-    All axe-core rules mapped to WCAG criteria.
-  </Cards.Card>
-  <Cards.Card title="Changelog" href="/reference/changelog" arrow />
-  <Cards.Card title="Roadmap" href="/reference/roadmap" arrow />
-</Cards>
+<div className="cs-cards">
+  <a href="/reference/wcag/level-a" className="cs-card">
+    <div className="cs-card-title">WCAG Level A</div>
+    <div className="cs-card-desc">All Level A success criteria checked by ClearSight.</div>
+  </a>
+  <a href="/reference/wcag/level-aa" className="cs-card">
+    <div className="cs-card-title">WCAG Level AA</div>
+    <div className="cs-card-desc">Level AA success criteria and what they mean.</div>
+  </a>
+  <a href="/reference/wcag/axe-core-rules" className="cs-card">
+    <div className="cs-card-title">axe-core Rule Index</div>
+    <div className="cs-card-desc">All axe-core rules mapped to WCAG criteria.</div>
+  </a>
+  <a href="/reference/changelog" className="cs-card">
+    <div className="cs-card-title">Changelog</div>
+    <div className="cs-card-desc">What's changed in each release.</div>
+  </a>
+  <a href="/reference/roadmap" className="cs-card">
+    <div className="cs-card-title">Roadmap</div>
+    <div className="cs-card-desc">Upcoming features and planned improvements.</div>
+  </a>
+</div>

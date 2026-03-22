@@ -3,23 +3,25 @@ title: Developer Guide
 description: Self-host ClearSight, explore its architecture, use the REST API, or contribute to the project.
 ---
 
-import { Cards } from 'nextra/components'
-
 # Developer Guide
 
 ClearSight is open-source and self-hostable. This guide covers everything from spinning up a local instance to contributing custom scan engines.
 
-<Cards>
-  <Cards.Card title="Self-Hosting" href="/dev/self-hosting" arrow>
-    Run ClearSight on your own infrastructure with Docker.
-  </Cards.Card>
-  <Cards.Card title="Architecture" href="/dev/architecture" arrow>
-    Crawlers, BullMQ queues, scan pipeline, and data model.
-  </Cards.Card>
-  <Cards.Card title="API Reference" href="/dev/api" arrow>
-    REST API for sites, crawls, scans, issues, and pages.
-  </Cards.Card>
-  <Cards.Card title="Contributing" href="/dev/contributing" arrow>
-    Set up a dev environment and add features.
-  </Cards.Card>
-</Cards>
+<div className="cs-cards">
+  <a href="/dev/self-hosting" className="cs-card">
+    <div className="cs-card-title">Self-Hosting</div>
+    <div className="cs-card-desc">Run ClearSight on your own infrastructure with Docker.</div>
+  </a>
+  <a href="/dev/architecture" className="cs-card">
+    <div className="cs-card-title">Architecture</div>
+    <div className="cs-card-desc">Crawlers, BullMQ queues, scan pipeline, and data model.</div>
+  </a>
+  <a href="/dev/api" className="cs-card">
+    <div className="cs-card-title">API Reference</div>
+    <div className="cs-card-desc">REST API for sites, crawls, scans, issues, and pages.</div>
+  </a>
+  <a href="/dev/contributing" className="cs-card">
+    <div className="cs-card-title">Contributing</div>
+    <div className="cs-card-desc">Set up a dev environment and add features.</div>
+  </a>
+</div>
