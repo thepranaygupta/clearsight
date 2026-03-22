@@ -1,0 +1,40 @@
+---
+title: Chrome Extension
+description: Scan any page you're browsing with one click using the ClearSight Chrome extension.
+---
+
+import { Callout } from 'nextra/components'
+
+# Chrome Extension
+
+The ClearSight Chrome extension lets you scan any page you're on with a single click — no need to copy and paste URLs.
+
+## How it works
+
+1. Click the ClearSight icon in your browser toolbar
+2. The extension reads the URL of your current tab
+3. Click **Scan this page** — a new tab opens with the scan results
+
+The extension uses the same scanner as the main app. Results are identical to running a single-page scan manually.
+
+## Installing the extension
+
+The extension is not yet published to the Chrome Web Store. To install it manually:
+
+1. Download the latest `extension.zip` from the [GitHub releases page](https://github.com/thepranaygupta/clearsight/releases)
+2. Unzip the file
+3. Open Chrome and go to `chrome://extensions`
+4. Enable **Developer mode** (top right toggle)
+5. Click **Load unpacked** and select the unzipped folder
+
+<Callout type="info">
+  The extension requires the ClearSight app to be running. It opens scans at `http://localhost:3000` by default — update this if your app runs on a different URL.
+</Callout>
+
+## Permissions
+
+The extension only requests `activeTab` permission — it reads the URL of the current tab and nothing else. It does not run in the background or access your browsing history.
+
+## Next steps
+
+- [Understanding your scan results →](/user/results/score)
