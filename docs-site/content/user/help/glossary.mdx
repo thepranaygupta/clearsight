@@ -1,0 +1,64 @@
+---
+title: Glossary
+description: Plain-English definitions of accessibility and ClearSight terms.
+---
+
+# Glossary
+
+## Accessibility terms
+
+**WCAG**
+Web Content Accessibility Guidelines. The international standard for web accessibility, published by the W3C. ClearSight checks against WCAG 2.1 Level A and AA.
+
+**Level A / Level AA**
+WCAG conformance levels. Level A is the minimum (most critical failures). Level AA is the standard most organizations target — it includes Level A plus additional requirements.
+
+**axe-core**
+The open-source accessibility testing engine that powers ClearSight's automated checks. Maintained by Deque Systems and used by major browsers' built-in dev tools.
+
+**Screen reader**
+Software that reads page content aloud for users who are blind or have low vision. Common screen readers: NVDA, JAWS (Windows), VoiceOver (macOS/iOS), TalkBack (Android).
+
+**Keyboard navigation**
+Navigating a page using only a keyboard (Tab, Enter, arrow keys) without a mouse. Users with motor disabilities and screen reader users rely on this.
+
+**Color contrast ratio**
+A measure of how distinct text is from its background. WCAG requires 4.5:1 for normal text and 3:1 for large text (18pt+ or 14pt+ bold).
+
+**Touch target**
+An interactive element on a touch screen. WCAG 2.1 recommends touch targets be at least 44×44px to be usable by people with motor impairments.
+
+**Alt text**
+Alternative text for images, read aloud by screen readers. Descriptive images need meaningful alt text; decorative images use empty alt (`alt=""`).
+
+**ARIA**
+Accessible Rich Internet Applications. A set of HTML attributes that add semantic meaning to elements for assistive technology. Example: `role="button"`, `aria-label="Close dialog"`.
+
+**Landmark**
+HTML5 sectioning elements (`<main>`, `<nav>`, `<header>`, `<footer>`) or ARIA landmark roles that let screen reader users jump between sections of a page.
+
+## ClearSight terms
+
+**Scan**
+A single accessibility check of one URL.
+
+**Crawl**
+A full-site audit that discovers and scans every page on a domain.
+
+**Site**
+A domain in ClearSight. One site can have many crawls over time.
+
+**Issue**
+A single accessibility violation found on a page.
+
+**Confirmed issue**
+An issue that automated testing has determined is definitely a WCAG violation.
+
+**Potential issue**
+An issue that may be a violation but requires human review to confirm.
+
+**Confidence score**
+For potential issues: how confident ClearSight is that the issue is a real violation (0–100%).
+
+**AI enrichment**
+The step where ClearSight uses Azure OpenAI to generate plain-English descriptions and fix suggestions for each issue.

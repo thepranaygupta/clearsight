@@ -1,0 +1,52 @@
+---
+title: FAQ
+description: Answers to common questions about ClearSight.
+---
+
+import { Callout } from 'nextra/components'
+
+# FAQ
+
+## General
+
+**Does ClearSight check for WCAG 2.2?**
+Not yet. ClearSight currently covers WCAG 2.1 Level A and AA. WCAG 2.2 support is on the roadmap.
+
+**Is a perfect score of 100 achievable?**
+Yes, but a score of 100 doesn't mean your site is fully accessible. Automated tools only catch 30–40% of all accessibility issues. Manual testing with screen readers and other assistive technology is still necessary.
+
+**Does ClearSight scan mobile views?**
+Not currently. Scans use a desktop viewport. Mobile-specific issues may not be detected.
+
+## Scanning
+
+**Can ClearSight scan pages behind a login?**
+No. ClearSight can only scan publicly accessible pages. Authentication support is planned.
+
+**Does ClearSight respect robots.txt?**
+No. ClearSight scans all pages it can reach regardless of robots.txt directives.
+
+**Why did my crawl find fewer pages than expected?**
+If your site is a JavaScript SPA, the crawler may miss pages that are only accessible through client-side navigation. The crawler uses lightweight HTTP discovery, not a full browser, for the page discovery phase. Try adding a `/sitemap.xml` to your site to help the crawler find all pages.
+
+**How often should I run a crawl?**
+For active sites, weekly or after major deployments. For static sites, after any content changes.
+
+## Results
+
+**Why is my score lower than I expected?**
+Severity penalties add up quickly. A single Critical issue removes 10 points. Check for Critical and Serious issues first — fixing those will have the biggest impact on your score.
+
+**Why are some issues marked "Potential"?**
+Potential issues are cases where automated testing can't be certain a violation exists. They need human review. See [Confirmed vs Potential Issues](/user/results/confirmed-vs-potential).
+
+**I dismissed an issue but it came back. Why?**
+Dismissals are matched by issue fingerprint (element selector + rule + page URL). If the element's HTML structure changed, the fingerprint changed, and it appears as a new issue. Re-dismiss it if it's still a false positive.
+
+## Technical
+
+**Which browsers does ClearSight scan in?**
+ClearSight uses headless Chromium (via Playwright). Results may differ from Firefox or Safari.
+
+**Which WCAG rules does ClearSight check?**
+All axe-core rules for WCAG 2.1 Level A and AA, plus custom engines for link text quality and touch target sizes. See the [axe-core Rule Index](/reference/wcag/axe-core-rules).
