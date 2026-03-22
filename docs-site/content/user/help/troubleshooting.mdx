@@ -1,0 +1,51 @@
+---
+title: Troubleshooting
+description: Common problems and how to fix them.
+---
+
+import { Callout } from 'nextra/components'
+
+# Troubleshooting
+
+## Scan failed or got stuck
+
+**Symptom:** Scan shows "Failed" or progress bar doesn't move.
+
+**Check:**
+1. Is the URL publicly accessible? Try opening it in an incognito window.
+2. Does the page require JavaScript to render? ClearSight supports JS, but some pages block headless browsers.
+3. Is the ClearSight worker running? The worker process handles scans separately from the web app.
+
+If you're self-hosting, check the worker logs: `pnpm worker` and look for error output.
+
+## Score seems wrong
+
+**Symptom:** Score is much lower (or higher) than expected.
+
+**Check:**
+- Are there dismissed issues inflating a previous score? Dismissed issues are excluded from scoring.
+- Did AI enrichment fail? Pages marked `completed_partial` use a fallback heuristic score.
+- Are you looking at a page score or the site score? Site score is the average of all pages.
+
+## Crawl found fewer pages than expected
+
+**Symptom:** Crawl finished but missed pages you know exist.
+
+**Check:**
+1. Do you have a `/sitemap.xml`? Add one — it significantly helps page discovery.
+2. Are the missing pages linked from other pages? The crawler follows `<a href>` links.
+3. Is your site a heavily JS-driven SPA? Client-side-only navigation is not followed by the crawler.
+
+## Export fails or produces empty PDF
+
+**Symptom:** PDF download fails or the file is blank.
+
+This is usually a temporary issue. Try:
+1. Refresh the page and try the export again
+2. Try the Excel export instead
+
+If you're self-hosting, check that `pdfkit` is in `serverExternalPackages` in your `next.config.ts`.
+
+<Callout type="info">
+  Still stuck? [Open an issue on GitHub](https://github.com/thepranaygupta/clearsight/issues) with the scan ID and what you expected vs what happened.
+</Callout>
