@@ -1,0 +1,98 @@
+---
+title: Docker Setup
+description: Run ClearSight with Docker Compose for development or production.
+---
+
+import { Callout, Tabs } from 'nextra/components'
+
+# Docker Setup
+
+ClearSight ships with Docker Compose configurations for both development and production.
+
+<Tabs items={['Development', 'Production']}>
+  <Tabs.Tab>
+
+## Development
+
+The dev setup runs 5 services with live reloading:
+
+```bash
+git clone https://github.com/thepranaygupta/clearsight.git
+cd clearsight
+cp .env.example .env  # fill in your values
+pnpm docker:dev
+```
+
+Services started:
+| Service | Port | Description |
+|---------|------|-------------|
+| `app` | 3000 | Next.js dev server with Turbopack |
+| `worker` | — | BullMQ processors (no port) |
+| `postgres` | 5432 | PostgreSQL 16 |
+| `redis` | 6379 | Redis 7 |
+| `bull-board` | 3001 | Queue monitoring UI |
+| `docs` | 3002 | Nextra docs site |
+
+Source files are volume-mounted into the container — changes to `src/` hot-reload immediately.
+
+To stop:
+```bash
+pnpm docker:dev:down
+```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+
+## Production
+
+The production setup uses a standalone Next.js build and runs migrations on startup:
+
+```bash
+git clone https://github.com/thepranaygupta/clearsight.git
+cd clearsight
+cp .env.example .env  # fill in your values
+pnpm docker:up
+```
+
+Services started:
+| Service | Port | Description |
+|---------|------|-------------|
+| `app` | 3000 | Next.js production server |
+| `worker` | — | BullMQ processors |
+| `postgres` | 5432 | PostgreSQL 16 |
+| `redis` | 6379 | Redis 7 |
+
+The `app` container runs `prisma migrate deploy` on startup before starting the server.
+
+To stop:
+```bash
+pnpm docker:down
+```
+
+  </Tabs.Tab>
+</Tabs>
+
+## Without Docker
+
+If you prefer to run services manually:
+
+```bash
+# 1. Install dependencies
+pnpm install
+
+# 2. Set up the database
+pnpm db:migrate
+
+# 3. Start the Next.js app
+pnpm dev
+
+# 4. In a separate terminal, start the worker
+pnpm worker
+```
+
+Redis and PostgreSQL must be running and accessible at the URLs in your `.env`.
+
+## Next steps
+
+- [Environment variables →](/dev/self-hosting/environment-variables)
+- [Running in production →](/dev/self-hosting/production)

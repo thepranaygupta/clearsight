@@ -1,0 +1,49 @@
+---
+title: Running in Production
+description: Checklist and guidance for deploying ClearSight to a production environment.
+---
+
+import { Callout } from 'nextra/components'
+
+# Running in Production
+
+## Deployment checklist
+
+- [ ] PostgreSQL and Redis are running and accessible from your app and worker containers
+- [ ] All required env vars are set (`DATABASE_URL`, `REDIS_URL`, `AZURE_OPENAI_ENDPOINT`, `AZURE_OPENAI_API_KEY`)
+- [ ] `pnpm docker:up` (or equivalent) starts cleanly
+- [ ] Database migrations run on startup (`prisma migrate deploy` in the `app` entrypoint)
+- [ ] Worker process is running (check logs for "BullMQ worker started")
+- [ ] A test scan completes successfully end-to-end
+
+## Deploying to Vercel
+
+The main Next.js app can be deployed to Vercel. The worker and Redis/Postgres cannot — they need a persistent process and a long-running container environment.
+
+Recommended split:
+- **Vercel** — Next.js app (`src/app/`)
+- **Railway / Render / Fly.io / VPS** — worker process + Redis + PostgreSQL
+
+<Callout type="info">
+  When deploying to Vercel, set `REDIS_URL` to a managed Redis instance (Upstash, Railway, etc.) and `DATABASE_URL` to a managed Postgres (Neon, Supabase, PlanetScale-compatible, etc.).
+</Callout>
+
+## Production-specific gotchas
+
+**PDFKit font resolution:** `pdfkit` must be in `serverExternalPackages` in `next.config.ts`. The standalone build must include `./node_modules/pdfkit/**/*` in `outputFileTracingIncludes`. Both are already configured in the repo — don't remove them.
+
+**Redis connectivity:** The worker uses `lazyConnect: true` for Redis. This prevents startup failures if Redis is briefly unavailable, but the worker will not process jobs until the connection succeeds.
+
+**Horizontal scaling:** The in-memory rate limiter resets on restart and is not shared across instances. Don't run multiple app instances without replacing it with a Redis-backed rate limiter.
+
+**Prisma client:** The `postinstall` script runs `prisma generate`. If you're deploying without running `pnpm install` (e.g., copying a standalone build), ensure the Prisma client is pre-generated.
+
+## Monitoring
+
+- **Bull Board** — queue monitoring UI at port 3001 (or `BULL_BOARD_PORT`). Shows job counts, failures, and retry history.
+- **Worker logs** — structured log output from the worker process includes job IDs, durations, and error traces.
+
+## Next steps
+
+- [Architecture overview →](/dev/architecture)
+- [Environment variables →](/dev/self-hosting/environment-variables)

@@ -1,0 +1,47 @@
+---
+title: Prerequisites
+description: What you need before running ClearSight.
+---
+
+import { Callout } from 'nextra/components'
+
+# Prerequisites
+
+ClearSight requires three external services:
+
+| Service | Version | Purpose |
+|---------|---------|---------|
+| PostgreSQL | 16+ | Persistent storage for scans, issues, and summaries |
+| Redis | 7+ | BullMQ job queue backing store |
+| Azure OpenAI | — | AI enrichment (fix suggestions, descriptions, scoring) |
+
+And the following on the host machine:
+
+| Tool | Version |
+|------|---------|
+| Node.js | 20+ |
+| pnpm | 9+ |
+| Docker + Docker Compose | Latest stable (optional but recommended) |
+
+## Azure OpenAI setup
+
+ClearSight uses Azure OpenAI for AI enrichment. You need:
+
+1. An Azure subscription with an OpenAI resource created
+2. A deployed model (GPT-4o or GPT-4o-mini recommended)
+3. The full chat completions URL — it looks like:
+   ```
+   https://<resource>.openai.azure.com/openai/deployments/<model>/chat/completions?api-version=2025-01-01-preview
+   ```
+4. An API key
+
+<Callout type="warning">
+  The `AZURE_OPENAI_ENDPOINT` env var must be the complete URL above, including the deployment name and `api-version` query param. ClearSight uses it directly as the fetch target — it does not append any path.
+</Callout>
+
+If you don't have Azure OpenAI, scans still work — they'll fall back to heuristic scoring and skip AI-generated descriptions. Pages will be marked `completed_partial`.
+
+## Next steps
+
+- [Docker setup →](/dev/self-hosting/docker)
+- [Environment variables →](/dev/self-hosting/environment-variables)
