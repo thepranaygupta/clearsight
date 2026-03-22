@@ -1,0 +1,88 @@
+---
+title: Dev Setup
+description: Set up a local development environment to contribute to ClearSight.
+---
+
+import { Callout, Steps } from 'nextra/components'
+
+# Dev Setup
+
+<Steps>
+
+### Clone and install
+
+```bash
+git clone https://github.com/thepranaygupta/clearsight.git
+cd clearsight
+pnpm install
+```
+
+### Set up environment
+
+```bash
+cp .env.example .env
+```
+
+Fill in at minimum:
+- `DATABASE_URL` — PostgreSQL connection string
+- `REDIS_URL` — Redis connection string
+
+Azure OpenAI is optional for local dev. Without it, scans complete as `completed_partial`.
+
+### Start infrastructure
+
+```bash
+# Start Postgres + Redis with Docker (no app/worker)
+docker compose up postgres redis -d
+```
+
+Or use your own local Postgres and Redis.
+
+### Run database migrations
+
+```bash
+pnpm db:migrate
+```
+
+### Start the app and worker
+
+In two separate terminals:
+
+```bash
+# Terminal 1 — Next.js app
+pnpm dev
+
+# Terminal 2 — BullMQ worker
+pnpm worker
+```
+
+The app runs at `http://localhost:3000`. The worker processes scan jobs in the background.
+
+### Verify the setup
+
+Open `http://localhost:3000`, enter a public URL, and run a scan. If it completes (even `completed_partial`), your setup is working.
+
+</Steps>
+
+## Optional services
+
+```bash
+pnpm bull-board    # Queue monitoring UI at http://localhost:3001
+pnpm docs:dev     # Nextra docs site at http://localhost:3002
+```
+
+## Project structure quick reference
+
+```
+src/app/          — Next.js pages and API routes
+src/worker/       — BullMQ processors
+src/modules/      — Core business logic (scanner, crawler, AI, export, DB)
+src/components/   — React components
+src/config/       — Centralized env config (read all env vars from here)
+prisma/           — Prisma schema and migrations
+```
+
+## Next steps
+
+- [Adding Scan Engines →](/dev/contributing/scan-engines)
+- [Code Style & PRs →](/dev/contributing/code-style)

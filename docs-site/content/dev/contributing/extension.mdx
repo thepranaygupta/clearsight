@@ -1,0 +1,61 @@
+---
+title: Chrome Extension Dev
+description: How the Chrome extension works and how to modify it.
+---
+
+# Chrome Extension Dev
+
+The extension lives in `extension/` and is intentionally minimal — it's a thin launcher, not a scanner.
+
+## Architecture
+
+```
+extension/
+├── manifest.json    # Manifest V3, activeTab permission only
+├── popup.html       # Popup UI (current URL + Scan button)
+├── popup.js         # Opens /dashboard?autoScan=<url> in a new tab
+└── icons/           # 16/48/128px PNG + SVG
+```
+
+The extension does not run any scan logic. Clicking **Scan this page**:
+1. Reads the current tab URL using `chrome.tabs.query`
+2. Opens `http://localhost:3000/dashboard?autoScan=<url>` in a new tab
+3. The main app detects the `autoScan` query param and starts a scan automatically
+
+## Changing the app URL
+
+The target URL is hardcoded in `popup.js`. To point the extension at a deployed instance:
+
+```javascript
+// popup.js
+const APP_URL = 'https://your-clearsight-instance.com'  // change this
+```
+
+## Permissions
+
+The extension only requests `activeTab`. It cannot:
+- Access tabs the user isn't actively viewing
+- Access browser history
+- Run in the background
+
+## Loading in developer mode
+
+1. Open `chrome://extensions`
+2. Enable **Developer mode**
+3. Click **Load unpacked** → select the `extension/` directory
+4. The ClearSight icon appears in the toolbar
+
+Changes to `popup.html` and `popup.js` take effect after reloading the extension (click the refresh icon in `chrome://extensions`).
+
+## Building for distribution
+
+The extension is Manifest V3 with no build step. To package for release:
+
+```bash
+cd extension
+zip -r clearsight-extension.zip . -x "*.DS_Store"
+```
+
+## Next steps
+
+- [Code Style & PRs →](/dev/contributing/code-style)
