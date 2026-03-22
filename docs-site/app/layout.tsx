@@ -27,6 +27,11 @@ export default async function RootLayout({
           navbar={<Navbar logo={themeConfig.logo} projectLink={themeConfig.project?.link} />}
           footer={<Footer>{typeof themeConfig.footer?.content === 'string' ? themeConfig.footer.content : null}</Footer>}
           pageMap={await getPageMap()}
+          docsRepositoryBase={themeConfig.docsRepositoryBase}
+          feedback={{ content: null }}
+          editLink="Edit this page on GitHub"
+          sidebar={themeConfig.sidebar}
+          toc={themeConfig.toc}
         >
           {children}
         </Layout>
