@@ -1,0 +1,45 @@
+---
+title: Confirmed vs Potential Issues
+description: The difference between confirmed violations and issues that need manual review.
+---
+
+import { Callout } from 'nextra/components'
+
+# Confirmed vs Potential Issues
+
+ClearSight marks every issue as either **Confirmed** or **Potential**.
+
+## Confirmed issues
+
+Confirmed issues are **definite WCAG violations** that axe-core can detect with certainty. There is no ambiguity — the page fails this rule.
+
+Examples:
+- An `<img>` with no `alt` attribute
+- A button with no accessible name
+- Color contrast below the required ratio
+
+**Act on these immediately.** They are real failures.
+
+## Potential issues
+
+Potential issues are cases where **automated testing can't be certain**, but a violation is likely. They require human judgment to confirm or dismiss.
+
+Examples:
+- An `<img>` where axe-core detected alt text but can't tell if it meaningfully describes the image
+- A link whose text is technically present but may not be descriptive enough ("click here")
+- Touch targets that are close to but not definitively under the size threshold
+
+<Callout type="info">
+  Potential issues have a **confidence score** (0–100%) indicating how likely they are to be real violations. Higher confidence = more likely to be a real problem.
+</Callout>
+
+## What to do with Potential issues
+
+1. Review each one using the [Visual Inspector](/user/results/visual-inspector)
+2. If it's a real problem — fix it like any other issue
+3. If it's a false positive — [dismiss it](/user/action/dismissing-tracking) so it doesn't affect your score
+
+## Next steps
+
+- [Using the Visual Inspector →](/user/results/visual-inspector)
+- [Dismissing false positives →](/user/action/dismissing-tracking)
