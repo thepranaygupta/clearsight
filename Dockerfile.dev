@@ -1,8 +1,7 @@
-FROM node:20-slim
+FROM mcr.microsoft.com/playwright:v1.58.0-noble
 
 RUN apt-get update && \
     apt-get install -y openssl && \
-    npx playwright install-deps chromium && \
     rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g pnpm@latest
@@ -16,9 +15,6 @@ RUN pnpm install
 
 # Generate Prisma client
 RUN npx prisma generate
-
-# Install Playwright browsers
-RUN npx playwright install chromium
 
 COPY . .
 

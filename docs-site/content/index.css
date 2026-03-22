@@ -1,0 +1,121 @@
+.cs-hero {
+  padding: 48px 0 32px;
+  border-bottom: 1px solid var(--nextra-border);
+  margin-bottom: 40px;
+}
+
+.cs-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: hsl(355 100% 45%);
+  background: hsl(355 100% 45% / 0.1);
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 20px;
+}
+
+.cs-hero-title {
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+  color: var(--nextra-fg);
+}
+
+.cs-hero-desc {
+  display: block;
+  font-size: 18px;
+  color: color-mix(in srgb, var(--nextra-fg) 55%, transparent);
+  max-width: 520px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.cs-role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.cs-role-card {
+  display: block;
+  padding: 28px;
+  border-radius: 12px;
+  border: 1px solid var(--nextra-border);
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  cursor: pointer;
+}
+
+.cs-role-card:hover {
+  border-color: hsl(355 100% 45%);
+  box-shadow: 0 0 0 1px hsl(355 100% 45% / 0.3);
+}
+
+.cs-role-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.cs-role-title {
+  font-weight: 700;
+  font-size: 17px;
+  margin-bottom: 8px;
+  color: var(--nextra-fg);
+}
+
+.cs-role-desc {
+  font-size: 14px;
+  color: color-mix(in srgb, var(--nextra-fg) 55%, transparent);
+  line-height: 1.6;
+}
+
+.cs-role-cta {
+  margin-top: 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: hsl(355 100% 45%);
+}
+
+.cs-quick-label {
+  margin-bottom: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--nextra-fg) 50%, transparent);
+}
+
+.cs-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.cs-quick-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--nextra-border);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--nextra-fg);
+  transition: background 0.15s;
+}
+
+.cs-quick-link:hover {
+  background: color-mix(in srgb, var(--nextra-fg) 5%, transparent);
+}
+
+.cs-quick-link span {
+  color: color-mix(in srgb, var(--nextra-fg) 40%, transparent);
+  font-size: 16px;
+}

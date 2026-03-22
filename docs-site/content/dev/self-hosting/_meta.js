@@ -1,4 +1,4 @@
-{
+export default {
   "index": "Prerequisites",
   "docker": "Docker Setup",
   "environment-variables": "Environment Variables",

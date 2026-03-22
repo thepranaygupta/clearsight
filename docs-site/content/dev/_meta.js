@@ -1,4 +1,4 @@
-{
+export default {
   "index": "Overview",
   "self-hosting": "Self-Hosting",
   "architecture": "Architecture",

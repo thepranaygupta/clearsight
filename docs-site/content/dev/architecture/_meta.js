@@ -1,4 +1,4 @@
-{
+export default {
   "index": "System Overview",
   "crawler": "Crawler & Discovery",
   "queue-system": "Queue System",

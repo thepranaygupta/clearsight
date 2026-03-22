@@ -1,4 +1,4 @@
-{
+export default {
   "index": "Overview",
   "getting-started": "Getting Started",
   "scanning": "Running Scans",
