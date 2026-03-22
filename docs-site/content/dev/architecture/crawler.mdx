@@ -1,0 +1,67 @@
+---
+title: Crawler & Discovery
+description: How ClearSight discovers pages during a full-site crawl.
+---
+
+import { Callout } from 'nextra/components'
+
+# Crawler & Discovery
+
+The crawler (`src/modules/crawler/`) is responsible for discovering all pages on a domain before scanning begins.
+
+## Discovery algorithm
+
+The crawler uses **BFS (breadth-first search)** via lightweight HTTP fetch — not Playwright. This keeps discovery fast: no JavaScript execution, no screenshots, just HTML parsing.
+
+For each URL in the queue:
+1. Fetch the page HTML (30s timeout)
+2. Parse `<a href>`, `<link href>`, `<iframe src>` tags
+3. Add same-origin URLs not yet seen to the queue
+4. Also fetch and parse `/sitemap.xml` on the first pass
+
+<Callout type="info">
+  Using HTTP fetch for discovery means JavaScript-only navigation (e.g., React Router client-side links that aren't in the initial HTML) won't be followed. A sitemap.xml helps bridge this gap.
+</Callout>
+
+## URL normalization
+
+`src/modules/crawler/url-normalizer.ts` normalizes URLs before deduplication:
+- Strips fragments (`#section`)
+- Strips common tracking params (`utm_*`, `fbclid`, etc.)
+- Normalizes trailing slashes
+- Lowercases the hostname
+
+This prevents the same page from being scanned twice due to URL variants.
+
+## Same-origin enforcement
+
+The crawler only follows links to the same origin as the seed URL. Subdomains are treated as separate origins.
+
+## Crawl delay
+
+`CRAWL_DELAY_MS` (default 200ms) adds a delay between discovery fetches to avoid hammering the target server.
+
+## Issue tracking across crawls
+
+`src/modules/crawler/issue-tracker.ts` handles cross-crawl issue state:
+
+- Issues are fingerprinted by `(pageUrl + ruleId + elementSelector)` hash
+- On crawl completion, each issue's hash is compared against the previous crawl
+- Issues not seen in the new crawl → marked `fixed`
+- New hashes not seen before → marked `open` (new)
+- Hashes seen in both → carry over their existing status
+
+## Key files
+
+| File | Responsibility |
+|------|----------------|
+| `src/modules/crawler/discovery.ts` | BFS crawl implementation |
+| `src/modules/crawler/url-normalizer.ts` | URL normalization and deduplication |
+| `src/modules/crawler/issue-tracker.ts` | Cross-crawl issue lifecycle |
+| `src/modules/crawler/types.ts` | Crawler type definitions |
+| `src/worker/processors/crawl.processor.ts` | BullMQ processor for crawl-discovery queue |
+
+## Next steps
+
+- [Queue System →](/dev/architecture/queue-system)
+- [Scan Pipeline →](/dev/architecture/scan-pipeline)

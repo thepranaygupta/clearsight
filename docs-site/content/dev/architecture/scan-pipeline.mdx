@@ -1,0 +1,58 @@
+---
+title: Scan Pipeline
+description: The five-stage pipeline that runs for every page scan.
+---
+
+# Scan Pipeline
+
+Every page scan — whether from a single-page scan or a full-site crawl — runs through the same five-stage pipeline implemented in `src/modules/pipeline/`.
+
+## Stages
+
+```
+Fetch (20%) → Analyze (40%) → CustomChecks (55%) → Enrich (80%) → Store (100%)
+```
+
+| Stage | Progress | What it does |
+|-------|----------|--------------|
+| **Fetch** | 0–20% | Loads the page in headless Chromium, captures a screenshot |
+| **Analyze** | 20–40% | Runs axe-core against the rendered DOM |
+| **CustomChecks** | 40–55% | Runs LinkTextEngine and TouchTargetEngine |
+| **Enrich** | 55–80% | Sends issues to Azure OpenAI for descriptions and fix suggestions |
+| **Store** | 80–100% | Saves all issues, summary, screenshot, and metadata to the DB |
+
+## PipelineOrchestrator
+
+`src/modules/pipeline/` contains the `PipelineOrchestrator` class which:
+- Runs stages sequentially
+- Updates `scan.progress` and `scan.currentStage` after each stage
+- If Enrich fails, falls back to raw axe-core findings and sets `scan.status = 'completed_partial'`
+- If any other stage fails, sets `scan.status = 'failed'`
+
+## Scan engines
+
+Three engines run in the **Analyze** and **CustomChecks** stages:
+
+**AxeCoreEngine** (`src/modules/scanner/engines/`)
+Runs the full axe-core ruleset against the page. Returns violations as structured issue objects with WCAG criterion, severity, element selector, and HTML snippet.
+
+**LinkTextEngine**
+Custom engine that flags links whose accessible name is generic ("click here", "read more", "here", empty). Returns Potential issues with a confidence score.
+
+**TouchTargetEngine**
+Custom engine that checks all interactive elements (buttons, links, inputs) for minimum touch target size. Elements under 24×24px are flagged as Moderate violations.
+
+The three engines run with `Promise.allSettled` — if one fails, the others still complete.
+
+## Playwright renderer
+
+`src/modules/scanner/renderer/playwright.ts` manages the headless browser:
+- Single browser instance reused across scans (not spawned per scan)
+- New page/context per scan, closed after completion
+- 30-second navigation timeout
+- Viewport: 1280×720 (desktop)
+
+## Next steps
+
+- [AI Enrichment →](/dev/architecture/ai-enrichment)
+- [Data Model →](/dev/architecture/data-model)
