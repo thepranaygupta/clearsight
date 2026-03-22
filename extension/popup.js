@@ -1,28 +1,26 @@
-const STORAGE_KEY = "clearsight_host";
-const DEFAULT_HOST = "http://localhost:3000";
+const HOST = "http://localhost:3000";
 
 const urlEl = document.getElementById("current-url");
-const hostInput = document.getElementById("host-input");
 const scanBtn = document.getElementById("scan-btn");
+const scanBtnText = document.getElementById("scan-btn-text");
+const scanBtnIcon = document.getElementById("scan-btn-icon");
+const scanBtnSpinner = document.getElementById("scan-btn-spinner");
 const errorMsg = document.getElementById("error-msg");
 
 let currentUrl = "";
-
-// Load saved host
-chrome.storage.local.get(STORAGE_KEY, (result) => {
-  hostInput.value = result[STORAGE_KEY] || DEFAULT_HOST;
-});
-
-// Save host on change
-hostInput.addEventListener("input", () => {
-  chrome.storage.local.set({ [STORAGE_KEY]: hostInput.value.trim() });
-});
 
 // Get current tab URL
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   if (tabs[0]?.url) {
     currentUrl = tabs[0].url;
-    urlEl.textContent = currentUrl;
+    urlEl.textContent = truncateUrl(currentUrl);
+    urlEl.title = currentUrl;
+
+    if (!isAllowed(currentUrl)) {
+      urlEl.classList.add("blocked");
+      scanBtn.disabled = true;
+      showError("This page cannot be scanned");
+    }
   } else {
     urlEl.textContent = "Unable to read page URL";
     scanBtn.disabled = true;
@@ -31,22 +29,38 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 
 // Scan button
 scanBtn.addEventListener("click", () => {
-  const host = hostInput.value.trim().replace(/\/+$/, "");
-
-  if (!host) {
-    showError("Please enter the ClearSight host URL");
+  if (!currentUrl || !isAllowed(currentUrl)) {
+    showError("Cannot scan this page");
     return;
   }
 
-  if (!currentUrl || currentUrl.startsWith("chrome://") || currentUrl.startsWith("chrome-extension://")) {
-    showError("Cannot scan browser internal pages");
-    return;
-  }
+  setLoading(true);
 
-  const scanUrl = `${host}/?autoScan=${encodeURIComponent(currentUrl)}`;
+  const scanUrl = `${HOST}/dashboard?autoScan=${encodeURIComponent(currentUrl)}`;
   chrome.tabs.create({ url: scanUrl });
-  window.close();
+
+  setTimeout(() => window.close(), 150);
 });
+
+function truncateUrl(url, max = 80) {
+  if (url.length <= max) return url;
+  // Cut at last "/" before the limit for a cleaner break
+  const cut = url.lastIndexOf("/", max - 3);
+  const breakAt = cut > 10 ? cut : max - 3;
+  return url.slice(0, breakAt) + "...";
+}
+
+function isAllowed(url) {
+  const lower = url.toLowerCase();
+  return lower.startsWith("http://") || lower.startsWith("https://");
+}
+
+function setLoading(loading) {
+  scanBtn.disabled = loading;
+  scanBtnText.textContent = loading ? "Opening..." : "Scan This Page";
+  scanBtnIcon.style.display = loading ? "none" : "block";
+  scanBtnSpinner.style.display = loading ? "block" : "none";
+}
 
 function showError(msg) {
   errorMsg.textContent = msg;

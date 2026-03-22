@@ -17,5 +17,5 @@
     "default_title": "Scan this page with ClearSight",
     "default_popup": "popup.html"
   },
-  "permissions": ["activeTab", "storage"]
+  "permissions": ["activeTab"]
 }

@@ -1,60 +1,57 @@
-import { Check, X, Minus } from "lucide-react";
-
 const rows = [
-  { feature: "AI-generated fix suggestions", clearsight: true, free: false, manual: false },
-  { feature: "WCAG 2.1 A & AA coverage", clearsight: true, free: "partial", manual: true },
-  { feature: "Full-site crawling", clearsight: true, free: false, manual: true },
-  { feature: "Concurrent page scanning", clearsight: true, free: false, manual: false },
-  { feature: "Issue tracking across scans", clearsight: true, free: false, manual: false },
-  { feature: "Severity & confidence scoring", clearsight: true, free: "partial", manual: true },
-  { feature: "Visual element inspector", clearsight: true, free: false, manual: true },
-  { feature: "Screenshot with issue highlights", clearsight: true, free: false, manual: "partial" },
-  { feature: "Progressive results (live preview)", clearsight: true, free: false, manual: false },
-  { feature: "PDF & Excel export", clearsight: true, free: false, manual: true },
-  { feature: "Open source", clearsight: true, free: "partial", manual: false },
-  { feature: "Time to results", clearsight: "< 2 min", free: "Instant (shallow)", manual: "2–4 weeks" },
-  { feature: "Cost", clearsight: "Free", free: "Free", manual: "$5,000+" },
+  { feature: "AI-driven Remediation", clearsight: "yes", free: "no", manual: "no" },
+  { feature: "WCAG 2.1 A & AA Coverage", clearsight: "yes", free: "partial", manual: "yes" },
+  { feature: "Automated Full-site Crawling", clearsight: "yes", free: "no", manual: "Manual (slow)" },
+  { feature: "Issue Regression Tracking", clearsight: "yes", free: "no", manual: "no" },
+  { feature: "Interactive Visual Inspector", clearsight: "yes", free: "no", manual: "no" },
+  { feature: "Time to Complete", clearsight: "< 5 Minutes", free: "Instant (Per Page)", manual: "2–4 Weeks" },
+  { feature: "Average Cost", clearsight: "Free / Open Source", free: "Free", manual: "$5,000+" },
 ];
 
-function Cell({ value }: { value: boolean | string }) {
-  if (value === true) return <Check className="mx-auto size-4 text-emerald-600" aria-label="Yes" />;
-  if (value === false) return <X className="mx-auto size-4 text-muted-foreground/20" aria-label="No" />;
-  if (value === "partial") return <Minus className="mx-auto size-4 text-amber-500/60" aria-label="Partial" />;
-  return <span className="text-[13px] font-semibold text-foreground">{value}</span>;
+function Cell({ value }: { value: string }) {
+  if (value === "yes") return <span className="text-xl font-bold text-green-500" aria-label="Yes">✔</span>;
+  if (value === "no") return <span className="text-xl text-gray-300" aria-label="No">✕</span>;
+  if (value === "partial") return <span className="font-bold text-yellow-500">— Partial</span>;
+  // Custom text values — check if it's a "weak" value (contains slow/manual/weeks/$)
+  const isWeak = /slow|week|manual|\$/i.test(value);
+  return <span className={`text-sm font-bold ${isWeak ? "text-yellow-500" : value.toLowerCase().includes("free") ? "text-green-600" : "text-foreground"}`}>{value}</span>;
 }
 
 export function Comparison() {
   return (
-    <section className="py-20">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-10 max-w-md">
-          <h2 className="text-2xl font-extrabold tracking-[-0.02em] text-foreground">
+    <section className="border-y border-border/30 bg-muted/20 py-32">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="mb-20 text-center">
+          <h2 className="mb-6 text-4xl font-bold tracking-tight text-foreground">
             Why teams choose ClearSight
           </h2>
-          <p className="mt-2 text-[15px] leading-[1.7] text-muted-foreground">
-            Deeper than free scanners. Faster than manual audits. AI-powered and open source.
+          <p className="mx-auto max-w-xl text-lg text-muted-foreground">
+            Deeper than free scanners. Faster than manual audits. Built for modern developer workflows.
           </p>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left">
+          <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b-2 border-border">
-                <th className="pb-3 pr-4 text-[13px] font-medium text-muted-foreground" />
-                <th className="pb-3 px-4 text-center">
-                  <span className="inline-block rounded-md bg-foreground/[0.05] px-3 py-1 text-[13px] font-bold text-foreground">ClearSight</span>
+              <tr className="border-b border-border">
+                <th className="py-8 font-medium text-muted-foreground">Capabilities</th>
+                <th className="w-1/4 px-6 py-8 text-center">
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="text-xl font-bold text-[#E90029]">ClearSight</span>
+                    <span className="rounded bg-[#E90029]/10 px-2 py-1 text-[10px] font-bold text-[#E90029]">RECOMMENDED</span>
+                  </div>
                 </th>
-                <th className="pb-3 px-4 text-center text-[13px] font-medium text-muted-foreground/60">Free scanners</th>
-                <th className="pb-3 px-4 text-center text-[13px] font-medium text-muted-foreground/60">Manual audits</th>
+                <th className="w-1/4 px-6 py-8 text-center font-medium text-muted-foreground">Lighthouse / WAVE</th>
+                <th className="w-1/4 px-6 py-8 text-center font-medium text-muted-foreground">Manual Agency</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-sm">
               {rows.map((row) => (
-                <tr key={row.feature} className="border-b border-border/30">
-                  <td className="py-3 pr-4 text-[14px] text-foreground">{row.feature}</td>
-                  <td className="py-3 px-4 text-center bg-foreground/[0.015]"><Cell value={row.clearsight} /></td>
-                  <td className="py-3 px-4 text-center"><Cell value={row.free} /></td>
-                  <td className="py-3 px-4 text-center"><Cell value={row.manual} /></td>
+                <tr key={row.feature} className="border-b border-border/30 transition-colors hover:bg-card">
+                  <td className="py-6 font-medium text-foreground">{row.feature}</td>
+                  <td className="px-6 py-6 text-center"><Cell value={row.clearsight} /></td>
+                  <td className="px-6 py-6 text-center"><Cell value={row.free} /></td>
+                  <td className="px-6 py-6 text-center"><Cell value={row.manual} /></td>
                 </tr>
               ))}
             </tbody>

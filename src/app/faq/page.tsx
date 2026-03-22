@@ -7,10 +7,10 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="pt-28 pb-0 sm:pt-36">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="mb-12 max-w-md">
-            <h1 className="text-3xl font-extrabold tracking-[-0.02em] text-foreground sm:text-4xl">
+      <main className="pt-28 sm:pt-36">
+        <div className="mx-auto max-w-4xl px-6">
+          <div className="mb-16 max-w-md">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground">
               Frequently asked questions
             </h1>
             <p className="mt-3 text-[15px] leading-[1.7] text-muted-foreground">
@@ -18,15 +18,11 @@ export default function FAQPage() {
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-12">
             {allFaqs.map((faq, i) => (
-              <div key={i} className="rounded-lg border border-border/50 bg-card p-5">
-                <h3 className="mb-2 text-[14px] font-bold text-foreground">
-                  {faq.q}
-                </h3>
-                <p className="text-[13px] leading-[1.7] text-muted-foreground">
-                  {faq.a}
-                </p>
+              <div key={i} className="grid gap-8 md:grid-cols-3">
+                <h4 className="col-span-1 font-bold text-foreground">{faq.q}</h4>
+                <p className="col-span-2 text-sm leading-relaxed text-muted-foreground">{faq.a}</p>
               </div>
             ))}
           </div>

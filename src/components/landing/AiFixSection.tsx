@@ -1,79 +1,83 @@
 export function AiFixSection() {
   return (
-    <section className="bg-[#1a0a0e] py-24">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-          {/* Left: copy */}
-          <div>
-            <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.15em] text-[#E90029]">
-              AI Fix Suggestions
-            </p>
-            <h2 className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-extrabold leading-[1.1] tracking-[-0.02em] text-white">
-              Remediate issues in seconds, not hours.
-            </h2>
-            <p className="mt-4 max-w-md text-[15px] leading-[1.7] text-white/40">
-              ClearSight doesn&apos;t just point out problems. Our AI engine analyzes
-              your component structure and generates optimized, accessible code
-              snippets you can merge instantly.
-            </p>
-            <ul className="mt-6 space-y-3">
-              {[
-                "Auto-generated ARIA labels",
-                "Color contrast ratio correction",
-                "Keyboard focus trap detection & logic",
-              ].map((item) => (
-                <li key={item} className="flex items-center gap-3">
-                  <span className="size-1.5 rounded-full bg-[#E90029]" />
-                  <span className="text-[14px] text-white/60">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <section className="relative py-32" style={{ background: "radial-gradient(circle at 50% -20%, #2A0A0E 0%, #0A0505 100%)" }}>
+      <div className="pointer-events-none absolute inset-0 opacity-10" style={{
+        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)",
+        backgroundSize: "24px 24px",
+      }} />
 
-          {/* Right: code mockup */}
-          <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#1a1a1f] shadow-2xl shadow-black/40">
-            {/* Terminal header */}
-            <div className="flex items-center gap-1.5 border-b border-white/[0.06] bg-white/[0.02] px-4 py-2.5">
-              <div className="size-2.5 rounded-full bg-[#DC2626]/60" />
-              <div className="size-2.5 rounded-full bg-[#D97706]/60" />
-              <div className="size-2.5 rounded-full bg-[#16A34A]/60" />
-              <span className="ml-3 font-mono text-[11px] text-white/30">RemediationView.tsx</span>
-              <span className="ml-auto font-mono text-[10px] text-white/20">Line: 42</span>
+      <div className="relative z-10 mx-auto max-w-7xl px-6 grid items-center gap-20 md:grid-cols-2">
+        {/* Left: copy */}
+        <div>
+          <span className="mb-6 block text-xs font-bold uppercase tracking-[0.3em] text-[#E90029]">
+            The Solution
+          </span>
+          <h2 className="mb-8 text-4xl font-bold tracking-tight text-white md:text-5xl">
+            Remediate issues in seconds, not hours.
+          </h2>
+          <p className="mb-10 text-lg font-medium leading-relaxed text-gray-400">
+            ClearSight doesn&apos;t just point out problems. Our AI engine analyzes your
+            component structure and generates optimized, accessible code snippets you
+            can merge instantly.
+          </p>
+          <ul className="space-y-6">
+            {[
+              "Auto-generated ARIA labels based on surrounding context",
+              "Precise color contrast correction for brand palettes",
+              "Dynamic keyboard focus trap logic injection",
+            ].map((item) => (
+              <li key={item} className="flex items-start gap-4">
+                <div className="mt-1 flex size-5 items-center justify-center rounded-full bg-[#E90029]/20">
+                  <span className="size-1.5 rounded-full bg-[#E90029]" />
+                </div>
+                <span className="text-base font-medium italic text-gray-300">&ldquo;{item}&rdquo;</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Right: code diff mockup */}
+        <div className="relative rounded border border-white/10 bg-[#0f0a0a] p-1.5 font-mono text-xs shadow-2xl">
+          <div className="absolute -right-10 -top-10 size-40 rounded-full bg-[#E90029]/10 blur-3xl" />
+          <div className="relative rounded-sm bg-[#0A0505] p-6">
+            {/* Header */}
+            <div className="mb-8 flex items-center justify-between opacity-40">
+              <div className="flex gap-1.5">
+                <div className="size-2.5 rounded-full bg-white/20" />
+                <div className="size-2.5 rounded-full bg-white/20" />
+              </div>
+              <span>RemediationView.tsx</span>
             </div>
 
-            <div className="p-5 font-mono text-[13px] leading-[1.8]">
-              {/* Original issue */}
-              <div className="mb-4">
-                <div className="mb-1 flex items-center gap-2">
-                  <span className="size-1.5 rounded-full bg-[#DC2626]" />
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#DC2626]">Original Issue</span>
+            <div className="space-y-10">
+              {/* Original violation */}
+              <div>
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="size-1.5 rounded-full bg-red-500 shadow-lg shadow-red-500/50" />
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-red-500">Original Violation</span>
                 </div>
-                <div className="rounded bg-[#DC2626]/[0.06] border border-[#DC2626]/20 px-3 py-2">
-                  <code className="text-white/50">
-                    <span className="text-[#7aa2f7]">&lt;img</span> <span className="text-[#9ece6a]">src=</span><span className="text-[#e0af68]">&quot;/hero.jpg&quot;</span> <span className="text-[#7aa2f7]">/&gt;</span>
-                  </code>
+                <div className="border-l border-red-500/30 pl-4 font-medium text-red-400">
+                  &lt;img src=&quot;/hero-image.jpg&quot; /&gt;
                 </div>
               </div>
 
-              {/* AI suggestion */}
-              <div>
-                <div className="mb-1 flex items-center justify-between">
+              {/* AI fix — green */}
+              <div className="group relative rounded-r border-l-2 border-green-500 bg-green-500/5 p-6">
+                <div className="mb-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-[#16A34A]" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#16A34A]">ClearSight Suggestion</span>
+                    <span className="size-1.5 rounded-full bg-green-500 shadow-lg shadow-green-500/50" />
+                    <span className="text-[9px] font-bold uppercase tracking-widest text-green-500">AI Remediation Suggestion</span>
                   </div>
-                  <button className="rounded bg-[#E90029]/10 border border-[#E90029]/20 px-2.5 py-1 text-[10px] font-semibold text-[#E90029] transition-colors hover:bg-[#E90029]/20">
-                    Apply Fix
-                  </button>
+                  <span className="rounded bg-green-600 px-3 py-1.5 text-[10px] font-bold text-white transition-all hover:bg-green-500 active:scale-95">
+                    COPY FIX
+                  </span>
                 </div>
-                <div className="rounded bg-[#16A34A]/[0.04] border border-[#16A34A]/15 px-3 py-2">
-                  <code className="text-white/60">
-                    <span className="text-[#7aa2f7]">&lt;img</span><br />
-                    {"  "}<span className="text-[#9ece6a]">src=</span><span className="text-[#e0af68]">&quot;/hero.jpg&quot;</span><br />
-                    {"  "}<span className="text-[#16A34A] font-semibold">alt=</span><span className="text-[#16A34A] font-semibold">&quot;Marketing professional analyzing data on tablet&quot;</span><br />
-                    {"  "}<span className="text-[#16A34A] font-semibold">aria-details=</span><span className="text-[#16A34A] font-semibold">&quot;hero-description&quot;</span><br />
-                    <span className="text-[#7aa2f7]">/&gt;</span>
-                  </code>
+                <div className="font-medium leading-relaxed text-green-400">
+                  &lt;img<br />
+                  {"  "}src=&quot;/hero-image.jpg&quot;<br />
+                  {"  "}<span className="rounded bg-green-500/20 text-green-300">alt=&quot;Professional team collaborating on laptop&quot;</span><br />
+                  {"  "}<span className="rounded bg-green-500/20 text-green-300">aria-describedby=&quot;hero-context&quot;</span><br />
+                  /&gt;
                 </div>
               </div>
             </div>

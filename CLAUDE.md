@@ -138,6 +138,11 @@ src/
 
 bull-board/                     # Standalone Bull Board admin UI (separate package)
 docs-site/                      # Nextra docs site (separate package)
+extension/                      # Chrome extension — one-click single-page scan
+├── manifest.json               #   Manifest V3, activeTab permission only
+├── popup.html                  #   Popup UI (shows current URL, scan button)
+├── popup.js                    #   Opens /dashboard?autoScan=<url> in new tab
+└── icons/                      #   Extension icons (16/48/128 PNG + SVG)
 ```
 
 ## Data Model (Prisma)

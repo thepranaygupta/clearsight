@@ -10,152 +10,128 @@ export function Hero() {
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
   return (
-    <section ref={ref} className="relative overflow-hidden bg-[#1a0a0e] pt-32 pb-24 sm:pt-40 sm:pb-32">
-      {/* Background effects */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-0 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-[#E90029]/[0.08] blur-[120px]" />
-        <div className="absolute bottom-0 left-1/4 h-[400px] w-[600px] rounded-full bg-[#E90029]/[0.04] blur-[100px]" />
-        {/* Grid */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
-      </div>
+    <section ref={ref} className="relative overflow-hidden pt-48 pb-32" style={{ background: "radial-gradient(circle at 50% -20%, #2A0A0E 0%, #0A0505 100%)" }}>
+      {/* Dot grid */}
+      <div className="pointer-events-none absolute inset-0 opacity-40" style={{
+        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)",
+        backgroundSize: "24px 24px",
+      }} />
 
-      <div className="relative mx-auto max-w-5xl px-6 text-center">
-        {/* Headline */}
-        <motion.h1
-          className="text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.08] font-extrabold tracking-[-0.03em] text-white"
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.1 }}
-        >
-          Accessibility at the
-          <br />
-          speed of thought
-        </motion.h1>
-
-        {/* Subheadline */}
-        <motion.p
-          className="mx-auto mt-6 max-w-xl text-[17px] leading-[1.7] text-white/70"
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          Automate manual compliance workflows with ClearSight. Real-time DOM
-          scanning, AI-driven remediation suggestions, and WCAG 2.1 auditing built
-          for modern engineering teams.
-        </motion.p>
-
-        {/* CTAs */}
-        <motion.div
-          className="mt-10 flex items-center justify-center gap-4"
-          initial={{ opacity: 0, y: 16 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <Link
-            href="/dashboard"
-            className="group flex items-center gap-2 rounded-lg bg-[#E90029] px-6 py-3 text-[14px] font-semibold text-white shadow-lg shadow-[#E90029]/25 transition-all hover:bg-[#D10025] hover:shadow-xl hover:shadow-[#E90029]/30"
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
+        {/* Centered headline */}
+        <div className="mb-16 text-center">
+          <motion.h1
+            className="mb-8 text-5xl font-bold leading-[0.9] tracking-tighter text-white md:text-8xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.1 }}
           >
-            Start your first scan
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-          <Link
-            href="/how-it-works"
-            className="flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-6 py-3 text-[14px] font-semibold text-white/80 backdrop-blur-sm transition-all hover:bg-white/10 hover:text-white"
-          >
-            View Demo
-          </Link>
-        </motion.div>
+            Accessibility at the
+            <br />
+            <span className="bg-gradient-to-r from-[#E90029] to-rose-400 bg-clip-text text-transparent">
+              speed of thought
+            </span>
+          </motion.h1>
 
-        {/* Product screenshot */}
+          <motion.p
+            className="mx-auto mb-10 max-w-2xl text-lg font-medium leading-relaxed text-gray-400 md:text-xl"
+            initial={{ opacity: 0, y: 16 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            Automate manual compliance workflows. Real-time DOM scanning and
+            AI-driven remediation suggestions built for modern engineering teams.
+          </motion.p>
+
+          <motion.div
+            className="flex flex-col items-center justify-center gap-4 sm:flex-row"
+            initial={{ opacity: 0, y: 16 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <Link
+              href="/dashboard"
+              className="group flex items-center gap-2 rounded bg-[#E90029] px-10 py-5 text-lg font-bold text-white shadow-xl shadow-[#E90029]/20 transition-all hover:bg-red-600"
+            >
+              Start your first scan
+              <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              href="/how-it-works"
+              className="rounded border border-white/10 bg-white/5 px-10 py-5 text-lg font-bold text-white transition-colors hover:bg-white/10"
+            >
+              View Demo
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* Dashboard mockup */}
         <motion.div
-          className="relative mx-auto mt-16 max-w-4xl"
+          className="group relative mx-auto max-w-5xl"
           initial={{ opacity: 0, y: 40 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
         >
-          {/* Glow behind */}
-          <div className="absolute -inset-4 rounded-2xl bg-[#E90029]/[0.06] blur-2xl" />
+          {/* Glow */}
+          <div className="absolute -inset-1 rounded bg-gradient-to-r from-[#E90029]/30 to-rose-500/30 opacity-30 blur transition-opacity duration-1000 group-hover:opacity-50" />
 
-          <div className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-[#0f0f12] shadow-2xl shadow-black/60">
-            {/* Browser chrome */}
-            <div className="flex h-10 items-center gap-1.5 border-b border-white/[0.06] bg-white/[0.02] px-4">
-              <div className="size-2.5 rounded-full bg-white/10" />
-              <div className="size-2.5 rounded-full bg-white/10" />
-              <div className="size-2.5 rounded-full bg-white/10" />
-              <div className="ml-4 flex-1 rounded bg-white/[0.04] px-3 py-1">
-                <span className="text-[11px] text-white/20">clearsight / dashboard</span>
+          <div className="relative overflow-hidden rounded-t border border-white/10 bg-[#0A0505]/90 p-1.5 shadow-2xl" style={{ boxShadow: "0 0 80px -20px rgba(233, 0, 41, 0.2)" }}>
+            <div className="rounded-t-sm border border-white/5 bg-[#0A0505]/90 p-6">
+              {/* Browser chrome */}
+              <div className="mb-8 flex items-center gap-2 px-2">
+                <div className="flex gap-1.5">
+                  <div className="size-3 rounded-full bg-[#FF5F56]" />
+                  <div className="size-3 rounded-full bg-[#FFBD2E]" />
+                  <div className="size-3 rounded-full bg-[#27C93F]" />
+                </div>
+                <span className="ml-6 font-mono text-xs tracking-wider text-gray-500 opacity-60">
+                  app.clearsight.dev / dashboard / audit
+                </span>
               </div>
-            </div>
 
-            {/* Dashboard mockup */}
-            <div className="p-6">
-              {/* Top stats row */}
-              <div className="mb-6 grid grid-cols-4 gap-4">
+              {/* Stats row */}
+              <div className="mb-12 grid grid-cols-2 gap-6 lg:grid-cols-4">
                 {[
-                  { label: "Score", value: "72", color: "#D97706" },
-                  { label: "Pages", value: "12", color: "#64748b" },
-                  { label: "Issues", value: "47", color: "#DC2626" },
-                  { label: "Fixed", value: "23", color: "#16A34A" },
+                  { label: "Health Score", value: "72.4", color: "text-yellow-500" },
+                  { label: "Total Pages", value: "12", color: "text-white" },
+                  { label: "Critical Issues", value: "47", color: "text-[#E90029]" },
+                  { label: "Remediated", value: "23", color: "text-green-500" },
                 ].map((stat) => (
-                  <div key={stat.label} className="rounded-lg bg-white/[0.03] border border-white/[0.06] p-3">
-                    <div className="text-[10px] text-white/30 uppercase tracking-wider">{stat.label}</div>
-                    <div className="mt-1 text-xl font-bold" style={{ color: stat.color }}>{stat.value}</div>
+                  <div key={stat.label} className="rounded border border-white/10 bg-white/5 p-5">
+                    <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-gray-500">{stat.label}</div>
+                    <div className={`text-3xl font-bold ${stat.color}`}>{stat.value}</div>
                   </div>
                 ))}
               </div>
 
-              {/* Chart area mockup */}
-              <div className="mb-6 rounded-lg bg-white/[0.02] border border-white/[0.06] p-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-white/60 uppercase tracking-wider">Score Trend</span>
-                  <span className="text-[10px] text-white/20">Last 7 crawls</span>
-                </div>
-                <svg viewBox="0 0 400 80" className="w-full" aria-hidden="true">
+              {/* Chart */}
+              <div className="relative mb-10 h-32 w-full overflow-hidden" aria-hidden="true">
+                <svg className="size-full" preserveAspectRatio="none" viewBox="0 0 1000 120">
+                  <path d="M0 100 Q 250 80, 500 70 T 1000 40" fill="none" stroke="#E90029" strokeWidth="3" />
+                  <path d="M0 100 Q 250 80, 500 70 T 1000 40 L 1000 120 L 0 120 Z" fill="url(#heroGrad)" opacity="0.15" />
                   <defs>
-                    <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#E90029" stopOpacity="0.15" />
+                    <linearGradient id="heroGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#E90029" stopOpacity="1" />
                       <stop offset="100%" stopColor="#E90029" stopOpacity="0" />
                     </linearGradient>
                   </defs>
-                  <path d="M0,60 C50,55 80,40 120,45 C160,50 200,30 240,25 C280,20 320,15 360,18 L400,15 L400,80 L0,80 Z" fill="url(#chartFill)" />
-                  <path d="M0,60 C50,55 80,40 120,45 C160,50 200,30 240,25 C280,20 320,15 360,18 L400,15" fill="none" stroke="#E90029" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </div>
 
-              {/* Issue detection popup */}
-              <div className="relative">
-                <div className="absolute right-4 -top-2 z-10 w-[280px] rounded-lg border border-[#DC2626]/30 bg-[#1a1a1f] p-4 shadow-xl">
-                  <div className="mb-2 flex items-center gap-2">
-                    <span className="size-2 rounded-full bg-[#DC2626]" />
-                    <span className="text-[11px] font-bold text-[#DC2626] uppercase tracking-wide">Critical Issue Detected</span>
+              {/* Issue rows */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between rounded border border-white/5 bg-white/5 p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="size-2.5 animate-pulse rounded-full bg-yellow-500" />
+                    <span className="text-sm text-gray-400">Missing descriptive alt text on primary hero images</span>
                   </div>
-                  <div className="rounded bg-white/[0.04] border border-white/[0.08] p-2 mb-2">
-                    <code className="text-[11px] text-white/60">&lt;button class=&quot;btn-primary&quot;&gt;Submit&lt;/button&gt;</code>
-                  </div>
-                  <p className="text-[10px] text-white/60 leading-relaxed">
-                    Element missing &apos;aria-label&apos; or descriptive text. Fails WCAG 2.1 Criterion 4.1.2.
-                  </p>
                 </div>
-
-                {/* Issue list below */}
-                <div className="space-y-2">
-                  {[
-                    { sev: "bg-[#DC2626]", text: "Missing alt text on promotional image", tag: "1.1.1" },
-                    { sev: "bg-[#D97706]", text: "Low contrast on navigation links", tag: "1.4.3" },
-                    { sev: "bg-[#D97706]", text: "Touch target below 48x48px", tag: "2.5.8" },
-                  ].map((issue, i) => (
-                    <div key={i} className="flex items-center gap-3 rounded-lg bg-white/[0.02] border border-white/[0.06] p-3">
-                      <span className={`size-2 shrink-0 rounded-full ${issue.sev}`} />
-                      <span className="flex-1 text-[12px] text-white/70">{issue.text}</span>
-                      <span className="rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-[9px] text-white/30">{issue.tag}</span>
-                    </div>
-                  ))}
+                <div className="flex items-center justify-between rounded border border-[#E90029]/30 bg-[#E90029]/10 p-4 ring-1 ring-[#E90029]/20">
+                  <div className="flex items-center gap-4">
+                    <div className="size-2.5 rounded-full bg-[#E90029]" />
+                    <span className="text-sm font-semibold tracking-wide text-gray-100">Critical: Interactive touch targets below 48x48px on mobile</span>
+                  </div>
+                  <span className="rounded bg-[#E90029] px-2 py-1 text-[10px] font-bold tracking-wider text-white">CRITICAL</span>
                 </div>
               </div>
             </div>

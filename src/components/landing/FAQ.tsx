@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export const allFaqs = [
   {
-    q: "Is the scan really free?",
-    a: "Yes. ClearSight is open source. You run it on your own infrastructure. The scan is free, unlimited, and requires no account.",
+    q: "Is it really free?",
+    a: "Yes. ClearSight is open-source. You can run the entire engine on your own infrastructure for free. We provide the scanning engine, AI enrichment, and reporting — all self-hosted.",
   },
   {
     q: "What WCAG criteria do you check?",
@@ -14,16 +14,16 @@ export const allFaqs = [
     a: "ClearSight crawls your entire site (not just one page), enriches every issue with AI-generated fix suggestions, tracks issues across crawls, and exports to PDF/Excel. Free scanners check one page at a time with no AI analysis.",
   },
   {
+    q: "How accurate is the AI?",
+    a: "Our AI engine has a high success rate on common violations like alt text and ARIA labels. For complex structural issues, it provides multiple annotated options for your team to review.",
+  },
+  {
     q: "How does AI enrichment work?",
     a: "After axe-core flags issues, ClearSight's AI engine analyzes each one with full page context. It writes a plain-English description and a specific fix suggestion for every issue. If the AI engine is unavailable, scans still complete with basic descriptions.",
   },
   {
     q: "Can I scan pages behind a login?",
     a: "Not yet. ClearSight currently scans publicly accessible pages only. Authenticated scanning is on the roadmap.",
-  },
-  {
-    q: "What's the difference between confirmed and potential issues?",
-    a: "Confirmed issues are definite WCAG violations (e.g., missing alt text). Potential issues need human review — the scanner suspects a problem but can't be certain.",
   },
   {
     q: "How long does a full site crawl take?",
@@ -43,35 +43,28 @@ export const allFaqs = [
   },
 ];
 
-/** Homepage FAQ — 2-column grid with card-style items */
+/** Homepage FAQ — 3-column layout (question left, answer right) */
 export function FAQSection() {
-  const topFaqs = allFaqs.slice(0, 6);
+  const topFaqs = allFaqs.slice(0, 4);
 
   return (
-    <section className="py-24">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="mb-10 flex items-end justify-between">
-          <h2 className="text-2xl font-extrabold tracking-[-0.02em] text-foreground">
-            Frequently asked questions
-          </h2>
-          <Link
-            href="/faq"
-            className="text-[13px] font-semibold text-[#E90029] transition-colors hover:text-[#D10025]"
-          >
-            See all &rarr;
-          </Link>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2">
+    <section className="bg-white py-32">
+      <div className="mx-auto max-w-4xl px-6">
+        <h2 className="mb-16 text-center text-4xl font-bold tracking-tight text-foreground">
+          Common questions
+        </h2>
+        <div className="space-y-12">
           {topFaqs.map((faq, i) => (
-            <div key={i} className="rounded-lg border border-border/50 bg-card p-5">
-              <h3 className="mb-2 text-[14px] font-bold text-foreground">
-                {faq.q}
-              </h3>
-              <p className="text-[13px] leading-[1.7] text-muted-foreground">
-                {faq.a}
-              </p>
+            <div key={i} className="grid gap-8 md:grid-cols-3">
+              <h4 className="col-span-1 font-bold text-foreground">{faq.q}</h4>
+              <p className="col-span-2 text-sm leading-relaxed text-muted-foreground">{faq.a}</p>
             </div>
           ))}
+        </div>
+        <div className="mt-12 text-center">
+          <Link href="/faq" className="text-sm font-semibold text-[#E90029] transition-colors hover:text-[#D10025]">
+            See all questions &rarr;
+          </Link>
         </div>
       </div>
     </section>

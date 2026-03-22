@@ -144,7 +144,7 @@ export function ScanForm() {
   const [url, setUrl] = useState(autoScanUrl ?? "");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [mode, setMode] = useState<ScanMode>("crawl");
+  const [mode, setMode] = useState<ScanMode>(autoScanUrl ? "page" : "crawl");
   const autoScanTriggered = useRef(false);
 
   async function submitCrawl(targetUrl: string) {
@@ -180,7 +180,7 @@ export function ScanForm() {
   }
 
   useEffect(() => {
-    if (autoScanUrl && !autoScanTriggered.current) { autoScanTriggered.current = true; submitCrawl(autoScanUrl); }
+    if (autoScanUrl && !autoScanTriggered.current) { autoScanTriggered.current = true; submitSinglePage(autoScanUrl); }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
