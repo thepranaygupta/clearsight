@@ -1,0 +1,110 @@
+---
+title: Data Model
+description: The Prisma schema — entities, relationships, and key fields.
+---
+
+# Data Model
+
+Defined in `prisma/schema.prisma`. All DB access goes through repository classes in `src/modules/db/repositories/`.
+
+## Entities
+
+### Site
+Represents a domain.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | UUID | Primary key |
+| `hostname` | String | e.g. `example.com` |
+| `name` | String | Display name |
+| `createdAt` | DateTime | |
+| `updatedAt` | DateTime | |
+
+### Crawl
+A full-site audit run for a site.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | UUID | |
+| `siteId` | FK → Site | |
+| `status` | Enum | `queued \| discovering \| scanning \| completed \| failed \| cancelled` |
+| `totalPages` | Int | Pages discovered |
+| `scannedPages` | Int | Pages with completed scans |
+| `enrichedPages` | Int | Pages with AI enrichment |
+| `overallScore` | Float? | Null until crawl completes |
+| `maxPages` | Int? | Per-crawl page cap |
+| `newIssues` | Int | Issues not seen in previous crawl |
+| `fixedIssues` | Int | Issues from previous crawl no longer present |
+
+### Page
+A URL discovered within a site.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | UUID | |
+| `siteId` | FK → Site | |
+| `url` | String | Full URL |
+| `path` | String | URL path only |
+| `firstSeenCrawlId` | FK → Crawl | Crawl where this page was first discovered |
+
+### Scan
+A single-page accessibility scan (created for both standalone scans and crawl-initiated scans).
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | UUID | |
+| `url` | String | |
+| `status` | Enum | `queued \| running \| completed \| failed \| completed_partial \| cancelled` |
+| `progress` | Int | 0–100 |
+| `currentStage` | String? | Current pipeline stage name |
+| `pageTitle` | String? | |
+| `pageScreenshot` | String? | Base64 PNG |
+| `metadata` | JSON? | Browser info, viewport, etc. |
+| `retryCount` | Int | |
+
+### Issue
+An accessibility violation found in a scan.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `scanId` | FK → Scan (CASCADE) | |
+| `issueHash` | String | Fingerprint: `hash(pageUrl + ruleId + selector)` |
+| `issueStatus` | Enum | `open \| fixed \| dismissed \| cant_fix` |
+| `pageUrl` | String | |
+| `firstSeenScanId` | FK → Scan | |
+| `lastSeenScanId` | FK → Scan | |
+| `fixedAtCrawlId` | FK → Crawl? | Set when status transitions to `fixed` |
+| `type` | Enum | `confirmed \| potential` |
+| `severity` | Enum | `critical \| serious \| moderate \| minor` |
+| `confidenceScore` | Float? | 0–1, for potential issues |
+| `wcagCriterion` | String | e.g. `1.1.1` |
+| `wcagLevel` | Enum | `A \| AA` |
+| `elementSelector` | String | CSS selector |
+| `elementHtml` | String | Outer HTML snippet |
+| `description` | String | AI or raw description |
+| `fixSuggestion` | String | AI or raw fix suggestion |
+| `axeRuleId` | String? | axe-core rule ID |
+
+### ScanSummary
+AI-generated summary for a scan. One-to-one with Scan.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `scanId` | FK → Scan (unique, CASCADE) | |
+| `overallScore` | Int | 0–100 |
+| `summary` | String | Narrative summary |
+| `topPriorities` | JSON | Ranked issue list |
+| `positiveFindings` | JSON | What the page does well |
+
+## Repository pattern
+
+All DB access goes through repositories, not direct Prisma calls from processors or API routes:
+
+- `PrismaScanRepository` — CRUD for Scan
+- `PrismaIssueRepository` — CRUD for Issue
+- `PrismaSummaryRepository` — CRUD for ScanSummary
+
+## Next steps
+
+- [System Overview →](/dev/architecture)
+- [API Reference →](/dev/api)

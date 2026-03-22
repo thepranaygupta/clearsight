@@ -1,0 +1,66 @@
+---
+title: AI Enrichment
+description: How ClearSight uses Azure OpenAI to generate fix suggestions and accessibility scores.
+---
+
+import { Callout } from 'nextra/components'
+
+# AI Enrichment
+
+After a page is scanned, the AI enrichment stage sends its issues to Azure OpenAI to generate human-readable descriptions, fix suggestions, and an overall accessibility score.
+
+## What it produces
+
+For each issue:
+- **Description** — plain-English explanation of why this is an accessibility problem
+- **Fix suggestion** — specific, actionable steps to resolve it
+
+For the page overall:
+- **Summary** — a 2–3 sentence narrative of the page's accessibility state
+- **Overall score** — 0–100 integer
+- **Top priorities** — ranked list of the most impactful issues to fix first
+- **Positive findings** — what the page does well
+
+## Implementation
+
+`src/modules/ai/providers/azure-openai.ts` — raw `fetch` call to the Azure OpenAI endpoint. No SDK.
+
+```typescript
+const response = await fetch(AZURE_OPENAI_ENDPOINT, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'api-key': AZURE_OPENAI_API_KEY,
+  },
+  body: JSON.stringify({
+    messages: [{ role: 'user', content: prompt }],
+    temperature: 0.3,
+    response_format: { type: 'json_object' },
+  }),
+})
+```
+
+The prompt is defined in `src/modules/ai/prompts/` and includes the full issue list, element HTML snippets, and WCAG context.
+
+## Failure handling
+
+<Callout type="warning">
+  If AI enrichment fails (Azure quota, network error, malformed response), the scan is marked `completed_partial`. Results still include all raw axe-core findings — only the AI descriptions and AI-generated score are missing. The score falls back to the heuristic calculation.
+</Callout>
+
+## Concurrency
+
+The `ai-enrichment` queue runs with `AI_CONCURRENCY` workers (default 2). Keep this within your Azure OpenAI deployment's requests-per-minute limit.
+
+## Prompt engineering
+
+Prompts live in `src/modules/ai/prompts/`. The enrichment prompt instructs the model to:
+- Return structured JSON (enforced by `response_format: { type: 'json_object' }`)
+- Write for a developer audience (technical fix suggestions)
+- Keep descriptions under 2 sentences
+- Score strictly (a page with Critical issues should not score above 60)
+
+## Next steps
+
+- [Data Model →](/dev/architecture/data-model)
+- [Queue System →](/dev/architecture/queue-system)

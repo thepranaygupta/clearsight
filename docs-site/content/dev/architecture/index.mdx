@@ -1,0 +1,75 @@
+---
+title: System Overview
+description: How ClearSight's components fit together — processes, queues, and data flow.
+---
+
+# System Overview
+
+ClearSight runs as two processes: the **Next.js app** and the **worker**. They communicate exclusively through BullMQ queues backed by Redis.
+
+## Processes
+
+| Process | Entry point | Responsibilities |
+|---------|-------------|-----------------|
+| `next` (app) | `src/app/` | UI, REST API, enqueuing jobs |
+| `worker` | `src/worker/index.ts` | Processing all BullMQ jobs |
+
+The app never touches Playwright or axe-core — all scan work happens in the worker.
+
+## Queues
+
+Three BullMQ queues handle the full-site crawl pipeline:
+
+```
+POST /api/sites/:id/crawl
+        │
+        ▼
+┌─────────────────────┐
+│  crawl-discovery    │  BFS link discovery (HTTP fetch + sitemap.xml)
+│  concurrency: 1     │
+└──────────┬──────────┘
+           │ enqueues one job per discovered page
+           ▼
+┌─────────────────────┐
+│  page-scan          │  Playwright + axe-core per page
+│  concurrency: 3     │
+└──────────┬──────────┘
+           │ enqueues one job per scanned page
+           ▼
+┌─────────────────────┐
+│  ai-enrichment      │  Azure OpenAI per page
+│  concurrency: 2     │
+└─────────────────────┘
+           │
+           ▼
+     Crawl finalization
+     (score aggregation, issue diff)
+```
+
+## Single-page scan flow
+
+`POST /api/scans` skips crawl-discovery and enqueues directly to `page-scan`:
+
+```
+POST /api/scans → page-scan → ai-enrichment → scan complete
+```
+
+## Key modules
+
+| Path | What it does |
+|------|--------------|
+| `src/modules/crawler/` | BFS discovery, URL normalization, issue tracking |
+| `src/modules/queue/` | BullMQ queue definitions and job type definitions |
+| `src/modules/pipeline/` | PipelineOrchestrator + 5 scan stages |
+| `src/modules/scanner/` | Playwright renderer + axe-core/LinkText/TouchTarget engines |
+| `src/modules/ai/` | Azure OpenAI provider and prompts |
+| `src/modules/export/` | PDF and Excel report generators |
+| `src/modules/db/repositories/` | Prisma repository layer |
+| `src/worker/processors/` | BullMQ job processors |
+| `src/config/index.ts` | Centralized env config |
+
+## Next steps
+
+- [Crawler & Discovery →](/dev/architecture/crawler)
+- [Queue System →](/dev/architecture/queue-system)
+- [Scan Pipeline →](/dev/architecture/scan-pipeline)
