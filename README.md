@@ -2,6 +2,8 @@
 
 ADA/WCAG compliance checker for websites. Crawl an entire site, scan every page for WCAG 2.1 Level A & AA violations, and get AI-powered reports with actionable fix suggestions — with issue tracking across crawls.
 
+**Live:** [clearsight.pranaygupta.in](https://clearsight.pranaygupta.in/) | **Docs:** [docs.clearsight.pranaygupta.in](https://docs.clearsight.pranaygupta.in/)
+
 ## What it does
 
 - **Full-site crawl** — BFS discovery of same-origin pages via HTTP fetch + sitemap.xml, then concurrent scanning of every page
@@ -232,10 +234,10 @@ erDiagram
 
 ## Services
 
-| Service    | Port | Description                              |
-|------------|------|------------------------------------------|
-| Next.js    | 3000 | Web app + REST API                       |
-| Bull Board | 3001 | BullMQ queue admin/monitoring UI         |
-| Docs       | 3002 | Nextra documentation site                |
-| Redis      | 6379 | BullMQ job queue backend                 |
-| PostgreSQL | 5432 | Primary database                         |
+| Service    | Port | Live URL                                              | Description                      |
+|------------|------|-------------------------------------------------------|----------------------------------|
+| Next.js    | 3000 | [clearsight.pranaygupta.in](https://clearsight.pranaygupta.in/) | Web app + REST API               |
+| Docs       | 3002 | [docs.clearsight.pranaygupta.in](https://docs.clearsight.pranaygupta.in/) | Nextra documentation site        |
+| Bull Board | 3001 | —                                                     | BullMQ queue admin/monitoring UI |
+| Redis      | 6379 | —                                                     | BullMQ job queue backend         |
+| PostgreSQL | 5432 | —                                                     | Primary database                 |
