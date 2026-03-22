@@ -1,0 +1,26 @@
+---
+title: Roadmap
+description: Planned features and known limitations.
+---
+
+# Roadmap
+
+## Planned
+
+- **Authentication support** — scan pages behind login (cookie injection or browser session replay)
+- **WCAG 2.2 support** — additional criteria beyond WCAG 2.1
+- **Scheduled crawls** — cron-based automatic re-crawls
+- **Webhook notifications** — alerts when new Critical issues appear
+- **Interactive API playground** — try API endpoints from the docs
+- **Chrome Web Store listing** — one-click extension install
+- **Multi-user support** — accounts, teams, and access control
+- **Redis-backed rate limiting** — support horizontal scaling
+
+## Known limitations
+
+- No authentication support for scanning protected pages
+- JavaScript-only navigation not followed during crawl discovery
+- `robots.txt` not respected
+- Single-instance rate limiter (resets on restart, not shared across instances)
+- Scans use desktop viewport only (no mobile)
+- WCAG 2.2 not yet covered
