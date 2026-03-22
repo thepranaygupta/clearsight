@@ -1,0 +1,62 @@
+---
+title: Code Style & PRs
+description: Coding conventions and the PR process for contributing to ClearSight.
+---
+
+# Code Style & PRs
+
+## TypeScript
+
+- Strict mode is enabled. No `any` unless unavoidable.
+- Use `import type { ... }` for type-only imports.
+- Path alias `@/*` maps to `./src/*`.
+- All env vars are read through `src/config/index.ts` — never `process.env` directly in business logic.
+
+## React
+
+- `"use client"` directive on all interactive components and pages that use hooks.
+- API routes are server-side only — no `"use client"` in `src/app/api/`.
+- Components in `src/components/ui/` are shadcn/ui — don't modify them directly, add overrides in parent components.
+
+## Database
+
+- All DB access through repository classes in `src/modules/db/repositories/`.
+- No raw Prisma calls in API routes or processors — use repositories.
+- Run `pnpm db:generate` after schema changes, `pnpm db:migrate` to apply.
+
+## API routes
+
+- Validate inputs at the route level before passing to repositories or queues.
+- Return consistent error shapes: `{ error: string }` with appropriate HTTP status.
+- Use `NextResponse.json()` — not `Response.json()`.
+
+## Linting
+
+```bash
+pnpm lint
+```
+
+ESLint with Next.js rules. Fix all lint errors before opening a PR. No lint suppression comments without a comment explaining why.
+
+## Submitting a PR
+
+1. Fork the repo and create a branch: `git checkout -b feat/your-feature`
+2. Make your changes with focused commits
+3. Run `pnpm lint` and fix any errors
+4. Open a PR against `main` with a clear description of what changed and why
+5. Link any related issues
+
+## Commit message format
+
+```
+type: short description
+
+Types: feat, fix, docs, refactor, test, chore
+```
+
+Examples:
+```
+feat: add HeadingHierarchyEngine scan engine
+fix: prevent duplicate pages in crawl discovery
+docs: update environment variables reference
+```

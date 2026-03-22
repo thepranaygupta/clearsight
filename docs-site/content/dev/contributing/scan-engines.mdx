@@ -1,0 +1,115 @@
+---
+title: Adding Scan Engines
+description: How to write a custom scan engine and plug it into the ClearSight pipeline.
+---
+
+import { Callout } from 'nextra/components'
+
+# Adding Scan Engines
+
+Scan engines are the modular units that detect accessibility issues. ClearSight ships with three:
+
+- **AxeCoreEngine** — runs axe-core rules
+- **LinkTextEngine** — checks link text quality
+- **TouchTargetEngine** — checks touch target sizes
+
+You can add custom engines to detect issues beyond what axe-core covers.
+
+## Engine interface
+
+All engines in `src/modules/scanner/engines/` follow this pattern:
+
+```typescript
+export interface ScanEngine {
+  name: string
+  run(page: Page, url: string): Promise<EngineResult[]>
+}
+
+export interface EngineResult {
+  type: 'confirmed' | 'potential'
+  severity: 'critical' | 'serious' | 'moderate' | 'minor'
+  wcagCriterion: string
+  wcagLevel: 'A' | 'AA'
+  elementSelector: string
+  elementHtml: string
+  description: string
+  axeRuleId?: string
+  confidenceScore?: number  // 0-1, required if type === 'potential'
+}
+```
+
+`page` is a Playwright `Page` object with the target URL already loaded.
+
+## Example: writing a custom engine
+
+```typescript
+// src/modules/scanner/engines/HeadingHierarchyEngine.ts
+import type { Page } from 'playwright'
+import type { ScanEngine, EngineResult } from './types'
+
+export class HeadingHierarchyEngine implements ScanEngine {
+  name = 'HeadingHierarchyEngine'
+
+  async run(page: Page, url: string): Promise<EngineResult[]> {
+    const issues = await page.evaluate(() => {
+      const headings = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,h6'))
+      const results: Array<{ selector: string; html: string; level: number }> = []
+      let prevLevel = 0
+
+      headings.forEach((el, i) => {
+        const level = parseInt(el.tagName[1])
+        if (level > prevLevel + 1) {
+          results.push({
+            selector: `${el.tagName.toLowerCase()}:nth-of-type(${i + 1})`,
+            html: el.outerHTML.slice(0, 200),
+            level,
+          })
+        }
+        prevLevel = level
+      })
+
+      return results
+    })
+
+    return issues.map(issue => ({
+      type: 'confirmed' as const,
+      severity: 'moderate' as const,
+      wcagCriterion: '1.3.1',
+      wcagLevel: 'A' as const,
+      elementSelector: issue.selector,
+      elementHtml: issue.html,
+      description: `Heading level skipped from h${issue.level - 1} to h${issue.level}.`,
+    }))
+  }
+}
+```
+
+## Plugging in the engine
+
+Register your engine in the **CustomChecks** stage in `src/modules/pipeline/`:
+
+```typescript
+// In the CustomChecks stage implementation
+const engines = [
+  new LinkTextEngine(),
+  new TouchTargetEngine(),
+  new HeadingHierarchyEngine(),  // add your engine here
+]
+
+const results = await Promise.allSettled(
+  engines.map(engine => engine.run(page, url))
+)
+```
+
+<Callout type="info">
+  Engines run with `Promise.allSettled` — if your engine throws, it won't break the other engines or the scan. Failed engines are logged but don't fail the scan.
+</Callout>
+
+## Testing your engine
+
+Write a test that creates a minimal HTML page with the violation, loads it in Playwright, and asserts your engine finds the expected issues.
+
+## Next steps
+
+- [Chrome Extension Dev →](/dev/contributing/extension)
+- [Code Style & PRs →](/dev/contributing/code-style)
