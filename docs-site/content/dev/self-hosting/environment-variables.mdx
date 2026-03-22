@@ -1,0 +1,53 @@
+---
+title: Environment Variables
+description: All environment variables for configuring ClearSight.
+---
+
+import { Callout } from 'nextra/components'
+
+# Environment Variables
+
+Copy `.env.example` to `.env` and fill in your values.
+
+## Required
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string. Example: `postgresql://user:pass@localhost:5432/clearsight` |
+| `REDIS_URL` | Redis connection string. Default: `redis://localhost:6379` |
+| `AZURE_OPENAI_ENDPOINT` | Full chat completions URL (see below) |
+| `AZURE_OPENAI_API_KEY` | Azure OpenAI API key |
+
+<Callout type="warning">
+**`AZURE_OPENAI_ENDPOINT` format is critical.**
+
+It must be the complete URL including deployment name and `api-version`:
+```
+https://<resource>.openai.azure.com/openai/deployments/<model>/chat/completions?api-version=2025-01-01-preview
+```
+
+The code uses this URL directly as the fetch target. Do not omit the path or query string.
+</Callout>
+
+## Optional
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `AZURE_OPENAI_API_VERSION` | `2025-01-01-preview` | Azure OpenAI API version |
+| `MAX_CRAWL_PAGES` | unlimited | Hard cap on pages per crawl |
+| `CRAWL_DELAY_MS` | `200` | Delay (ms) between page fetches during discovery |
+| `WORKER_CONCURRENCY` | `3` | Parallel Playwright instances for page scanning |
+| `AI_CONCURRENCY` | `2` | Parallel AI enrichment workers |
+| `BULL_BOARD_PORT` | `3001` | Port for Bull Board admin UI |
+
+## Tuning concurrency
+
+`WORKER_CONCURRENCY` controls how many pages are scanned simultaneously. Each worker runs a headless Chromium instance. Higher values = faster crawls but more RAM usage.
+
+Rule of thumb: 1 Playwright worker ≈ 300–500MB RAM. With `WORKER_CONCURRENCY=3`, budget ~1.5GB for the worker process.
+
+`AI_CONCURRENCY` controls parallel Azure OpenAI calls. Keep this ≤ your Azure deployment's rate limit.
+
+## Next steps
+
+- [Running in production →](/dev/self-hosting/production)
