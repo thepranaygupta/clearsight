@@ -10,7 +10,7 @@ export function Hero() {
   const inView = useInView(ref, { once: true, amount: 0.2 });
 
   return (
-    <section ref={ref} className="relative overflow-hidden pt-48 pb-32" style={{ background: "radial-gradient(circle at 50% -20%, #2A0A0E 0%, #0A0505 100%)" }}>
+    <section ref={ref} className="relative overflow-hidden pt-36 pb-24 sm:pt-40 sm:pb-28" style={{ background: "radial-gradient(circle at 50% -20%, #2A0A0E 0%, #0A0505 100%)" }}>
       {/* Dot grid */}
       <div className="pointer-events-none absolute inset-0 opacity-40" style={{
         backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)",
@@ -21,7 +21,7 @@ export function Hero() {
         {/* Centered headline */}
         <div className="mb-16 text-center">
           <motion.h1
-            className="mb-8 text-5xl font-bold leading-[0.9] tracking-tighter text-white md:text-8xl"
+            className="mb-6 text-4xl font-bold leading-[0.95] tracking-tighter text-white md:text-6xl"
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1 }}
@@ -34,7 +34,7 @@ export function Hero() {
           </motion.h1>
 
           <motion.p
-            className="mx-auto mb-10 max-w-2xl text-lg font-medium leading-relaxed text-gray-400 md:text-xl"
+            className="mx-auto mb-8 max-w-xl text-base font-medium leading-relaxed text-gray-400 md:text-lg"
             initial={{ opacity: 0, y: 16 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -51,16 +51,18 @@ export function Hero() {
           >
             <Link
               href="/dashboard"
-              className="group flex items-center gap-2 rounded bg-[#E90029] px-10 py-5 text-lg font-bold text-white shadow-xl shadow-[#E90029]/20 transition-all hover:bg-red-600"
+              className="group flex items-center gap-2 rounded bg-[#E90029] px-7 py-3.5 text-sm font-bold text-white shadow-xl shadow-[#E90029]/20 transition-all hover:bg-red-600"
             >
               Start your first scan
               <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
-              href="/how-it-works"
-              className="rounded border border-white/10 bg-white/5 px-10 py-5 text-lg font-bold text-white transition-colors hover:bg-white/10"
+              href={process.env.NEXT_PUBLIC_DOCS_URL || "http://localhost:3002"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded border border-white/10 bg-white/5 px-7 py-3.5 text-sm font-bold text-white transition-colors hover:bg-white/10"
             >
-              View Demo
+              View Docs
             </Link>
           </motion.div>
         </div>

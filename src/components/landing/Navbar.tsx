@@ -7,8 +7,8 @@ import { LogoFull } from "@/components/Logo";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
-  { href: "/how-it-works", label: "How it works" },
   { href: "/solutions", label: "Solutions" },
+  { href: "/how-it-works", label: "How it works" },
   { href: "/faq", label: "FAQ" },
   { href: process.env.NEXT_PUBLIC_DOCS_URL || "http://localhost:3002", label: "Docs", external: true },
 ];
