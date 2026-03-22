@@ -1,0 +1,44 @@
+---
+title: Settings & Limits
+description: Scan limits, rate limits, and what affects scan behavior.
+---
+
+import { Callout } from 'nextra/components'
+
+# Settings & Limits
+
+## Rate limits
+
+| Action | Limit |
+|--------|-------|
+| Single-page scans | 10 per hour per IP |
+| Full-site crawls | 1 running at a time per site |
+| Concurrent page scans (per crawl) | 3 (server-side, not configurable in UI) |
+
+<Callout type="warning">
+  Rate limits reset every hour. If you hit the single-page scan limit, you can still start or continue a full-site crawl — crawl-initiated scans bypass the IP rate limit.
+</Callout>
+
+## Page cap
+
+If the ClearSight instance has `MAX_CRAWL_PAGES` configured, crawls will stop after that many pages. Check with whoever hosts your ClearSight instance.
+
+You can also set a per-crawl page cap when starting a crawl from the UI.
+
+## What affects scan accuracy
+
+| Factor | Impact |
+|--------|--------|
+| JavaScript-rendered content | Included — ClearSight uses a real browser |
+| Lazy-loaded content | Partially included — content must be in the DOM at load time |
+| CSS-hidden elements | Checked — hidden elements can still fail accessibility rules |
+| Dark mode / forced colors | Not tested — scans use default browser settings |
+
+## Scan timeout
+
+Individual page scans time out after 30 seconds. Pages that time out are marked as failed and don't count toward the overall score.
+
+## Next steps
+
+- [Single-page scan →](/user/scanning/single-page)
+- [Full-site crawl →](/user/scanning/full-site-crawl)
