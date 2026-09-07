@@ -53,7 +53,10 @@ export async function POST(
     } catch { /* no body is fine */ }
 
     const crawl = await crawlRepo.create({ siteId: id, maxPages })
-    const rootUrl = `https://${site.hostname}`
+    // Use stored root URL if it contains a path (e.g. /s/), otherwise derive from hostname
+    const rootUrl = site.name && site.name.startsWith('http')
+      ? site.name
+      : `https://${site.hostname}`
 
     await crawlQueue.add(`crawl-${crawl.id}`, {
       crawlId: crawl.id,

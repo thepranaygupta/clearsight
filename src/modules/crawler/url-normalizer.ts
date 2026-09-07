@@ -43,3 +43,24 @@ export function extractPath(url: string): string {
     return '/'
   }
 }
+
+/**
+ * Returns a key for deduplication that ignores locale params.
+ * The actual URL (with locale) is preserved for scanning —
+ * this only determines whether two URLs point to the same page.
+ */
+const LOCALE_PARAMS = new Set(['language', 'lang', 'locale'])
+
+export function dedupKey(normalizedUrl: string): string {
+  try {
+    const url = new URL(normalizedUrl)
+    for (const param of LOCALE_PARAMS) {
+      url.searchParams.delete(param)
+    }
+    url.searchParams.sort()
+    const key = url.origin + url.pathname.replace(/\/+$/, '') + url.search
+    return url.pathname === '/' && !url.search ? url.origin + '/' : key
+  } catch {
+    return normalizedUrl
+  }
+}

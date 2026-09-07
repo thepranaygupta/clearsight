@@ -25,8 +25,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: validation.error }, { status: 400 })
     }
 
-    const hostname = normalizeHostname(new URL(url).hostname)
-    const site = await siteRepo.findOrCreate(hostname)
+    const parsed = new URL(url)
+    const hostname = normalizeHostname(parsed.hostname)
+    // Store full root URL (with path) as name so crawls start from the right place
+    const rootUrl = parsed.origin + parsed.pathname.replace(/\/+$/, '') + '/'
+    const site = await siteRepo.findOrCreate(hostname, rootUrl)
     return NextResponse.json(site, { status: 201 })
   } catch {
     return NextResponse.json({ error: 'Invalid URL' }, { status: 400 })

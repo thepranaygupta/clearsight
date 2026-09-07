@@ -1,5 +1,5 @@
 import type { CrawlConfig, DiscoveredPage } from './types'
-import { normalizeUrl, isSameOrigin, extractPath } from './url-normalizer'
+import { normalizeUrl, isSameOrigin, extractPath, dedupKey } from './url-normalizer'
 
 export async function discoverPages(
   rootUrl: string,
@@ -12,14 +12,16 @@ export async function discoverPages(
 
   const normalizedRoot = normalizeUrl(rootUrl, rootUrl)
   if (!normalizedRoot) throw new Error(`Invalid root URL: ${rootUrl}`)
-  visited.add(normalizedRoot)
+  visited.add(dedupKey(normalizedRoot))
 
-  // Also discover from sitemap
+  // Also discover from sitemap (sitemap URLs take priority — they often include locale params)
   const sitemapUrls = await fetchSitemap(rootUrl, crawlConfig)
   for (const sitemapUrl of sitemapUrls) {
     const normalized = normalizeUrl(sitemapUrl, rootUrl)
-    if (normalized && isSameOrigin(normalized, rootUrl) && !visited.has(normalized)) {
-      visited.add(normalized)
+    if (!normalized) continue
+    const key = dedupKey(normalized)
+    if (isSameOrigin(normalized, rootUrl) && !visited.has(key)) {
+      visited.add(key)
       queue.push(normalized)
     }
   }
@@ -40,9 +42,10 @@ export async function discoverPages(
       const normalized = normalizeUrl(link, url)
       if (!normalized) continue
       if (!isSameOrigin(normalized, rootUrl)) continue
-      if (visited.has(normalized)) continue
+      const key = dedupKey(normalized)
+      if (visited.has(key)) continue
       if (isNonPageUrl(normalized)) continue
-      visited.add(normalized)
+      visited.add(key)
       queue.push(normalized)
     }
   }
@@ -88,14 +91,75 @@ function extractLinksFromHtml(html: string, baseUrl: string): string[] {
 }
 
 async function fetchSitemap(rootUrl: string, config: CrawlConfig): Promise<string[]> {
+  const origin = new URL(rootUrl).origin
+
+  // 1. Check robots.txt for Sitemap: directives (most reliable)
+  const robotsSitemaps = await fetchSitemapsFromRobots(origin, config)
+
+  // 2. Fallback candidates: /sitemap.xml and path-relative sitemap
+  const candidates = [`${origin}/sitemap.xml`]
+  const rootPath = new URL(rootUrl).pathname
+  if (rootPath !== '/' && rootPath !== '') {
+    const base = rootPath.endsWith('/') ? rootPath : rootPath.split('/').slice(0, -1).join('/') + '/'
+    candidates.push(`${origin}${base}sitemap.xml`)
+  }
+
+  const allSitemaps = robotsSitemaps.length > 0 ? robotsSitemaps : candidates
+  const allUrls: string[] = []
+  for (const sitemapUrl of allSitemaps) {
+    const urls = await fetchSitemapUrl(sitemapUrl, config, rootUrl)
+    allUrls.push(...urls)
+  }
+  return [...new Set(allUrls)]
+}
+
+async function fetchSitemapsFromRobots(origin: string, config: CrawlConfig): Promise<string[]> {
   try {
-    const origin = new URL(rootUrl).origin
-    const response = await fetch(`${origin}/sitemap.xml`, {
+    const response = await fetch(`${origin}/robots.txt`, {
+      headers: { 'User-Agent': config.userAgent },
+      signal: AbortSignal.timeout(5000),
+    })
+    if (!response.ok) return []
+    const text = await response.text()
+    const sitemaps: string[] = []
+    const sitemapRegex = /^Sitemap:\s*(.+)$/gim
+    let match: RegExpExecArray | null
+    while ((match = sitemapRegex.exec(text)) !== null) {
+      if (match[1]) sitemaps.push(match[1].trim())
+    }
+    return [...new Set(sitemaps)]
+  } catch {
+    return []
+  }
+}
+
+async function fetchSitemapUrl(sitemapUrl: string, config: CrawlConfig, rootUrl: string, depth = 0): Promise<string[]> {
+  if (depth > 3) return [] // prevent infinite recursion
+  try {
+    const response = await fetch(sitemapUrl, {
       headers: { 'User-Agent': config.userAgent },
       signal: AbortSignal.timeout(10000),
     })
     if (!response.ok) return []
     const xml = await response.text()
+
+    // Detect sitemap index — contains <sitemap> elements
+    const isSitemapIndex = /<sitemap[\s>]/i.test(xml)
+    if (isSitemapIndex) {
+      // Extract sub-sitemap URLs and fetch each recursively
+      const subSitemapUrls: string[] = []
+      const locRegex = /<sitemap[\s\S]*?<loc>([^<]+)<\/loc>/gi
+      let match: RegExpExecArray | null
+      while ((match = locRegex.exec(xml)) !== null) {
+        if (match[1]) subSitemapUrls.push(match[1].trim())
+      }
+      const results = await Promise.all(
+        subSitemapUrls.map((url) => fetchSitemapUrl(url, config, rootUrl, depth + 1))
+      )
+      return results.flat()
+    }
+
+    // Regular sitemap — extract <loc> page URLs
     const urls: string[] = []
     const locRegex = /<loc>([^<]+)<\/loc>/gi
     let match: RegExpExecArray | null
@@ -115,5 +179,16 @@ function isNonPageUrl(url: string): boolean {
     '.css', '.js', '.json', '.xml', '.zip', '.tar', '.gz',
     '.mp3', '.mp4', '.avi', '.mov', '.woff', '.woff2', '.ttf', '.eot',
   ]
-  return skipExtensions.some((ext) => path.endsWith(ext))
+  if (skipExtensions.some((ext) => path.endsWith(ext))) return true
+
+  // Skip static asset paths (CDN, file serving endpoints)
+  const skipPatterns = [
+    '/sfsites/c/file-asset/',  // Salesforce static assets
+    '/sfsites/c/resource/',
+    '/_next/static/',
+    '/static/',
+    '/assets/',
+    '/cdn-cgi/',
+  ]
+  return skipPatterns.some((pattern) => path.includes(pattern))
 }
